@@ -19,7 +19,7 @@ export interface GetFundingHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
   pageSize?: number; // will get only provided number of orders must be <= 50
   cursor?: number; // will fetch particular page records. A single page contains 50 records.
-  parentAddress?:string;
+  parentAddress?: string;
 }
 
 export interface GetTransferHistoryRequest {
@@ -35,11 +35,11 @@ export interface GetOrderRequest extends GetTransactionHistoryRequest {
   orderType?: ORDER_TYPE[]; //order type LIMIT / MARKET
   pageSize?: number;
   pageNumber?: number;
-  parentAddress?:string;
+  parentAddress?: string;
 }
 
 export interface GetPositionRequest extends GetTransactionHistoryRequest {
-  parentAddress?:string;
+  parentAddress?: string;
 }
 
 export interface RequiredOrderFields {
@@ -57,7 +57,8 @@ export interface OrderSignatureRequest extends RequiredOrderFields {
   reduceOnly?: boolean; // is order to be reduce only true/false, default its false
   salt?: number; // random number for uniqueness of order. Generated randomly if not provided
   expiration?: number; // time at which order will expire. Will be set to 1 month if not provided
-  maker?:address; //address of the parent account on behalf user wants to place the order
+  maker?: address; //address of the parent account on behalf user wants to place the order
+  isBuy?: boolean;
 }
 
 export interface OrderSignatureResponse extends RequiredOrderFields {
@@ -66,7 +67,7 @@ export interface OrderSignatureResponse extends RequiredOrderFields {
   salt: number;
   expiration: number;
   orderSignature: string;
-  maker:address;
+  maker: address;
 }
 
 export interface PlaceOrderRequest extends OrderSignatureResponse {
@@ -195,7 +196,7 @@ export interface GetUserTradesRequest {
   pageSize?: number;
   pageNumber?: number;
   type?: ORDER_TYPE;
-  parentAddress?:string;
+  parentAddress?: string;
 }
 
 export interface GetUserTradesResponse {
@@ -302,7 +303,7 @@ export interface UserFundingHistoryResponse {
   oraclePrice: string;
   side: ORDER_SIDE;
   blockNumber: number;
-  isPositionPositive: boolean
+  isPositionPositive: boolean;
 }
 
 export interface GetMarketRecentTradesRequest {
@@ -363,7 +364,7 @@ export interface MarketData {
   lastPrice: string;
   _24hrHighPrice: string;
   _24hrLowPrice: string;
-  _24hrVolume: string; 
+  _24hrVolume: string;
   _24hrQuoteVolume: string;
   _24hrClosePrice: string;
   _24hrOpenPrice: string;
@@ -435,11 +436,10 @@ export interface AuthorizeHashResponse {
   token: string;
 }
 
-export interface adjustLeverageRequest{
-  symbol: MarketSymbol,
-  leverage: number,
-  perpetualAddress?: address,
-  parentAddress?:string
+export interface adjustLeverageRequest {
+  symbol: MarketSymbol;
+  leverage: number;
+  parentAddress?: string;
 }
 
 export interface AdjustLeverageResponse {
@@ -458,7 +458,7 @@ export interface UserSubscriptionAck {
   success: boolean;
   message: string;
 }
-export interface verifyDepositResponse{
+export interface verifyDepositResponse {
   verificationStatus: string;
 }
 export interface CountDown {

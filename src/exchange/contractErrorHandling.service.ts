@@ -1,5 +1,7 @@
 import { getValue } from "@firefly-exchange/library";
 import { serializeError } from "eth-rpc-errors";
+import { Transaction } from "../../submodules/library-sui/src";
+import { SuiTransactionBlockResponse } from "@mysten/sui.js";
 export type ResponseSchema = {
   ok: boolean;
   data: any;
@@ -40,24 +42,34 @@ export const handleResponse = (
 };
 
 export const TransformToResponseSchema = async (
-  contactCall: () => Promise<void>,
+  contactCall: () => Promise<SuiTransactionBlockResponse>,
   successMessage: string
 ): Promise<ResponseSchema> => {
   try {
-    const result = await contactCall();
-    return handleResponse(
-      {
-        data: result,
-        message: successMessage,
-        code: 200,
-      },
-      true
-    );
+    const tx = await contactCall();
+    if (Transaction.getStatus(tx) == "success") {
+      return handleResponse(
+        {
+          data: tx,
+          message: successMessage,
+          code: 200,
+        },
+        true
+      );
+    } else {
+      return handleResponse(
+        {
+          data: tx,
+          message: Transaction.getError(tx),
+          code: 400,
+        },
+        false
+      );
+    }
   } catch (error: any) {
     return handleResponse({ ...serializeError(error) }, false);
   }
 };
-
 
 export enum SuccessMessages {
   adjustLeverage = "Leverage Adjusted to {leverage}x.",
@@ -66,13 +78,13 @@ export enum SuccessMessages {
   withdrawMargin = "{amount} USDC withdrawn.",
   approveUSDC = "{amount} USDC approved.",
   depositToBank = "{amount} USDC deposited to Margin Bank.",
-  setSubAccounts = "This {address} is successfully {status} as a subaccount"
+  setSubAccounts = "This {address} is successfully {status} as a subaccount",
 }
 
-export enum VerificationStatus{
+export enum VerificationStatus {
   Success = "success",
   Restricted = "restricted",
-  Blocked = "blocked"
+  Blocked = "blocked",
 }
 
 export enum APIErrorMessages {

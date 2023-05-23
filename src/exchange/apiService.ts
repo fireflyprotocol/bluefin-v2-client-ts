@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
-import { getValue, isEmpty } from "@firefly-exchange/library";
+import { getValue, isEmpty } from "../../submodules/library-sui/src/library";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
 
@@ -28,9 +28,8 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
-    if(!baseUrl)
-      baseUrl = this.baseUrl
-    url = baseUrl + url
+    if (!baseUrl) baseUrl = this.baseUrl;
+    url = baseUrl + url;
     const response = await this.apiService.get(url, {
       params: queryParams,
       ...config,
@@ -47,10 +46,8 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
-
-    if(!baseUrl)
-      baseUrl = this.baseUrl
-    url = baseUrl + url
+    if (!baseUrl) baseUrl = this.baseUrl;
+    url = baseUrl + url;
     const response = await this.apiService.post(url, data, {
       ...config,
       transformRequest: config?.isAuthenticationRequired
@@ -66,9 +63,8 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
-    if(!baseUrl)
-      baseUrl = this.baseUrl
-    url = baseUrl + url
+    if (!baseUrl) baseUrl = this.baseUrl;
+    url = baseUrl + url;
     const response = await this.apiService.put(url, data, {
       ...config,
       transformRequest: config?.isAuthenticationRequired
@@ -84,9 +80,8 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
-    if(!baseUrl)
-      baseUrl = this.baseUrl
-    url = baseUrl + url
+    if (!baseUrl) baseUrl = this.baseUrl;
+    url = baseUrl + url;
     const response = await this.apiService.patch(url, data, {
       ...config,
       transformRequest: config?.isAuthenticationRequired
@@ -102,9 +97,8 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
-    if(!baseUrl)
-      baseUrl = this.baseUrl
-    url = baseUrl + url
+    if (!baseUrl) baseUrl = this.baseUrl;
+    url = baseUrl + url;
     const response = await this.apiService.delete(url, {
       ...config,
       data,

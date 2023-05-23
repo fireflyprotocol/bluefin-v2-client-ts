@@ -1,0 +1,187 @@
+{
+  "deployer": "0xdbd64f232e67693269692be1c1889fea8558fc7da2fbb6cc9dc6f0e6e4da9b6d",
+  "objects": {
+    "Bank": {
+      "id": "0x004045205d0ff38632e43a474c6b3cfe2c9f3680905aae71b8bc55b404adfe41",
+      "owner": "Shared",
+      "dataType": "Bank"
+    },
+    "package": {
+      "id": "0x0724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279",
+      "owner": "Immutable",
+      "dataType": "package"
+    },
+    "UpgradeCap": {
+      "id": "0x140055dd193b4aa7e1c9f06a770bfe45176db240a48202b528dce9db900ea264",
+      "owner": "Owned",
+      "dataType": "UpgradeCap"
+    },
+    "ExchangeAdminCap": {
+      "id": "0x4208de5803ec3cad3c7cfd46d3c7b531f400cb3fc8887022cf914e29a343b992",
+      "owner": "Owned",
+      "dataType": "ExchangeAdminCap"
+    },
+    "PriceOracleOperatorCap": {
+      "id": "0x47456388d0fb80a8a9b1755fa67c4b7ed18c8ad51c6d28f8197445539a198811",
+      "owner": "Owned",
+      "dataType": "PriceOracleOperatorCap"
+    },
+    "CapabilitiesSafe": {
+      "id": "0x56e2c985d296f310345a4397333461b45cd6b862833d0944676c2c427b2993cf",
+      "owner": "Shared",
+      "dataType": "CapabilitiesSafe"
+    },
+    "SubAccounts": {
+      "id": "0x7ad2ac6081f87b512670a3f7d4f012fffe5580231246a1724c2679bff95aaeed",
+      "owner": "Shared",
+      "dataType": "SubAccounts"
+    },
+    "ExchangeGuardianCap": {
+      "id": "0x80b31be1e12042573508a42a592f87908aeea21d0f2d8379550a518c75ed79c1",
+      "owner": "Owned",
+      "dataType": "ExchangeGuardianCap"
+    },
+    "Table<vector<u8>, 0x724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::isolated_trading::OrderStatus>": {
+      "id": "0x9aad53cc204ea03e18b43f8a9b023150f97e779bf9533a89d3f1a396a7736c6a",
+      "owner": "Shared",
+      "dataType": "Table<vector<u8>, 0x724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::isolated_trading::OrderStatus>"
+    },
+    "Currency": {
+      "id": "0x9fb98890d471c3197c68f6dfddc7112328f0eb3cc3763ffbc323170ddf58f2ec",
+      "owner": "Immutable",
+      "dataType": "0x0724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::tusdc::TUSDC"
+    },
+    "DeleveragingCap": {
+      "id": "0xeeba8d5c728e7476bc5e8b190e7b65ae07a0315a33515d8be978513d58e2986e",
+      "owner": "Owned",
+      "dataType": "DeleveragingCap"
+    },
+    "TreasuryCap": {
+      "id": "0xfbd9f68b429dce7e57fba58d3f9052284f1184c25318dea2e3a8e30b7e8a90cc",
+      "owner": "Owned",
+      "dataType": "TreasuryCap"
+    }
+  },
+  "markets": {
+    "ETH-PERP": {
+      "Config": {
+        "name": "ETH-PERP",
+        "minPrice": "100000000",
+        "maxPrice": "100000000000000",
+        "tickSize": "1000000",
+        "minQty": "10000000",
+        "maxQtyLimit": "100000000000000",
+        "maxQtyMarket": "1000000000000",
+        "stepSize": "10000000",
+        "mtbLong": "200000000",
+        "mtbShort": "200000000",
+        "maxAllowedOIOpen": [
+          "5000000000000000",
+          "5000000000000000",
+          "2500000000000000",
+          "2500000000000000",
+          "1000000000000000",
+          "1000000000000000",
+          "250000000000000",
+          "250000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000"
+        ],
+        "initialMarginRequired": "475000000",
+        "maintenanceMarginRequired": "300000000",
+        "makerFee": "1000000",
+        "takerFee": "4500000",
+        "maxAllowedFR": "1000000",
+        "maxAllowedPriceDiffInOP": "1000000000",
+        "insurancePoolRatio": "300000000",
+        "insurancePool": "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88",
+        "feePool": "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073"
+      },
+      "Objects": {
+        "BankAccount": {
+          "id": "0x50bbc71aed57ff57a36129e607809e553496064059720749cad821ba9d9c93aa",
+          "owner": "Owned",
+          "dataType": "BankAccount"
+        },
+        "Perpetual": {
+          "id": "0x29e92ca3ce620805aecf73cb65247ca0abfdcfb46f4d2a252fe9bf9244adbff0",
+          "owner": "Shared",
+          "dataType": "Perpetual"
+        }
+      }
+    },
+    "BTC-PERP": {
+      "Config": {
+        "name": "BTC-PERP",
+        "minPrice": "100000000",
+        "maxPrice": "100000000000000",
+        "tickSize": "1000000",
+        "minQty": "10000000",
+        "maxQtyLimit": "100000000000000",
+        "maxQtyMarket": "1000000000000",
+        "stepSize": "10000000",
+        "mtbLong": "200000000",
+        "mtbShort": "200000000",
+        "maxAllowedOIOpen": [
+          "5000000000000000",
+          "5000000000000000",
+          "2500000000000000",
+          "2500000000000000",
+          "1000000000000000",
+          "1000000000000000",
+          "250000000000000",
+          "250000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000",
+          "200000000000000"
+        ],
+        "initialMarginRequired": "475000000",
+        "maintenanceMarginRequired": "300000000",
+        "makerFee": "1000000",
+        "takerFee": "4500000",
+        "maxAllowedFR": "1000000",
+        "maxAllowedPriceDiffInOP": "1000000000",
+        "insurancePoolRatio": "300000000",
+        "insurancePool": "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88",
+        "feePool": "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073"
+      },
+      "Objects": {
+        "BankAccount": {
+          "id": "0x1435afa32bf0b10c1a6c1e73118eb22f446c2ff93605c84af5c7a3f9a670d97a",
+          "owner": "Owned",
+          "dataType": "BankAccount"
+        },
+        "Perpetual": {
+          "id": "0xdf2b92435b1dcb18c7e6698441a09e98c6e98d530d5af85a10609a218e58287c",
+          "owner": "Shared",
+          "dataType": "Perpetual"
+        }
+      }
+    }
+  },
+  "bankAccounts": {
+    "0x29e92ca3ce620805aecf73cb65247ca0abfdcfb46f4d2a252fe9bf9244adbff0": "0x017ab51f0635263753223aaa8efd50d14930dae1a8a3bd460d83491ee4f0751b",
+    "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88": "0x12a4f0dddb600be6d056ade0004b13952d768bdb2163fcf6e88da9f189383ebd",
+    "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073": "0x50bbc71aed57ff57a36129e607809e553496064059720749cad821ba9d9c93aa",
+    "0xdf2b92435b1dcb18c7e6698441a09e98c6e98d530d5af85a10609a218e58287c": "0x1435afa32bf0b10c1a6c1e73118eb22f446c2ff93605c84af5c7a3f9a670d97a"
+  }
+}

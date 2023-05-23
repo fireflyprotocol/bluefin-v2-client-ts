@@ -49,7 +49,8 @@ export interface RequiredOrderFields {
   side: ORDER_SIDE; // BUY/SELL
   orderType: ORDER_TYPE; // MARKET/LIMIT
   triggerPrice?: number; //optional, send triggerPrice for stop orders
-  postOnly: boolean; // true/false, default is true
+  postOnly?: boolean; // true/false, default is false
+  orderbookOnly?: boolean; // true/false, default is true
 }
 
 export interface OrderSignatureRequest extends RequiredOrderFields {

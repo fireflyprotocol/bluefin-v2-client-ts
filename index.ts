@@ -1,6 +1,3 @@
-// export exchange library
-export * from "@firefly-exchange/library";
-
 // interfaces
 export * from "./src/interfaces/routes";
 

@@ -1,4 +1,4 @@
-import { getValue } from "@firefly-exchange/library";
+import { getValue } from "../../submodules/library-sui/src/library";
 import { serializeError } from "eth-rpc-errors";
 import { Transaction } from "../../submodules/library-sui/src";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";

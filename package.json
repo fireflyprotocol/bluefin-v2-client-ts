@@ -1,26 +1,30 @@
 {
   "name": "@firefly-exchange/bluefin-client-sui",
-  "version": "1.1.4",
+  "version": "0.0.1",
   "description": "The Firefly Client Library allows traders to sign, create, retrieve and listen to orders on Firefly Exchange.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "lint": "npx eslint src/*/** --fix",
     "test": "ts-mocha --timeout 100000 tests/*.test.ts",
     "prepare": "husky install",
     "debug": "ts-node ./scripts/myDebuger.ts",
-    "generate:dapi": "rm -rf src/gen/dapi && openapi-generator-cli generate -i swagger/swagger.json -g typescript-axios -o src/gen/dapi --additional-properties=useSingleRequestParameter=true --skip-validate-spec"
+    "generate:dapi": "rm -rf src/gen/dapi && openapi-generator-cli generate -i swagger/swagger.json -g typescript-axios -o src/gen/dapi --additional-properties=useSingleRequestParameter=true --skip-validate-spec",
+    "lint": "yarn eslint --fix --cache --max-warnings=-1 .",
+    "format-all": "yarn prettier --write .",
+    "format-staged": "git-format-staged -f \"prettier '{}'\" '**/*.js' '**/*.json' '**/*.ts' ",
+    "ci:code-formatting": "yarn prettier --check .",
+    "ci:code-style": "yarn eslint ."
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fireflyprotocol/firefly-client"
+    "url": "https://github.com/fireflyprotocol/bluefin-client-sui"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fireflyprotocol/ffly-client/issues"
+    "url": "https://github.com/fireflyprotocol/bluefin-client-sui/issues"
   },
-  "homepage": "https://github.com/fireflyprotocol/ffly-client#readme",
+  "homepage": "https://github.com/fireflyprotocol/bluefin-client-sui#readme",
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.5",
@@ -31,7 +35,7 @@
     "@types/node": "^17.0.36",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
-    "eslint": "^8.16.0",
+    "eslint": "^8.42.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-node": "^0.3.6",
@@ -41,7 +45,7 @@
     "lint-staged": "^13.0.3",
     "mocha": "^10.0.0",
     "node-polyfill-webpack-plugin": "^2.0.1",
-    "prettier": "^2.6.2",
+    "prettier": "^2.8.8",
     "ts-loader": "^9.3.1",
     "ts-mocha": "^10.0.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
@@ -60,7 +64,7 @@
     "bignumber.js": "^9.1.0",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.4",
     "es6-promisify": "^7.0.0",
     "eth-rpc-errors": "^4.0.3",
     "ethereumjs-wallet": "^1.0.2",
@@ -87,6 +91,12 @@
     "**/*.{js,ts,json}": "prettier --write",
     "**/*.{js,ts}": "eslint --fix"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "browser": {
     "fs": false,
     "net": false,

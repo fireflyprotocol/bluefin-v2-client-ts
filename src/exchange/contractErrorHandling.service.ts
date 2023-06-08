@@ -1,7 +1,8 @@
-import { getValue } from "../../submodules/library-sui/src/library";
 import { serializeError } from "eth-rpc-errors";
-import { Transaction } from "../../submodules/library-sui/src";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";
+import { getValue } from "../../submodules/library-sui/src/library";
+import { Transaction } from "../../submodules/library-sui/src";
+
 export type ResponseSchema = {
   ok: boolean;
   data: any;
@@ -56,16 +57,15 @@ export const TransformToResponseSchema = async (
         },
         true
       );
-    } else {
-      return handleResponse(
-        {
-          data: tx,
-          message: Transaction.getError(tx),
-          code: 400,
-        },
-        false
-      );
     }
+    return handleResponse(
+      {
+        data: tx,
+        message: Transaction.getError(tx),
+        code: 400,
+      },
+      false
+    );
   } catch (error: any) {
     return handleResponse({ ...serializeError(error) }, false);
   }

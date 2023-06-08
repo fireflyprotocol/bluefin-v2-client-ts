@@ -11,7 +11,7 @@ export const SERVICE_URLS = {
     CONTRACT_ADDRESSES: "/marketData/contractAddresses",
     TICKER: "/ticker",
     MASTER_INFO: "/masterInfo",
-    FUNDING_RATE: "/fundingRate"
+    FUNDING_RATE: "/fundingRate",
   },
   USER: {
     USER_POSITIONS: "/userPosition",
@@ -25,7 +25,7 @@ export const SERVICE_URLS = {
     FUND_GAS: "/account/fundGas",
     TRANSFER_HISTORY: "/userTransferHistory",
     FUNDING_HISTORY: "/userFundingHistory",
-    CANCEL_ON_DISCONNECT: "/dms-countdown"
+    CANCEL_ON_DISCONNECT: "/dms-countdown",
   },
   ORDERS: {
     ORDERS: "/orders",

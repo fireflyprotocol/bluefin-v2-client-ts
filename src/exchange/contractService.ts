@@ -1,23 +1,27 @@
+import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
+import { default as interpolate } from "interpolate";
 import {
   address,
   ADJUST_MARGIN,
   Transaction,
+  OnChainCalls,
 } from "../../submodules/library-sui/src";
-import { OnChainCalls } from "../../submodules/library-sui/src";
-import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
 import {
   ResponseSchema,
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { default as interpolate } from "interpolate";
 import { toBigNumberStr, toBaseNumber } from "../../submodules/library-sui";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
+
   signer: RawSigner;
+
   marginBankId: string | undefined;
+
   defaultGas: number = 100000000;
+
   constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
     this.signer = signer;
     const signerWithProvider: SignerWithProvider = this.signer.connect(rpc);
@@ -63,7 +67,7 @@ export class ContractCalls {
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
-          coinID: coinID,
+          coinID,
           bankID: this.onChainCalls.getBankID(),
           accountAddress: await this.signer.getAddress(),
           gasBudget: gasLimit || this.defaultGas,
@@ -74,7 +78,7 @@ export class ContractCalls {
         this.marginBankId = Transaction.getBankAccountID(tx);
       }
       return tx;
-    }, interpolate(SuccessMessages.depositToBank, { amount: amount }));
+    }, interpolate(SuccessMessages.depositToBank, { amount }));
   };
 
   adjustLeverageContractCall = async (
@@ -87,11 +91,9 @@ export class ContractCalls {
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.adjustLeverage(
         {
-          leverage: leverage,
+          leverage,
           perpID: perpId,
-          account: parentAddress
-            ? parentAddress
-            : await this.signer.getAddress(),
+          account: parentAddress || (await this.signer.getAddress()),
           gasBudget: gasLimit || this.defaultGas,
         },
         this.signer
@@ -108,7 +110,7 @@ export class ContractCalls {
       return await this.onChainCalls.setSubAccount(
         {
           account: publicAddress,
-          status: status,
+          status,
           gasBudget: gasLimit || this.defaultGas,
         },
         this.signer
@@ -131,22 +133,21 @@ export class ContractCalls {
       if (operationType == ADJUST_MARGIN.Add) {
         return await this.onChainCalls.addMargin(
           {
-            amount: amount,
+            amount,
             perpID: perpId,
             gasBudget: gasLimit || this.defaultGas,
           },
           this.signer
         );
-      } else {
-        return await this.onChainCalls.removeMargin(
-          {
-            amount: amount,
-            gasBudget: gasLimit,
-            perpID: perpId,
-          },
-          this.signer
-        );
       }
+      return await this.onChainCalls.removeMargin(
+        {
+          amount,
+          gasBudget: gasLimit,
+          perpID: perpId,
+        },
+        this.signer
+      );
     }, msg);
   };
 
@@ -156,8 +157,7 @@ export class ContractCalls {
         (await this.onChainCalls.getBankAccountDetails(this.marginBankId))
           .balance
       );
-    } else {
-      return 0;
     }
+    return 0;
   };
 }

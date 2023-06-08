@@ -1,0 +1,5287 @@
+{
+  "components": {
+    "examples": {},
+    "headers": {},
+    "parameters": {},
+    "requestBodies": {},
+    "responses": {},
+    "schemas": {
+      "Meta": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "domainHash": {
+            "type": "string"
+          },
+          "onboardingWebsiteUrl": {
+            "type": "string"
+          },
+          "rpcURI": {
+            "type": "string"
+          },
+          "networkID": {
+            "type": "string"
+          },
+          "orderAddress": {
+            "type": "string"
+          },
+          "liquidationAddress": {
+            "type": "string"
+          },
+          "perpetualAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "domainHash",
+          "onboardingWebsiteUrl",
+          "rpcURI",
+          "networkID",
+          "orderAddress",
+          "liquidationAddress",
+          "perpetualAddress"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MarketStatus": {
+        "enum": [
+          "ACTIVE",
+          "INACTIVE",
+          "TRADES_INACTIVE",
+          "BETA"
+        ],
+        "type": "string"
+      },
+      "ExchangeInfo": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MarketStatus"
+          },
+          "baseAssetSymbol": {
+            "type": "string"
+          },
+          "baseAssetName": {
+            "type": "string"
+          },
+          "quoteAssetSymbol": {
+            "type": "string"
+          },
+          "quoteAssetName": {
+            "type": "string"
+          },
+          "maintenanceMarginReq": {
+            "type": "string"
+          },
+          "initialMarginReq": {
+            "type": "string"
+          },
+          "stepSize": {
+            "type": "string"
+          },
+          "tickSize": {
+            "type": "string"
+          },
+          "minOrderSize": {
+            "type": "string"
+          },
+          "maxLimitOrderSize": {
+            "type": "string"
+          },
+          "maxMarketOrderSize": {
+            "type": "string"
+          },
+          "minOrderPrice": {
+            "type": "string"
+          },
+          "maxOrderPrice": {
+            "type": "string"
+          },
+          "defaultMakerFee": {
+            "type": "string"
+          },
+          "defaultTakerFee": {
+            "type": "string"
+          },
+          "insurancePoolPercentage": {
+            "type": "string"
+          },
+          "mtbLong": {
+            "type": "string"
+          },
+          "mtbShort": {
+            "type": "string"
+          },
+          "defaultLeverage": {
+            "type": "string"
+          },
+          "maxAllowedOIOpen": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "networkGasFee": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "status",
+          "baseAssetSymbol",
+          "baseAssetName",
+          "quoteAssetSymbol",
+          "quoteAssetName",
+          "maintenanceMarginReq",
+          "initialMarginReq",
+          "stepSize",
+          "tickSize",
+          "minOrderSize",
+          "maxLimitOrderSize",
+          "maxMarketOrderSize",
+          "minOrderPrice",
+          "maxOrderPrice",
+          "defaultMakerFee",
+          "defaultTakerFee",
+          "insurancePoolPercentage",
+          "mtbLong",
+          "mtbShort",
+          "defaultLeverage",
+          "maxAllowedOIOpen",
+          "networkGasFee"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MarketData": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "lastQty": {
+            "type": "string"
+          },
+          "lastTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "lastPrice": {
+            "type": "string"
+          },
+          "_24hrHighPrice": {
+            "type": "string"
+          },
+          "_24hrLowPrice": {
+            "type": "string"
+          },
+          "_24hrVolume": {
+            "type": "string"
+          },
+          "_24hrQuoteVolume": {
+            "type": "string"
+          },
+          "_24hrClosePrice": {
+            "type": "string"
+          },
+          "_24hrOpenPrice": {
+            "type": "string"
+          },
+          "_24hrCloseTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrOpenTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrFirstId": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrLastId": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrCount": {
+            "type": "string"
+          },
+          "lastFundingRate": {
+            "type": "string"
+          },
+          "nextFundingTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "avgFundingRate": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrPriceChange": {
+            "type": "string"
+          },
+          "midMarketPriceDirection": {
+            "type": "number",
+            "format": "double"
+          },
+          "marketPriceDirection": {
+            "type": "number",
+            "format": "double"
+          },
+          "_24hrPriceChangePercent": {
+            "type": "string"
+          },
+          "oraclePrice": {
+            "type": "string"
+          },
+          "indexPrice": {
+            "type": "string"
+          },
+          "marketPrice": {
+            "type": "string"
+          },
+          "midMarketPrice": {
+            "type": "string"
+          },
+          "bestBidPrice": {
+            "type": "string"
+          },
+          "bestBidQty": {
+            "type": "string"
+          },
+          "bestAskPrice": {
+            "type": "string"
+          },
+          "bestAskQty": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "lastQty",
+          "lastTime",
+          "lastPrice",
+          "_24hrHighPrice",
+          "_24hrLowPrice",
+          "_24hrVolume",
+          "_24hrQuoteVolume",
+          "_24hrClosePrice",
+          "_24hrOpenPrice",
+          "_24hrCloseTime",
+          "_24hrOpenTime",
+          "_24hrFirstId",
+          "_24hrLastId",
+          "_24hrCount",
+          "lastFundingRate",
+          "nextFundingTime",
+          "avgFundingRate",
+          "time",
+          "_24hrPriceChange",
+          "midMarketPriceDirection",
+          "marketPriceDirection",
+          "_24hrPriceChangePercent",
+          "oraclePrice",
+          "indexPrice",
+          "marketPrice",
+          "midMarketPrice",
+          "bestBidPrice",
+          "bestBidQty",
+          "bestAskPrice",
+          "bestAskQty"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SymbolMasterInfo": {
+        "properties": {
+          "marketData": {
+            "$ref": "#/components/schemas/MarketData"
+          },
+          "exchangeInfo": {
+            "$ref": "#/components/schemas/ExchangeInfo"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "symbol": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "marketData",
+          "exchangeInfo",
+          "meta",
+          "symbol"
+        ],
+        "type": "object"
+      },
+      "MasterInfo": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SymbolMasterInfo"
+            },
+            "type": "array"
+          },
+          "_24hrVolume": {
+            "type": "string"
+          },
+          "_24hrTrades": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "_24hrVolume",
+          "_24hrTrades"
+        ],
+        "type": "object"
+      },
+      "Record_string.any_": {
+        "properties": {},
+        "type": "object",
+        "description": "Construct a type with a set of properties K of type T"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "properties": {
+              "data": {
+                "anyOf": [
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Record_string.any_"
+                  }
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "code": {
+                "type": "number",
+                "format": "double"
+              }
+            },
+            "required": [
+              "message",
+              "code"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AuthTokenResponse": {
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserAuthRequest": {
+        "properties": {
+          "userAddress": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "isTermAccepted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "userAddress",
+          "signature",
+          "isTermAccepted"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CountryAuthResponse": {
+        "properties": {
+          "isBlockedCountry": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "isBlockedCountry"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountWhitelistedAuthResponse": {
+        "properties": {
+          "isWhitelisted": {
+            "type": "boolean"
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "isWhitelisted",
+          "cached"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TimeInterval": {
+        "type": "string",
+        "enum": [
+          "1m",
+          "3m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "2h",
+          "4h",
+          "6h",
+          "8h",
+          "12h",
+          "1d",
+          "3d",
+          "1w",
+          "1M",
+          "3M",
+          "1y"
+        ],
+        "nullable": false
+      },
+      "FeedbackSubmissionResponse": {
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FeedbackSubmissionRequest": {
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string"
+          },
+          "userAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "message",
+          "userAddress"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Message": {
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "SupportedVersion": {
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "build": {
+            "type": "string"
+          },
+          "isUnderMaintenance": {
+            "type": "boolean"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        "required": [
+          "version",
+          "build",
+          "isUnderMaintenance",
+          "message"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MOBILE_CLIENT": {
+        "enum": [
+          "android",
+          "ios"
+        ],
+        "type": "string"
+      },
+      "OrderDTO": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "requestTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "orderStatus": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "orderType": {
+            "type": "string"
+          },
+          "orderTypeID": {
+            "type": "number",
+            "format": "double"
+          },
+          "timeInForce": {
+            "type": "string"
+          },
+          "timeInForceTypeID": {
+            "type": "number",
+            "format": "double"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "triggerPrice": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "reduceOnly": {
+            "type": "boolean"
+          },
+          "expiration": {
+            "type": "number",
+            "format": "double"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "orderSignature": {
+            "type": "string"
+          },
+          "filledQty": {
+            "type": "string"
+          },
+          "openQty": {
+            "type": "string"
+          },
+          "avgFillPrice": {
+            "type": "string"
+          },
+          "makerFee": {
+            "type": "string"
+          },
+          "takerFee": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "postOnly": {
+            "type": "boolean"
+          },
+          "fee": {
+            "type": "string"
+          },
+          "margin": {
+            "type": "string"
+          },
+          "cancelOnRevert": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "requestTime",
+          "cancelReason",
+          "orderStatus",
+          "hash",
+          "symbol",
+          "orderType",
+          "orderTypeID",
+          "timeInForce",
+          "timeInForceTypeID",
+          "userAddress",
+          "side",
+          "price",
+          "triggerPrice",
+          "quantity",
+          "leverage",
+          "reduceOnly",
+          "expiration",
+          "salt",
+          "orderSignature",
+          "filledQty",
+          "openQty",
+          "avgFillPrice",
+          "makerFee",
+          "takerFee",
+          "updatedAt",
+          "createdAt",
+          "postOnly",
+          "fee",
+          "margin",
+          "cancelOnRevert"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OrderType": {
+        "enum": [
+          "LIMIT",
+          "MARKET",
+          "STOP_LIMIT",
+          "STOP_MARKET"
+        ],
+        "type": "string"
+      },
+      "OrderStatus": {
+        "enum": [
+          "PENDING",
+          "OPEN",
+          "PARTIAL_FILLED",
+          "FILLED",
+          "CANCELLING",
+          "CANCELLED",
+          "REJECTED",
+          "EXPIRED",
+          "STAND_BY_PENDING",
+          "STAND_BY"
+        ],
+        "type": "string"
+      },
+      "TimeInForce": {
+        "enum": [
+          "GTT",
+          "IOC",
+          "FOK"
+        ],
+        "type": "string"
+      },
+      "Side": {
+        "enum": [
+          "BUY",
+          "SELL"
+        ],
+        "type": "string"
+      },
+      "OrderResponse": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "clientId": {
+            "type": "string",
+            "nullable": true
+          },
+          "requestTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "orderStatus": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "orderType": {
+            "$ref": "#/components/schemas/OrderType"
+          },
+          "timeInForce": {
+            "$ref": "#/components/schemas/TimeInForce"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          },
+          "price": {
+            "type": "string"
+          },
+          "triggerPrice": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "reduceOnly": {
+            "type": "boolean"
+          },
+          "expiration": {
+            "type": "number",
+            "format": "double"
+          },
+          "salt": {
+            "type": "string"
+          },
+          "filledQty": {
+            "type": "string"
+          },
+          "openQty": {
+            "type": "string"
+          },
+          "avgFillPrice": {
+            "type": "string"
+          },
+          "makerFee": {
+            "type": "string"
+          },
+          "takerFee": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "postOnly": {
+            "type": "boolean"
+          },
+          "cancelOnRevert": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "orderStatus",
+          "hash",
+          "symbol",
+          "orderType",
+          "timeInForce",
+          "userAddress",
+          "side",
+          "price",
+          "triggerPrice",
+          "quantity",
+          "leverage",
+          "reduceOnly",
+          "expiration",
+          "salt",
+          "filledQty",
+          "openQty",
+          "avgFillPrice",
+          "makerFee",
+          "takerFee",
+          "createdAt",
+          "updatedAt",
+          "cancelOnRevert"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "OrderBodyAttributes": {
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "orderType": {
+            "$ref": "#/components/schemas/OrderType"
+          },
+          "price": {
+            "type": "string"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          },
+          "reduceOnly": {
+            "type": "boolean"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "salt": {
+            "type": "number",
+            "format": "double"
+          },
+          "expiration": {
+            "type": "number",
+            "format": "double"
+          },
+          "timeInForce": {
+            "$ref": "#/components/schemas/TimeInForce"
+          },
+          "orderSignature": {
+            "type": "string"
+          },
+          "postOnly": {
+            "type": "boolean"
+          },
+          "cancelOnRevert": {
+            "type": "boolean"
+          },
+          "signerAddress": {
+            "type": "string"
+          },
+          "triggerPrice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "userAddress",
+          "orderType",
+          "price",
+          "side",
+          "reduceOnly",
+          "quantity",
+          "leverage",
+          "salt",
+          "expiration",
+          "timeInForce",
+          "orderSignature"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteOrderDTO": {
+        "properties": {
+          "hash": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "hash"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteOrdersResponse": {
+        "properties": {
+          "acceptedForCancelling": {
+            "items": {
+              "$ref": "#/components/schemas/DeleteOrderDTO"
+            },
+            "type": "array"
+          },
+          "failedCancelling": {
+            "items": {
+              "$ref": "#/components/schemas/DeleteOrderDTO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "acceptedForCancelling",
+          "failedCancelling"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ApiResponse_DeleteOrdersResponse_": {
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DeleteOrdersResponse"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "DeleteOrdersParam": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "orderHashes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "cancelSignature": {
+            "type": "string"
+          },
+          "parentAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "orderHashes",
+          "cancelSignature"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Orderbook": {
+        "properties": {
+          "limit": {
+            "type": "number",
+            "format": "double"
+          },
+          "asks": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "bids": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "bestBidPrice": {
+            "type": "string"
+          },
+          "bestBidQty": {
+            "type": "string"
+          },
+          "bestAskPrice": {
+            "type": "string"
+          },
+          "bestAskQty": {
+            "type": "string"
+          },
+          "midPrice": {
+            "type": "string"
+          },
+          "lastUpdatedAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "orderbookUpdateId": {
+            "type": "number",
+            "format": "double"
+          },
+          "responseSentAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "oraclePrice": {
+            "type": "string"
+          },
+          "oraclePriceLastUpdateAt": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "limit",
+          "asks",
+          "bids",
+          "bestBidPrice",
+          "bestBidQty",
+          "bestAskPrice",
+          "bestAskQty",
+          "midPrice",
+          "lastUpdatedAt",
+          "orderbookUpdateId",
+          "responseSentAt",
+          "oraclePrice",
+          "oraclePriceLastUpdateAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "RecentTrades": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "quoteQty": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "price",
+          "quantity",
+          "quoteQty",
+          "time",
+          "side"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TAReferralCodeResponse": {
+        "properties": {
+          "isReferralGenerated": {
+            "type": "boolean"
+          },
+          "referralDetails": {
+            "properties": {
+              "acceptedCount": {
+                "type": "number",
+                "format": "double"
+              },
+              "appliedCount": {
+                "type": "number",
+                "format": "double"
+              },
+              "referralCode": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "acceptedCount",
+              "appliedCount",
+              "referralCode",
+              "url"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "isReferralGenerated"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TAReferralBodyAttributes": {
+        "properties": {
+          "accountAddress": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountAddress",
+          "emailAddress"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TradeAlliancePartnerDetailsDTO": {
+        "properties": {
+          "refereesAcceptedCount": {
+            "type": "string"
+          },
+          "refereeDepositedCount": {
+            "type": "string"
+          },
+          "milestoneAchievedCount": {
+            "type": "string"
+          },
+          "totalPartnerPoints": {
+            "type": "string"
+          },
+          "redeemedTradingPoints": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refereesAcceptedCount",
+          "refereeDepositedCount",
+          "milestoneAchievedCount",
+          "totalPartnerPoints"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MileStone": {
+        "enum": [
+          "I",
+          "II",
+          "III",
+          "IV",
+          "VIP Silver",
+          "VIP Gold",
+          "VIP Platinum"
+        ],
+        "type": "string"
+      },
+      "IRefereesDetails": {
+        "properties": {
+          "refereeWalletAdd": {
+            "type": "string"
+          },
+          "totalDeposit": {
+            "type": "string"
+          },
+          "tradingVolume": {
+            "type": "string"
+          },
+          "milestoneAchieved": {
+            "$ref": "#/components/schemas/MileStone"
+          },
+          "tradingPoints": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refereeWalletAdd",
+          "totalDeposit",
+          "tradingVolume",
+          "tradingPoints"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_IRefereesDetails_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/IRefereesDetails"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "PartnerRefereeDetailsDto": {
+        "properties": {
+          "refereeTotalDeposit": {
+            "type": "string"
+          },
+          "refereeTotalTradingVol": {
+            "type": "string"
+          },
+          "refereeTotalFeesPaid": {
+            "type": "string"
+          },
+          "refereeList": {
+            "$ref": "#/components/schemas/ListingWithCursor_IRefereesDetails_"
+          }
+        },
+        "required": [
+          "refereeTotalDeposit",
+          "refereeTotalTradingVol",
+          "refereeTotalFeesPaid",
+          "refereeList"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TradeAllianceMemberOverviewDTO": {
+        "properties": {
+          "totalTradingVolume": {
+            "type": "string"
+          },
+          "maxMilestoneAchieved": {
+            "$ref": "#/components/schemas/MileStone"
+          },
+          "totalTradingPoints": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "totalTradingVolume",
+          "maxMilestoneAchieved",
+          "totalTradingPoints"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ITradeAllianceMemberMonthlyOverview": {
+        "properties": {
+          "userAddress": {
+            "type": "string"
+          },
+          "totalTakerVolume": {
+            "type": "string"
+          },
+          "totalMakerVolume": {
+            "type": "string"
+          },
+          "totalTakerFeesPaid": {
+            "type": "string"
+          },
+          "totalMakerFeesPaid": {
+            "type": "string"
+          },
+          "totalDeposit": {
+            "type": "string"
+          },
+          "totalWithdraw": {
+            "type": "string"
+          },
+          "milestoneAchieved": {
+            "$ref": "#/components/schemas/MileStone"
+          },
+          "rewardedTradingPoints": {
+            "type": "string"
+          },
+          "monthTimestamp": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "userAddress",
+          "totalTakerVolume",
+          "totalMakerVolume",
+          "totalTakerFeesPaid",
+          "totalMakerFeesPaid",
+          "totalDeposit",
+          "totalWithdraw",
+          "milestoneAchieved",
+          "rewardedTradingPoints",
+          "monthTimestamp"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_ITradeAllianceMemberMonthlyOverview_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ITradeAllianceMemberMonthlyOverview"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "TradeType": {
+        "enum": [
+          "Order",
+          "Liquidation",
+          "Liquidate"
+        ],
+        "type": "string"
+      },
+      "IUserTransactionHistory": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "traderType": {
+            "type": "string"
+          },
+          "commission": {
+            "type": "string"
+          },
+          "commissionAsset": {
+            "type": "string"
+          },
+          "maker": {
+            "type": "boolean"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          },
+          "price": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "quoteQty": {
+            "type": "string"
+          },
+          "notionalValue": {
+            "type": "string"
+          },
+          "realizedPnl": {
+            "type": "string"
+          },
+          "orderHash": {
+            "type": "string"
+          },
+          "tradeType": {
+            "$ref": "#/components/schemas/TradeType"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "traderType",
+          "commission",
+          "commissionAsset",
+          "maker",
+          "side",
+          "price",
+          "quantity",
+          "quoteQty",
+          "notionalValue",
+          "realizedPnl",
+          "orderHash",
+          "tradeType",
+          "time"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserPosition": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "avgEntryPrice": {
+            "type": "string"
+          },
+          "marginType": {
+            "type": "string"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "margin": {
+            "type": "string"
+          },
+          "liquidationPrice": {
+            "type": "string"
+          },
+          "midMarketPrice": {
+            "type": "string"
+          },
+          "positionValue": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "unrealizedProfit": {
+            "type": "string"
+          },
+          "unrealizedProfitPercent": {
+            "type": "string"
+          },
+          "positionSelectedLeverage": {
+            "type": "string"
+          },
+          "latestTxHash": {
+            "type": "string"
+          },
+          "latestBlockNumber": {
+            "type": "number",
+            "format": "double"
+          },
+          "oraclePrice": {
+            "type": "string"
+          },
+          "indexPrice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "avgEntryPrice",
+          "marginType",
+          "userAddress",
+          "margin",
+          "liquidationPrice",
+          "midMarketPrice",
+          "positionValue",
+          "quantity",
+          "side",
+          "leverage",
+          "unrealizedProfit",
+          "unrealizedProfitPercent",
+          "positionSelectedLeverage",
+          "latestTxHash",
+          "latestBlockNumber",
+          "oraclePrice",
+          "indexPrice"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "TransferStatuses": {
+        "enum": [
+          "Confirmed"
+        ],
+        "type": "string"
+      },
+      "TransferActions": {
+        "enum": [
+          "Deposit",
+          "Withdraw"
+        ],
+        "type": "string"
+      },
+      "IUserTransferHistory": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TransferStatuses"
+          },
+          "action": {
+            "$ref": "#/components/schemas/TransferActions"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "blockNumber": {
+            "type": "number",
+            "format": "double"
+          },
+          "latestTxHash": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "updatedAt": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "action",
+          "amount",
+          "userAddress",
+          "blockNumber",
+          "latestTxHash",
+          "time",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_IUserTransferHistory_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/IUserTransferHistory"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "Partial_AuxiliaryContractAddresses_": {
+        "properties": {
+          "FFLY": {
+            "type": "string"
+          },
+          "Governance": {
+            "type": "string"
+          },
+          "MarketMakingPool": {
+            "type": "string"
+          },
+          "SafetyStakingPool": {
+            "type": "string"
+          },
+          "Timelock": {
+            "type": "string"
+          },
+          "TokenVesting": {
+            "type": "string"
+          },
+          "TradeInfo": {
+            "type": "string"
+          },
+          "TradeMining": {
+            "type": "string"
+          },
+          "MarginBank": {
+            "type": "string"
+          },
+          "USDC": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "description": "Make all properties in T optional"
+      },
+      "Config": {
+        "properties": {
+          "auxiliaryContractsAddresses": {
+            "$ref": "#/components/schemas/Partial_AuxiliaryContractAddresses_"
+          }
+        },
+        "required": [
+          "auxiliaryContractsAddresses"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FundingDTO": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "fundingRate": {
+            "type": "string"
+          },
+          "nextTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "createdAt": {
+            "type": "number",
+            "format": "double"
+          },
+          "avgFundingRate": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "fundingRate",
+          "nextTime",
+          "createdAt",
+          "avgFundingRate"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AppInfoResponse": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Ticker": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "_24hrPriceChange": {
+            "type": "string"
+          },
+          "_24hrPriceChangePercent": {
+            "type": "string"
+          },
+          "openTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "closeTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "price": {
+            "type": "string"
+          },
+          "oraclePrice": {
+            "type": "string"
+          },
+          "lastPrice": {
+            "type": "string"
+          },
+          "bestAskPrice": {
+            "type": "string"
+          },
+          "bestBidPrice": {
+            "type": "string"
+          },
+          "indexPrice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "_24hrPriceChange",
+          "_24hrPriceChangePercent",
+          "openTime",
+          "closeTime",
+          "price",
+          "oraclePrice",
+          "lastPrice",
+          "bestAskPrice",
+          "bestBidPrice",
+          "indexPrice"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "UserFundingDTO": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "userAddress": {
+            "type": "string"
+          },
+          "appliedFundingRate": {
+            "type": "string"
+          },
+          "isFundingRatePositive": {
+            "type": "boolean"
+          },
+          "payment": {
+            "type": "string"
+          },
+          "isPaymentPositive": {
+            "type": "boolean"
+          },
+          "oraclePrice": {
+            "type": "string"
+          },
+          "blockNumber": {
+            "type": "number",
+            "format": "double"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "isPositionPositive": {
+            "type": "boolean"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "userAddress",
+          "appliedFundingRate",
+          "isFundingRatePositive",
+          "payment",
+          "isPaymentPositive",
+          "oraclePrice",
+          "blockNumber",
+          "quantity",
+          "isPositionPositive",
+          "time",
+          "side"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_UserFundingDTO_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/UserFundingDTO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "IUserTradeView": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "commission": {
+            "type": "string"
+          },
+          "orderHash": {
+            "type": "string"
+          },
+          "commissionAsset": {
+            "type": "string"
+          },
+          "maker": {
+            "type": "boolean"
+          },
+          "side": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "quoteQty": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "number",
+            "format": "double"
+          },
+          "realizedPnl": {
+            "type": "string"
+          },
+          "tradeType": {
+            "$ref": "#/components/schemas/TradeType"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "networkGasFee": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "commission",
+          "orderHash",
+          "commissionAsset",
+          "maker",
+          "side",
+          "price",
+          "quantity",
+          "quoteQty",
+          "clientId",
+          "orderId",
+          "realizedPnl",
+          "tradeType",
+          "time",
+          "networkGasFee"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_IUserTradeView_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/IUserTradeView"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "ListingWithCursor_OrderDTO_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OrderDTO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "RecentTradesDTO": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "quoteQty": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "price",
+          "quantity",
+          "quoteQty",
+          "time",
+          "side"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_RecentTradesDTO_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RecentTradesDTO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "UserTransactionHistoryDTO": {
+        "properties": {
+          "id": {
+            "type": "number",
+            "format": "double"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "traderType": {
+            "type": "string"
+          },
+          "commission": {
+            "type": "string"
+          },
+          "commissionAsset": {
+            "type": "string"
+          },
+          "maker": {
+            "type": "boolean"
+          },
+          "side": {
+            "$ref": "#/components/schemas/Side"
+          },
+          "price": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "quoteQty": {
+            "type": "string"
+          },
+          "realizedPnl": {
+            "type": "string"
+          },
+          "orderHash": {
+            "type": "string"
+          },
+          "time": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "id",
+          "symbol",
+          "traderType",
+          "commission",
+          "commissionAsset",
+          "maker",
+          "side",
+          "price",
+          "quantity",
+          "quoteQty",
+          "realizedPnl",
+          "orderHash",
+          "time"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ListingWithCursor_UserTransactionHistoryDTO_": {
+        "properties": {
+          "isMoreDataAvailable": {
+            "type": "boolean"
+          },
+          "nextCursor": {
+            "type": "number",
+            "format": "double"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/UserTransactionHistoryDTO"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "isMoreDataAvailable",
+          "nextCursor",
+          "data"
+        ],
+        "type": "object"
+      },
+      "Status": {
+        "properties": {
+          "isAlive": {
+            "type": "boolean"
+          },
+          "serverTime": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "isAlive",
+          "serverTime"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountDataByMarket": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "positionQtyReduced": {
+            "type": "string"
+          },
+          "positionQtyReducible": {
+            "type": "string"
+          },
+          "positionMargin": {
+            "type": "string"
+          },
+          "unrealizedProfit": {
+            "type": "string"
+          },
+          "expectedPnl": {
+            "type": "string"
+          },
+          "selectedLeverage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "positionQtyReduced",
+          "positionQtyReducible",
+          "positionMargin",
+          "unrealizedProfit",
+          "expectedPnl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Account": {
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "canTrade": {
+            "type": "boolean"
+          },
+          "updateTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "feeTier": {
+            "type": "string"
+          },
+          "totalPositionQtyReduced": {
+            "type": "string"
+          },
+          "totalPositionQtyReducible": {
+            "type": "string"
+          },
+          "totalPositionMargin": {
+            "type": "string"
+          },
+          "totalUnrealizedProfit": {
+            "type": "string"
+          },
+          "totalExpectedPnl": {
+            "type": "string"
+          },
+          "walletBalance": {
+            "type": "string"
+          },
+          "freeCollateral": {
+            "type": "string"
+          },
+          "accountValue": {
+            "type": "string"
+          },
+          "accountDataByMarket": {
+            "items": {
+              "$ref": "#/components/schemas/AccountDataByMarket"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "address",
+          "canTrade",
+          "updateTime",
+          "feeTier",
+          "totalPositionQtyReduced",
+          "totalPositionQtyReducible",
+          "totalPositionMargin",
+          "totalUnrealizedProfit",
+          "totalExpectedPnl",
+          "walletBalance",
+          "freeCollateral",
+          "accountValue",
+          "accountDataByMarket"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "MarginType": {
+        "enum": [
+          "ISOLATED",
+          "CROSS"
+        ],
+        "type": "string"
+      },
+      "AdjustLeverageResponse": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "maxNotionalValue": {
+            "type": "string"
+          },
+          "marginType": {
+            "$ref": "#/components/schemas/MarginType"
+          }
+        },
+        "required": [
+          "symbol",
+          "address",
+          "leverage",
+          "maxNotionalValue",
+          "marginType"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AdjustLeverageRequest": {
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "leverage": {
+            "type": "string"
+          },
+          "marginType": {
+            "$ref": "#/components/schemas/MarginType"
+          },
+          "callerAddress": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol",
+          "address",
+          "leverage",
+          "marginType"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "FaucetRequest": {
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "depositToMarginBank": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "address",
+          "email",
+          "depositToMarginBank"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "AccountValueTimeInterval": {
+        "type": "string",
+        "enum": [
+          "1h",
+          "1d",
+          "1w",
+          "1M",
+          "1y"
+        ],
+        "nullable": false
+      },
+      "IUserTradeOverview": {
+        "properties": {
+          "totalDeposit": {
+            "type": "string"
+          },
+          "totalTradingVolume": {
+            "type": "string"
+          },
+          "totalFees": {
+            "type": "string"
+          },
+          "totalWithdraw": {
+            "type": "string"
+          },
+          "totalProfit": {
+            "type": "string"
+          },
+          "totalLoss": {
+            "type": "string"
+          },
+          "totalPnl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "totalDeposit",
+          "totalTradingVolume",
+          "totalFees",
+          "totalWithdraw",
+          "totalProfit",
+          "totalLoss",
+          "totalPnl"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "VerificationStatus": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Success",
+              "Failed",
+              "TemporaryFailure",
+              "NotStarted"
+            ]
+          }
+        ]
+      },
+      "UserAccountPermissionsDto": {
+        "properties": {
+          "isWhitelisted": {
+            "type": "boolean"
+          },
+          "isTradeAlliancePartner": {
+            "type": "boolean"
+          },
+          "isTradeAllianceMember": {
+            "type": "boolean"
+          },
+          "isAmbassador": {
+            "type": "boolean"
+          },
+          "verificationStatus": {
+            "$ref": "#/components/schemas/VerificationStatus"
+          }
+        },
+        "required": [
+          "isWhitelisted",
+          "isTradeAlliancePartner",
+          "isTradeAllianceMember",
+          "isAmbassador",
+          "verificationStatus"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "in": "header"
+      }
+    }
+  },
+  "info": {
+    "title": "dAPI",
+    "version": "2.0.0",
+    "contact": {}
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/masterInfo": {
+      "get": {
+        "operationId": "GetMasterInfo",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/MasterInfo"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/authorize": {
+      "post": {
+        "operationId": "Auth",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AuthTokenResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "500": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserAuthRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/country": {
+      "get": {
+        "operationId": "CountryAuthorization",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CountryAuthResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "parameters": []
+      }
+    },
+    "/whitelistedAccount": {
+      "get": {
+        "operationId": "IsWhitelistedAccount",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AccountWhitelistedAuthResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "userAddress",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/candlestickData": {
+      "get": {
+        "operationId": "GetCandlestickData",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {},
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "interval",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TimeInterval"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/exchangeInfo": {
+      "get": {
+        "operationId": "GetExchangeInfo",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/ExchangeInfo"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ExchangeInfo"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/feedback": {
+      "post": {
+        "operationId": "CreateFeedback",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/FeedbackSubmissionResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Feedback"
+        ],
+        "security": [],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackSubmissionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketData": {
+      "get": {
+        "operationId": "GetMarketData",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/MarketData"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MarketData"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketData/symbols": {
+      "get": {
+        "operationId": "GetMarketSymbols",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": []
+      }
+    },
+    "/marketData/contractAddresses": {
+      "get": {
+        "operationId": "GetContractAddresses",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Record_string.any_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/meta": {
+      "get": {
+        "operationId": "GetMeta",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Meta"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Meta"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/meta/minimumSupportVersion": {
+      "get": {
+        "operationId": "MinimumSupportVersion",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/SupportedVersion"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "client",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MOBILE_CLIENT"
+            }
+          }
+        ]
+      }
+    },
+    "/orders": {
+      "get": {
+        "operationId": "GetOrder",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/OrderDTO"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderId",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderHashes",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderType",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/OrderType"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "statuses",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/OrderStatus"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "CreateOrder",
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/OrderResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "409": {
+            "description": "Order already exists"
+          },
+          "503": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "user-agent",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderBodyAttributes"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteOrder",
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/OrderDTO"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "409": {
+            "description": "Invalid Order"
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderBodyAttributes"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/open-orders": {
+      "get": {
+        "operationId": "GetOpenOrder",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/OrderDTO"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/orders/by-order-type": {
+      "get": {
+        "operationId": "GetOrdersByOrderType",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/OrderDTO"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderId",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderHashes",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "limitStatuses",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/OrderStatus"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "marketStatuses",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/OrderStatus"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/orders/hash": {
+      "delete": {
+        "operationId": "DeleteOrders",
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse_DeleteOrdersResponse_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "409": {
+            "description": "Invalid Orders"
+          }
+        },
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteOrdersParam"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orderbook": {
+      "get": {
+        "operationId": "GetOrderbook",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Orderbook"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/recentTrades": {
+      "get": {
+        "operationId": "GetRecentTrade",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/RecentTrades"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "traders",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/tareferral/getReferralDetails": {
+      "get": {
+        "operationId": "GetReferralDetails",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TAReferralCodeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/tareferral/linkAccount": {
+      "put": {
+        "operationId": "LinkAccount",
+        "responses": {
+          "201": {
+            "description": "TA Referral email linked with account"
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TAReferralBodyAttributes"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tareferral/genReferral": {
+      "put": {
+        "operationId": "GenerateReferralLink",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TAReferralCodeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/tareferral/getPartnerDetails": {
+      "get": {
+        "operationId": "GetPartnerDetails",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeAlliancePartnerDetailsDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/tareferral/getRefereesByPartner": {
+      "get": {
+        "operationId": "GetRefereeDetailsByPartner",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerRefereeDetailsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/tareferral/getMemberDetails": {
+      "get": {
+        "operationId": "GetMemberDetails",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeAllianceMemberOverviewDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/tareferral/getMembersMonthlyOverview": {
+      "get": {
+        "operationId": "GetMembersMonthlyOverview",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingWithCursor_ITradeAllianceMemberMonthlyOverview_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "TA Referral"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/userTransactionHistory": {
+      "get": {
+        "operationId": "GetUserTransactionHistory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/IUserTransactionHistory"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/userPosition": {
+      "get": {
+        "operationId": "GetUserPosition",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/UserPosition"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserPosition"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/userTransferHistory": {
+      "get": {
+        "operationId": "GetUserTransfer",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_IUserTransferHistory_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/TransferActions"
+            }
+          }
+        ]
+      }
+    },
+    "/config": {
+      "get": {
+        "operationId": "GetAuxiliaryAddresses",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Config"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "config"
+        ],
+        "security": [],
+        "parameters": []
+      }
+    },
+    "/fundingRate": {
+      "get": {
+        "operationId": "GetFundingRate",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/FundingDTO"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "Get",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AppInfoResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Misc"
+        ],
+        "security": [],
+        "parameters": []
+      }
+    },
+    "/ticker": {
+      "get": {
+        "operationId": "Ticker",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/Ticker"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/userFundingHistory": {
+      "get": {
+        "operationId": "GetUserFundingHistory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_UserFundingDTO_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/userTrades": {
+      "get": {
+        "operationId": "GetUserTrade",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "$ref": "#/components/schemas/IUserTradeView"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "maker",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderType",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderType"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fromId",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageNumber",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/userTradesHistory": {
+      "get": {
+        "operationId": "GetUserTradeHistory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_IUserTradeView_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "maker",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderType",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderType"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fromId",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/user/orders": {
+      "get": {
+        "operationId": "GetOrder",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_OrderDTO_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/market/recent-trades": {
+      "get": {
+        "operationId": "GetRecentTrade",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_RecentTradesDTO_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/market"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "traders",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/user/funding-history": {
+      "get": {
+        "operationId": "GetUserFundingHistory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_UserFundingDTO_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/user/trades": {
+      "get": {
+        "operationId": "GetUserTrade",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_IUserTradeView_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "maker",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "orderType",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderType"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/user/transaction-history": {
+      "get": {
+        "operationId": "GetUserTransactionHistory",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_UserTransactionHistoryDTO_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "symbol",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/v2/user/transfer-history": {
+      "get": {
+        "operationId": "GetUserTransfer",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListingWithCursor_IUserTransferHistory_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "v2/User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/TransferActions"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": false,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/status": {
+      "get": {
+        "operationId": "GetExchangeStatus",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Market"
+        ],
+        "security": [],
+        "parameters": []
+      }
+    },
+    "/account": {
+      "get": {
+        "operationId": "GetAccount",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "parentAddress",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/account/adjustLeverage": {
+      "post": {
+        "operationId": "AdjustLeverage",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AdjustLeverageResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "406": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustLeverageRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/faucet": {
+      "post": {
+        "operationId": "Faucet",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {},
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          },
+          "406": {
+            "description": ""
+          },
+          "503": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaucetRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/fundGas": {
+      "post": {
+        "operationId": "FundGas",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {},
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/account/value-graph": {
+      "get": {
+        "operationId": "GetAccountValueOverTime",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {},
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startTime",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "interval",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AccountValueTimeInterval"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    },
+    "/account/historicalOverview": {
+      "get": {
+        "operationId": "GetUserTraderOverView",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IUserTradeOverview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": []
+      }
+    },
+    "/account/getAccountPermissions": {
+      "get": {
+        "operationId": "GetAccountPermissions",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAccountPermissionsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "userAddress",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/account/verifyDeposit": {
+      "get": {
+        "operationId": "VerifyDeposit",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "verificationStatus": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "verificationStatus"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "jwt": [
+              "user"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "depositAmount",
+            "required": true,
+            "schema": {
+              "format": "double",
+              "type": "number"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ]
+}

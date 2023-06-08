@@ -42,7 +42,7 @@ let client: BluefinClient;
 
 describe("BluefinClient", () => {
   //* set environment from here
-  const network = Networks.CLOUD_SUI;
+  const network = Networks.LOCAL_SUI;
   const symbol = "ETH-PERP";
   let defaultLeverage = 3;
   let buyPrice = 18000;

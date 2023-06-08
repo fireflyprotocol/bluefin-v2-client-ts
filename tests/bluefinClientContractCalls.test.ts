@@ -43,7 +43,7 @@ const TEST_WALLETS = [
 describe.only("BluefinClient", () => {
   //* set environment from here
   let deplymentJson: any;
-  const network = Networks.CLOUD_SUI;
+  const network = Networks.LOCAL_SUI;
   const symbol = "ETH-PERP";
   let defaultLeverage = 3;
   let buyPrice = 18000;

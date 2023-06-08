@@ -6,13 +6,10 @@
 // import {
 //   ORDER_SIDE,
 //   ORDER_TYPE,
-//   bnStrToBaseNumber,
+//   toBaseNumber,
 // } from "@firefly-exchange/library";
 
-// import {
-//   FireflyClient,
-//   Networks,
-// } from "../index";
+// import { FireflyClient, Networks } from "../index";
 // import { AwsKmsSigner } from "ethers-aws-kms-signer";
 
 // chai.use(chaiAsPromised);
@@ -29,12 +26,16 @@
 //   let sellPrice = 20000;
 //   let marketPrice = 0;
 //   let indexPrice = 1600;
-//   let testAcctPubAddr='0x6967C92D93809CdC5158AB0E84A9919c9D0e4096'.toLowerCase();
+//   let testAcctPubAddr =
+//     "0x6967C92D93809CdC5158AB0E84A9919c9D0e4096".toLowerCase();
 
 //   before(async () => {
-//     const kmsSigner= new AwsKmsSigner({region: 'ap-northeast-1', keyId: 'arn:aws:kms:ap-northxxxxxxx'})
+//     const kmsSigner = new AwsKmsSigner({
+//       region: "ap-northeast-1",
+//       keyId: "arn:aws:kms:ap-northxxxxxxx",
+//     });
 
-//     client = new FireflyClient(true, network,kmsSigner);
+//     client = new FireflyClient(true, network, kmsSigner);
 //     await client.init();
 //     // TODO! uncomment when done testing specifically on BTC-PERP
 //     // const allSymbols = await client.getMarketSymbols();
@@ -52,9 +53,9 @@
 
 //     // market data
 //     const marketData = await client.getMarketData(symbol);
-//     if (marketData.data && bnStrToBaseNumber(marketData.data.marketPrice) > 0) {
-//       marketPrice = bnStrToBaseNumber(marketData.data.marketPrice);
-//       indexPrice = bnStrToBaseNumber(marketData.data.indexPrice || "0");
+//     if (marketData.data && toBaseNumber(marketData.data.marketPrice) > 0) {
+//       marketPrice = toBaseNumber(marketData.data.marketPrice);
+//       indexPrice = toBaseNumber(marketData.data.indexPrice || "0");
 //       const percentChange = 3 / 100; // 3%
 //       buyPrice = Number((marketPrice - marketPrice * percentChange).toFixed(0));
 //       sellPrice = Number(
@@ -66,9 +67,12 @@
 //   });
 
 //   beforeEach(async () => {
-//     const kmsSigner= new AwsKmsSigner({region: 'ap-northeast-1', keyId: 'arn:aws:kms:ap-northxxxxxxx'})
+//     const kmsSigner = new AwsKmsSigner({
+//       region: "ap-northeast-1",
+//       keyId: "arn:aws:kms:ap-northxxxxxxx",
+//     });
 
-//     client = new FireflyClient(true, network,kmsSigner);
+//     client = new FireflyClient(true, network, kmsSigner);
 //     await client.init();
 //     client.addMarket(symbol);
 //   });
@@ -143,7 +147,5 @@
 
 //       expect(response.ok).to.be.equal(true);
 //     });
-
 //   });
-
 // });

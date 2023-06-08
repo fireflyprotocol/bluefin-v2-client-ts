@@ -5,7 +5,7 @@ import {
   SOCKET_EVENTS,
   MARKET_STATUS,
   MinifiedCandleStick,
-} from "../../submodules/library-sui/src";
+} from "../../submodules/library-sui";
 
 import {
   GetMarketRecentTradesResponse,

@@ -9,7 +9,7 @@ import {
 import fs from "fs";
 import {
   OnChainCalls,
-  requestGas,
+  Faucet,
   toBigNumberStr,
 } from "../submodules/library-sui";
 
@@ -64,7 +64,7 @@ export async function setupTestAccounts(
     const mintAmount = 1000000000;
     for (const wallet of testWallets) {
       try {
-        await requestGas(wallet.privateAddress);
+        await Faucet.requestSUI(wallet.privateAddress);
       } catch (e) {
         console.log(e);
       }

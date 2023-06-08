@@ -1,6 +1,6 @@
-import { getValue } from "../../submodules/library-sui/src/library";
+import { getValue } from "../../submodules/library-sui/";
 import { serializeError } from "eth-rpc-errors";
-import { Transaction } from "../../submodules/library-sui/src";
+import { Transaction } from "../../submodules/library-sui";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";
 export type ResponseSchema = {
   ok: boolean;

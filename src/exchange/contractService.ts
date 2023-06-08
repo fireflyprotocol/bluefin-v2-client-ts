@@ -2,8 +2,10 @@ import {
   address,
   ADJUST_MARGIN,
   Transaction,
-} from "../../submodules/library-sui/src";
-import { OnChainCalls } from "../../submodules/library-sui/src";
+  OnChainCalls,
+  toBigNumberStr,
+  toBaseNumber,
+} from "../../submodules/library-sui";
 import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
 import {
   ResponseSchema,
@@ -11,7 +13,6 @@ import {
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
 import { default as interpolate } from "interpolate";
-import { toBigNumberStr, toBaseNumber } from "../../submodules/library-sui";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -24,6 +25,13 @@ export class ContractCalls {
     this.onChainCalls = new OnChainCalls(signerWithProvider, deployment);
   }
 
+  /**
+   * @param amount the amount to withdraw
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns ResponseSchema
+   * @description
+   * Withdraws funds from the margin bank contract
+   * */
   withdrawFromMarginBankContractCall = async (
     amount: Number,
     gasLimit?: number
@@ -43,6 +51,12 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.withdrawMargin, { amount }));
   };
 
+  /**
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns ResponseSchema
+   * @description
+   * Withdraws all funds from the margin bank contract
+   * */
   withdrawAllFromMarginBankContractCall = async (
     gasLimit?: number
   ): Promise<ResponseSchema> => {
@@ -54,6 +68,14 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
 
+  /**
+   * @param amount the amount to deposit
+   * @param coinID the coinID to deposit
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns ResponseSchema
+   * @description
+   * Deposits funds to the margin bank contract
+   **/
   depositToMarginBankContractCall = async (
     amount: number,
     coinID: string,
@@ -77,12 +99,21 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.depositToBank, { amount: amount }));
   };
 
+  /**
+   * @param leverage the leverage to set
+   * @param symbol the position's market symbol
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns ResponseSchema
+   * @description
+   * adjusts the leverage of the desiered position
+   * */
+
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
     parentAddress?: string,
     gasLimit?: number
-  ) => {
+  ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.adjustLeverage(
@@ -98,6 +129,15 @@ export class ContractCalls {
       );
     }, interpolate(SuccessMessages.adjustLeverage, { leverage }));
   };
+
+  /**
+   * @param publicAddress the sub account's public address
+   * @param status the status to set for sub account true = add, false = remove
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns ResponseSchema
+   * @description
+   * closes the desiered position
+   * */
 
   setSubAccount = async (
     publicAddress: address,
@@ -116,12 +156,21 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.setSubAccounts, { address: publicAddress, status: status ? "added" : "removed" }));
   };
 
+  /**
+   * @param symbol the position's market symbol
+   * @operationType the operation type to perform (add or remove)
+   * @amount the amount to add or remove
+   * @param gasLimit (optional) the gas limit for the transaction
+   * @returns Response Schemea
+   * @description
+   * adjusts the margin of the desiered position
+   * */
   adjustMarginContractCall = async (
     symbol: string,
     operationType: ADJUST_MARGIN,
     amount: number,
     gasLimit?: number
-  ) => {
+  ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
     const msg =
       operationType == ADJUST_MARGIN.Add
@@ -150,11 +199,19 @@ export class ContractCalls {
     }, msg);
   };
 
+  /**
+   * @returns number
+   * @description
+   * Get the margin bank balance
+   * */
   getMarginBankBalance = async (): Promise<number> => {
     if (this.marginBankId) {
       return toBaseNumber(
-        (await this.onChainCalls.getBankAccountDetails(this.marginBankId))
-          .balance
+        (
+          await this.onChainCalls.getBankAccountDetailsUsingID(
+            this.marginBankId
+          )
+        ).balance
       );
     } else {
       return 0;

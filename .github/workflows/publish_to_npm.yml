@@ -1,0 +1,21 @@
+on:
+  pull_request:
+    branches: [main]
+    types:
+      - closed
+name: Publish to NPM
+jobs:
+  publish:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          registry-url: https://registry.npmjs.org
+      - run: yarn install --immutable
+      - run: yarn build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

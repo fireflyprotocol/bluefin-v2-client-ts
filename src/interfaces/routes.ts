@@ -8,7 +8,7 @@ import {
   MarketSymbol,
   address,
   Interval,
-} from "../../submodules/library-sui/src/index";
+} from "../../submodules/library-sui";
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
   pageSize?: number; // will get only provided number of orders must be <= 50
@@ -51,6 +51,7 @@ export interface RequiredOrderFields {
   triggerPrice?: number; //optional, send triggerPrice for stop orders
   postOnly?: boolean; // true/false, default is false
   orderbookOnly?: boolean; // true/false, default is true
+  ioc?: boolean; // true/false, default is false
 }
 
 export interface OrderSignatureRequest extends RequiredOrderFields {

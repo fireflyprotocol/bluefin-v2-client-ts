@@ -5,8 +5,8 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 module.exports = {
   mode: "production",
   entry: {
-    client: "./src/fireflyClient.ts",
-    "client.min": "./src/fireflyClient.ts",
+    client: "./src/BluefinClient.ts",
+    "client.min": "./src/BluefinClient.ts",
   },
   output: {
     path: path.resolve(__dirname, "bundles"),
@@ -18,10 +18,10 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
     fallback: {
-      "tls": false,
-      "fs": false,
-      "net": false
-    }
+      tls: false,
+      fs: false,
+      net: false,
+    },
   },
   devtool: "source-map",
   plugins: [

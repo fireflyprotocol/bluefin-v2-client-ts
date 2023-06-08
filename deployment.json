@@ -1,65 +1,65 @@
 {
   "deployer": "0xdbd64f232e67693269692be1c1889fea8558fc7da2fbb6cc9dc6f0e6e4da9b6d",
   "objects": {
-    "Bank": {
-      "id": "0x004045205d0ff38632e43a474c6b3cfe2c9f3680905aae71b8bc55b404adfe41",
-      "owner": "Shared",
-      "dataType": "Bank"
-    },
-    "package": {
-      "id": "0x0724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279",
-      "owner": "Immutable",
-      "dataType": "package"
+    "TreasuryCap": {
+      "id": "0x03fdebd6861107eb79ea2b8e421df653b38ea05370340a76834898e93e295484",
+      "owner": "Owned",
+      "dataType": "TreasuryCap"
     },
     "UpgradeCap": {
-      "id": "0x140055dd193b4aa7e1c9f06a770bfe45176db240a48202b528dce9db900ea264",
+      "id": "0x13d7d8738156b5f6e59cff012a1d6589c368cc0f48b7b5651a5ecc5ea507cc24",
       "owner": "Owned",
       "dataType": "UpgradeCap"
     },
-    "ExchangeAdminCap": {
-      "id": "0x4208de5803ec3cad3c7cfd46d3c7b531f400cb3fc8887022cf914e29a343b992",
-      "owner": "Owned",
-      "dataType": "ExchangeAdminCap"
-    },
-    "PriceOracleOperatorCap": {
-      "id": "0x47456388d0fb80a8a9b1755fa67c4b7ed18c8ad51c6d28f8197445539a198811",
-      "owner": "Owned",
-      "dataType": "PriceOracleOperatorCap"
-    },
-    "CapabilitiesSafe": {
-      "id": "0x56e2c985d296f310345a4397333461b45cd6b862833d0944676c2c427b2993cf",
-      "owner": "Shared",
-      "dataType": "CapabilitiesSafe"
-    },
     "SubAccounts": {
-      "id": "0x7ad2ac6081f87b512670a3f7d4f012fffe5580231246a1724c2679bff95aaeed",
+      "id": "0x48d381b6e062100d30b2a8f80288657443da765fd3cf1e9b44968f3242ebf12a",
       "owner": "Shared",
       "dataType": "SubAccounts"
     },
-    "ExchangeGuardianCap": {
-      "id": "0x80b31be1e12042573508a42a592f87908aeea21d0f2d8379550a518c75ed79c1",
-      "owner": "Owned",
-      "dataType": "ExchangeGuardianCap"
-    },
-    "Table<vector<u8>, 0x724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::isolated_trading::OrderStatus>": {
-      "id": "0x9aad53cc204ea03e18b43f8a9b023150f97e779bf9533a89d3f1a396a7736c6a",
-      "owner": "Shared",
-      "dataType": "Table<vector<u8>, 0x724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::isolated_trading::OrderStatus>"
-    },
     "Currency": {
-      "id": "0x9fb98890d471c3197c68f6dfddc7112328f0eb3cc3763ffbc323170ddf58f2ec",
+      "id": "0x621008b7c88c8866ae69519f865811d4f6450fd210015b578db04c45510af356",
       "owner": "Immutable",
-      "dataType": "0x0724ed170473a55b6b53871af67edb5a153629cc2a77c116fd87d3c4cdbd6279::tusdc::TUSDC"
+      "dataType": "0x79e3e42993436bcb58b2236ea20b1b2ce1e99ae7b331acc9c1f043b36740110c::tusdc::TUSDC"
+    },
+    "CapabilitiesSafe": {
+      "id": "0x777e866cb4041ce7df2b10cda970280d1cc04d74177fd0ac8a873b062c3d14c4",
+      "owner": "Shared",
+      "dataType": "CapabilitiesSafe"
+    },
+    "package": {
+      "id": "0x79e3e42993436bcb58b2236ea20b1b2ce1e99ae7b331acc9c1f043b36740110c",
+      "owner": "Immutable",
+      "dataType": "package"
+    },
+    "ExchangeAdminCap": {
+      "id": "0x7aab3f98279855f8bb5c4984226ea026fa0e61c236e04222099c40790cace09d",
+      "owner": "Owned",
+      "dataType": "ExchangeAdminCap"
+    },
+    "Table<vector<u8>, 0x79e3e42993436bcb58b2236ea20b1b2ce1e99ae7b331acc9c1f043b36740110c::isolated_trading::OrderStatus>": {
+      "id": "0xa456306630e3c2887a4eb8e1fef8e8d44b36cce31372685a60e903c8d32a4236",
+      "owner": "Shared",
+      "dataType": "Table<vector<u8>, 0x79e3e42993436bcb58b2236ea20b1b2ce1e99ae7b331acc9c1f043b36740110c::isolated_trading::OrderStatus>"
+    },
+    "Bank": {
+      "id": "0xa7a98c02c12189c249874f53be779eacc29fab963a12a764c743f7c72b1a3409",
+      "owner": "Shared",
+      "dataType": "Bank"
+    },
+    "PriceOracleOperatorCap": {
+      "id": "0xb26603f11f7f5d70e248ac56c79826a2b13a59ae719741b3402f12469f238f4a",
+      "owner": "Owned",
+      "dataType": "PriceOracleOperatorCap"
     },
     "DeleveragingCap": {
-      "id": "0xeeba8d5c728e7476bc5e8b190e7b65ae07a0315a33515d8be978513d58e2986e",
+      "id": "0xe6ddb32c7765776c9d9216916d28f44f33f10cd41f095e35b5eced3f670cbeed",
       "owner": "Owned",
       "dataType": "DeleveragingCap"
     },
-    "TreasuryCap": {
-      "id": "0xfbd9f68b429dce7e57fba58d3f9052284f1184c25318dea2e3a8e30b7e8a90cc",
+    "ExchangeGuardianCap": {
+      "id": "0xee3fbaa4624bb92f9910b22581ee9012a2e3df11d3730898a39a4aee3f8369da",
       "owner": "Owned",
-      "dataType": "TreasuryCap"
+      "dataType": "ExchangeGuardianCap"
     }
   },
   "markets": {
@@ -109,12 +109,12 @@
       },
       "Objects": {
         "BankAccount": {
-          "id": "0x50bbc71aed57ff57a36129e607809e553496064059720749cad821ba9d9c93aa",
+          "id": "0xf84137ee42e3c89ddd2db4d6ae56e81fe84368075d71ebed05f0f4b67be0779b",
           "owner": "Owned",
           "dataType": "BankAccount"
         },
         "Perpetual": {
-          "id": "0x29e92ca3ce620805aecf73cb65247ca0abfdcfb46f4d2a252fe9bf9244adbff0",
+          "id": "0xfef1b35a587df4b0dcc992b7f668fa6b253fea56877f7839dc1bb980949a1319",
           "owner": "Shared",
           "dataType": "Perpetual"
         }
@@ -166,12 +166,12 @@
       },
       "Objects": {
         "BankAccount": {
-          "id": "0x1435afa32bf0b10c1a6c1e73118eb22f446c2ff93605c84af5c7a3f9a670d97a",
+          "id": "0x13b60ca082abe36c50dad508261c1c9da76ace7ebf842a73300de3fd67c1d3ca",
           "owner": "Owned",
           "dataType": "BankAccount"
         },
         "Perpetual": {
-          "id": "0xdf2b92435b1dcb18c7e6698441a09e98c6e98d530d5af85a10609a218e58287c",
+          "id": "0x375883db33910e2c15af560d8db6ad5ace00aa5c3d14006a9aa259ae600d2ee8",
           "owner": "Shared",
           "dataType": "Perpetual"
         }
@@ -179,9 +179,10 @@
     }
   },
   "bankAccounts": {
-    "0x29e92ca3ce620805aecf73cb65247ca0abfdcfb46f4d2a252fe9bf9244adbff0": "0x017ab51f0635263753223aaa8efd50d14930dae1a8a3bd460d83491ee4f0751b",
-    "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88": "0x12a4f0dddb600be6d056ade0004b13952d768bdb2163fcf6e88da9f189383ebd",
-    "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073": "0x50bbc71aed57ff57a36129e607809e553496064059720749cad821ba9d9c93aa",
-    "0xdf2b92435b1dcb18c7e6698441a09e98c6e98d530d5af85a10609a218e58287c": "0x1435afa32bf0b10c1a6c1e73118eb22f446c2ff93605c84af5c7a3f9a670d97a"
+    "0xfef1b35a587df4b0dcc992b7f668fa6b253fea56877f7839dc1bb980949a1319": "0xad1bb80d61fbfd7ddb6ee3c73bcc356529e0a67fc17755f276d11a895ba7861c",
+    "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073": "0xe30d9bc31abbad9bd84d022f0e9c8b9cb8ba913487002cbbe95bfbb7ad7049ce",
+    "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88": "0xf84137ee42e3c89ddd2db4d6ae56e81fe84368075d71ebed05f0f4b67be0779b",
+    "0x375883db33910e2c15af560d8db6ad5ace00aa5c3d14006a9aa259ae600d2ee8": "0x13b60ca082abe36c50dad508261c1c9da76ace7ebf842a73300de3fd67c1d3ca"
+
   }
 }

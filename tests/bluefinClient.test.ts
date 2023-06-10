@@ -9,8 +9,11 @@ import {
   ORDER_SIDE,
   // MinifiedCandleStick,
   ORDER_TYPE,
-} from "../submodules/library-sui";
-import { toBaseNumber, MinifiedCandleStick } from "../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
+import {
+  toBaseNumber,
+  MinifiedCandleStick,
+} from "@firefly-exchange/library-sui";
 import {
   BluefinClient,
   GetMarketRecentTradesResponse,
@@ -21,7 +24,7 @@ import {
   GetAccountDataResponse,
   TickerData,
 } from "../index";
-import { Faucet } from "../submodules/library-sui";
+import { Faucet } from "@firefly-exchange/library-sui";
 
 chai.use(chaiAsPromised);
 

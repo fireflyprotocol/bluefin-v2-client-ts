@@ -10,7 +10,7 @@ import {
   Order,
   OrderSigner,
   Transaction,
-} from "../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
 import {
   AdjustLeverageResponse,
   AuthorizeHashResponse,
@@ -74,11 +74,11 @@ import {
   ORDER_STATUS,
   ORDER_TYPE,
   TIME_IN_FORCE,
-} from "../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
 import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
-import { OnboardingSigner } from "../submodules/library-sui";
+import { OnboardingSigner } from "@firefly-exchange/library-sui";
 
 // import { Contract } from "ethers";
 
@@ -313,6 +313,7 @@ export class BluefinClient {
       maker: orderToSign.maker,
       orderSignature: signature,
       orderbookOnly: orderToSign.orderbookOnly,
+      timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
     return signedOrder;
   };
@@ -1072,7 +1073,7 @@ export class BluefinClient {
       postOnly: params.postOnly || false,
       salt,
       orderbookOnly: params.orderbookOnly || true,
-      ioc: params.ioc || false,
+      ioc: params.timeInForce == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,
     };
   };
 

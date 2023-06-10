@@ -9,10 +9,10 @@ import {
   ORDER_TYPE,
   OnChainCalls,
   Transaction,
-} from "../submodules/library-sui/src";
-import { toBigNumberStr } from "../submodules/library-sui/src/library";
+} from "@firefly-exchange/library-sui";
+import { toBigNumberStr } from "@firefly-exchange/library-sui";
 import { BluefinClient, Networks } from "../index";
-import { getSignerFromSeed, readFile } from "../submodules/library-sui";
+import { getSignerFromSeed, readFile } from "@firefly-exchange/library-sui";
 import { setupTestAccounts } from "../utils/utils";
 
 chai.use(chaiAsPromised);

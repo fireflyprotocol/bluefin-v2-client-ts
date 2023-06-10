@@ -1,4 +1,4 @@
-import { Network } from "../submodules/library-sui/src/interfaces/deployment";
+import { Network } from "@firefly-exchange/library-sui";
 
 export const Networks = {
   TESTNET_SUI: {

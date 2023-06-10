@@ -5,7 +5,7 @@ import {
   OnChainCalls,
   toBigNumberStr,
   toBaseNumber,
-} from "../../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
 import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
 import {
   ResponseSchema,

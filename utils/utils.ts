@@ -11,7 +11,7 @@ import {
   OnChainCalls,
   Faucet,
   toBigNumberStr,
-} from "../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
 
 /**
  * Generates random number

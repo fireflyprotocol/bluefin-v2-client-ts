@@ -4,7 +4,7 @@ import {
   SOCKET_EVENTS,
   MARKET_STATUS,
   MinifiedCandleStick,
-} from "../../submodules/library-sui";
+} from "@firefly-exchange/library-sui";
 
 import {
   GetMarketRecentTradesResponse,

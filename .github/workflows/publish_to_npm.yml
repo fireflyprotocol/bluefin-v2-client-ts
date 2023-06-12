@@ -1,12 +1,9 @@
 on:
-  pull_request:
-    branches: [main]
-    types:
-      - closed
+  release:
+    types: [published]
 name: Publish to NPM
 jobs:
   publish:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

@@ -1,7 +1,7 @@
 {
   "name": "@firefly-exchange/bluefin-client-sui",
   "version": "0.0.1",
-  "description": "The Firefly Client Library allows traders to sign, create, retrieve and listen to orders on Firefly Exchange.",
+  "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fireflyprotocol/bluefin-client-sui"
+    "url": "https://github.com/fireflyprotocol/bluefin-client-sui.git"
   },
   "author": "",
   "license": "ISC",
@@ -79,10 +79,9 @@
     "yarn": "^1.22.19"
   },
   "keywords": [
-    "client",
-    "library",
-    "firefly",
+    "bluefin",
     "exchange",
+    "client",
     "decentralized",
     "orderbook"
   ],

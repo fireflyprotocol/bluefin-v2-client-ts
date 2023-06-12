@@ -11,6 +11,7 @@ export class APIService {
   private walletAddress: string | undefined = undefined;
 
   private baseUrl: string | undefined = undefined;
+
   constructor(url: string) {
     this.baseUrl = url;
     this.apiService = axios.create({

@@ -1,7 +1,7 @@
-import { getValue } from "@firefly-exchange/library-sui/";
+import { getValue, Transaction } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
-import { Transaction } from "@firefly-exchange/library-sui";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";
+
 export type ResponseSchema = {
   ok: boolean;
   data: any;
@@ -56,16 +56,15 @@ export const TransformToResponseSchema = async (
         },
         true
       );
-    } else {
-      return handleResponse(
-        {
-          data: tx,
-          message: Transaction.getError(tx),
-          code: 400,
-        },
-        false
-      );
     }
+    return handleResponse(
+      {
+        data: tx,
+        message: Transaction.getError(tx),
+        code: 400,
+      },
+      false
+    );
   } catch (error: any) {
     return handleResponse({ ...serializeError(error) }, false);
   }

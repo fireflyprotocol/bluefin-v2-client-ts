@@ -16,9 +16,13 @@ import { default as interpolate } from "interpolate";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
+
   signer: RawSigner;
+
   marginBankId: string | undefined;
+
   defaultGas: number = 100000000;
+
   constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
     this.signer = signer;
     const signerWithProvider: SignerWithProvider = this.signer.connect(rpc);
@@ -85,7 +89,7 @@ export class ContractCalls {
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
-          coinID: coinID,
+          coinID,
           bankID: this.onChainCalls.getBankID(),
           accountAddress: await this.signer.getAddress(),
           gasBudget: gasLimit || this.defaultGas,
@@ -96,7 +100,7 @@ export class ContractCalls {
         this.marginBankId = Transaction.getBankAccountID(tx);
       }
       return tx;
-    }, interpolate(SuccessMessages.depositToBank, { amount: amount }));
+    }, interpolate(SuccessMessages.depositToBank, { amount }));
   };
 
   /**
@@ -118,11 +122,9 @@ export class ContractCalls {
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.adjustLeverage(
         {
-          leverage: leverage,
+          leverage,
           perpID: perpId,
-          account: parentAddress
-            ? parentAddress
-            : await this.signer.getAddress(),
+          account: parentAddress || (await this.signer.getAddress()),
           gasBudget: gasLimit || this.defaultGas,
         },
         this.signer
@@ -148,7 +150,7 @@ export class ContractCalls {
       return await this.onChainCalls.setSubAccount(
         {
           account: publicAddress,
-          status: status,
+          status,
           gasBudget: gasLimit || this.defaultGas,
         },
         this.signer
@@ -180,22 +182,21 @@ export class ContractCalls {
       if (operationType == ADJUST_MARGIN.Add) {
         return await this.onChainCalls.addMargin(
           {
-            amount: amount,
+            amount,
             perpID: perpId,
             gasBudget: gasLimit || this.defaultGas,
           },
           this.signer
         );
-      } else {
-        return await this.onChainCalls.removeMargin(
-          {
-            amount: amount,
-            gasBudget: gasLimit,
-            perpID: perpId,
-          },
-          this.signer
-        );
       }
+      return await this.onChainCalls.removeMargin(
+        {
+          amount,
+          gasBudget: gasLimit,
+          perpID: perpId,
+        },
+        this.signer
+      );
     }, msg);
   };
 
@@ -213,8 +214,7 @@ export class ContractCalls {
           )
         ).balance
       );
-    } else {
-      return 0;
     }
+    return 0;
   };
 }

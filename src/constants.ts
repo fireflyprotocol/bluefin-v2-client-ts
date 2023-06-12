@@ -29,7 +29,7 @@ export const Networks = {
     socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
     webSocketURL: "wss://notifications.api.arbitrum-staging.firefly.exchange/",
     onboardingUrl: "https://testnet.firefly.exchange",
-    faucet: "http://127.0.0.1:9123/gas",
+    faucet: "http://127.0.0.1:5003/gas",
   },
 };
 

@@ -38,8 +38,8 @@ const testSubAccKey =
 const testSubAccPubAddr =
   "0x7c550b81ce7f8f458f5520d55623eb5dd1013310323607c0c7b5c3625e47079e";
 
-Faucet.requestSUI(testAcctPubAddr);
-Faucet.requestSUI(testSubAccPubAddr);
+Faucet.requestSUI(testAcctPubAddr, Networks.LOCAL_SUI.faucet);
+Faucet.requestSUI(testSubAccPubAddr, Networks.LOCAL_SUI.faucet);
 
 let client: BluefinClient;
 

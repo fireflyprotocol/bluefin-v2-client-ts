@@ -53,7 +53,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@firefly-exchange/library-sui": "^0.1.24",
+    "@firefly-exchange/library-sui": "^0.1.25",
     "@mysten/sui.js": "^0.35.0",
     "@noble/hashes": "^1.2.0",
     "@noble/secp256k1": "^1.7.1",

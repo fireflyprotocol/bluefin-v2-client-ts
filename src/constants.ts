@@ -1,4 +1,4 @@
-import { Network } from "@firefly-exchange/library-sui";
+//import { Network } from "@firefly-exchange/library-sui";
 
 export const Networks = {
   TESTNET_SUI: {
@@ -38,6 +38,14 @@ export const SUI_NETWROK = "sui";
 
 export const EXTRA_FEES = 10000;
 
+export interface Network {
+  name?: string;
+  rpc?: string;
+  faucet?: string;
+  url?: string;
+}
+
+//adding this here as it's temporary support for socket.io
 // adding this here as it's temporary support for socket.io
 export interface ExtendedNetwork extends Network {
   apiGateway?: string; // making it optional for backward compatibility

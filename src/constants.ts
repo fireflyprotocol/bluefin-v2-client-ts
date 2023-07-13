@@ -40,9 +40,9 @@ export const EXTRA_FEES = 10000;
 
 //adding this here as it's temporary support for socket.io
 export interface ExtendedNetwork extends Network {
-  apiGateway: string;
-  socketURL: string;
-  onboardingUrl: string;
+  apiGateway?: string; //making it optional for backward compatibility
+  socketURL?: string;
+  onboardingUrl?: string;
   webSocketURL: string;
   dmsURL?: string;
 }

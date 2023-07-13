@@ -3,7 +3,7 @@ import { Network } from "@firefly-exchange/library-sui";
 export const Networks = {
   TESTNET_SUI: {
     name: "testnet",
-    rpc: "https://fullnode.devnet.sui.io:443",
+    url: "https://fullnode.devnet.sui.io:443",
     apiGateway: "https://dapi.api.arbitrum-staging.firefly.exchange",
     dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
     socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
@@ -13,7 +13,7 @@ export const Networks = {
   },
   PRODUCTION_SUI: {
     name: "production",
-    rpc: "https://arb1.arbitrum.io/rpc/",
+    url: "https://arb1.arbitrum.io/rpc/",
     apiGateway: "https://dapi.api.arbitrum-prod.firefly.exchange",
     socketURL: "wss://dapi.api.arbitrum-prod.firefly.exchange",
     dmsURL: "https://api.arbitrum-prod.firefly.exchange/dead-man-switch",
@@ -23,7 +23,7 @@ export const Networks = {
   },
   LOCAL_SUI: {
     name: "local",
-    rpc: "http://127.0.0.1:9000",
+    url: "http://127.0.0.1:9000",
     apiGateway: "https://dapi.api.arbitrum-staging.firefly.exchange",
     dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
     socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
@@ -38,9 +38,9 @@ export const SUI_NETWROK = "sui";
 
 export const EXTRA_FEES = 10000;
 
-//adding this here as it's temporary support for socket.io
+// adding this here as it's temporary support for socket.io
 export interface ExtendedNetwork extends Network {
-  apiGateway?: string; //making it optional for backward compatibility
+  apiGateway?: string; // making it optional for backward compatibility
   socketURL?: string;
   onboardingUrl?: string;
   webSocketURL: string;

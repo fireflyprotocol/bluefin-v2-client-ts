@@ -83,7 +83,7 @@ import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
-  private orderSigner: OrderSigner | undefined;
+  private orderSigner: OrderSigner | any;
 
   private apiService: APIService;
 
@@ -97,7 +97,7 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: RawSigner | undefined; // to save signer when connecting from UI
+  private signer: RawSigner | any; // to save signer when connecting from UI
 
   private contractCalls: ContractCalls | undefined;
 
@@ -121,7 +121,9 @@ export class BluefinClient {
     _isTermAccepted: boolean,
     _network: ExtendedNetwork,
     _account?: string | Keypair | AwsKmsSigner,
-    _scheme?: any
+    _scheme?: any,
+    _isUI?: boolean,
+    _uiSignerObject?: any
   ) {
     this.network = _network;
 
@@ -137,8 +139,12 @@ export class BluefinClient {
     }
 
     this.isTermAccepted = _isTermAccepted;
+
+    if (_isUI){
+      this.initializeWithHook(_uiSignerObject);
+    }
     // if input is string then its seed phrase else it should be AwsKmsSigner object
-    if (_account && _scheme && typeof _account === "string") {
+    else if (_account && _scheme && typeof _account === "string") {
       this.initializeWithSeed(_account, _scheme);
     } else if (
       _account &&
@@ -166,6 +172,18 @@ export class BluefinClient {
       // await this.userOnBoarding(); // uncomment once DAPI-SUI is up
     }
   };
+
+  initializeWithHook= async(uiSignerObject: any): Promise<void> => {
+    try{
+      this.signer=uiSignerObject;
+      this.orderSigner=uiSignerObject;
+      this.walletAddress=this.signer.getAddress();
+
+    }catch(err){
+      console.log(err);
+      throw Error("Failed to initialize through UI");
+    }
+  }
 
   /**
    * @description

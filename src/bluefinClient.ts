@@ -157,14 +157,14 @@ export class BluefinClient {
    * @param userOnboarding boolean indicating if user onboarding is required
    */
   init = async (userOnboarding: boolean = true) => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    await this.initContractCalls();
-    this.walletAddress = await this.signer.getAddress();
-    if (userOnboarding) {
-      // await this.userOnBoarding(); // uncomment once DAPI-SUI is up
-    }
+    // if (!this.signer) {
+    //   throw Error("Signer not initialized");
+    // }
+    // await this.initContractCalls();
+    // this.walletAddress = await this.signer.getAddress();
+    // if (userOnboarding) {
+    //   // await this.userOnBoarding(); // uncomment once DAPI-SUI is up
+    // }
   };
 
   /**
@@ -969,7 +969,7 @@ export class BluefinClient {
    * Creates message to be signed, creates signature and authorize it from dapi
    * @returns auth token
    */
-  userOnBoarding = async (token?: string) => {
+  userOnBoarding = async (token?: string, signMessage?: any) => {
     let userAuthToken = token;
     if (!userAuthToken) {
       let signature: string;
@@ -989,10 +989,15 @@ export class BluefinClient {
         // (signature = await this.kmsSigner._signDigest(hashedMessageETH));
       } else {
         // sign onboarding message
-        signature = await OnboardingSigner.createOnboardSignature(
-          this.network.onboardingUrl,
-          this.signer
-        );
+        // signature = await OnboardingSigner.createOnboardSignature(
+        //   this.network.onboardingUrl,
+        //   this.signer
+        // );
+        const msgBytes = new TextEncoder().encode(this.network.onboardingUrl);
+        console.log("======22SIGNATURE====", msgBytes, signMessage, token);
+        const signed = await signMessage({ message: msgBytes });
+        signature = signed.signature;
+        console.log("======SIGNATURE====", signature);
       }
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(signature);
@@ -1088,7 +1093,7 @@ export class BluefinClient {
       SERVICE_URLS.USER.AUTHORIZE,
       {
         signature: signedHash,
-        userAddress: this.getPublicAddress(),
+        userAddress: "0x473a86716dd3688974ea9aaaeb4274895d30650118e671737afbd4e46f54ddf4",
         isTermAccepted: this.isTermAccepted,
       }
     );

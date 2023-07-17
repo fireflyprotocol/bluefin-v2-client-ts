@@ -7,7 +7,7 @@ import {
   Ed25519Keypair,
   SuiTransactionBlockResponse,
 } from "@mysten/sui.js";
-import fs from "fs";
+import * as fs from "fs";
 import {
   OnChainCalls,
   Faucet,

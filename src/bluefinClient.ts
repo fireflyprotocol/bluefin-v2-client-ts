@@ -140,7 +140,7 @@ export class BluefinClient {
 
     this.isTermAccepted = _isTermAccepted;
 
-    if (_isUI){
+    if (_isUI) {
       this.initializeWithHook(_uiSignerObject);
     }
     // if input is string then its seed phrase else it should be AwsKmsSigner object
@@ -173,17 +173,16 @@ export class BluefinClient {
     }
   };
 
-  initializeWithHook= async(uiSignerObject: any): Promise<void> => {
-    try{
-      this.signer=uiSignerObject;
-      this.orderSigner=uiSignerObject;
-      this.walletAddress=this.signer.getAddress();
-
-    }catch(err){
+  initializeWithHook = async (uiSignerObject: any): Promise<void> => {
+    try {
+      this.signer = uiSignerObject;
+      this.orderSigner = uiSignerObject;
+      this.walletAddress = this.signer.getAddress();
+    } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
     }
-  }
+  };
 
   /**
    * @description
@@ -251,6 +250,8 @@ export class BluefinClient {
       throw Error("Signer not Initialized");
     }
     const _deployment = deployment || this.getDeploymentJson();
+    console.log("GPRP3", _deployment);
+
     this.contractCalls = new ContractCalls(
       this.getSigner(),
       this.getProvider(),
@@ -383,6 +384,8 @@ export class BluefinClient {
    * @returns PlaceOrderResponse
    */
   postOrder = async (params: PostOrderRequest) => {
+    console.log("===PO2", params);
+
     const signedOrder = this.createSignedOrder(params);
     const response = await this.placeSignedOrder({
       ...signedOrder,
@@ -517,7 +520,7 @@ export class BluefinClient {
    * @returns Number representing balance of user in Margin Bank contract
    */
   getMarginBankBalance = async (): Promise<number> => {
-    return await this.contractCalls.getMarginBankBalance();
+    return this.contractCalls.getMarginBankBalance();
   };
 
   /**
@@ -526,7 +529,7 @@ export class BluefinClient {
    * @returns Number representing balance of user in USDC contract
    */
   getUSDCBalance = async (): Promise<number> => {
-    return await this.contractCalls.onChainCalls.getUSDCBalance(
+    return this.contractCalls.onChainCalls.getUSDCBalance(
       {
         address: await this.signer.getAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
@@ -552,7 +555,7 @@ export class BluefinClient {
       to: await this.signer.getAddress(),
       gasBudget: 1000000000,
     });
-    if (Transaction.getStatus(txResponse) == "success") {
+    if (Transaction.getStatus(txResponse) === "success") {
       return true;
     }
     return false;
@@ -569,7 +572,7 @@ export class BluefinClient {
     params: adjustLeverageRequest
   ): Promise<ResponseSchema> => {
     // TODO: Add Dapi checks and adjust leverage on dapi once dapi is up
-    return await this.contractCalls.adjustLeverageContractCall(
+    return this.contractCalls.adjustLeverageContractCall(
       params.leverage,
       params.symbol,
       params.parentAddress
@@ -590,7 +593,7 @@ export class BluefinClient {
     operationType: ADJUST_MARGIN,
     amount: number
   ): Promise<ResponseSchema> => {
-    return await this.contractCalls.adjustMarginContractCall(
+    return this.contractCalls.adjustMarginContractCall(
       symbol,
       operationType,
       amount
@@ -617,10 +620,7 @@ export class BluefinClient {
       )?.coinObjectId;
     }
     if (coin) {
-      return await this.contractCalls.depositToMarginBankContractCall(
-        amount,
-        coin
-      );
+      return this.contractCalls.depositToMarginBankContractCall(amount, coin);
     }
     throw Error(`User has no coin with amount ${amount} to deposit`);
   };
@@ -633,11 +633,9 @@ export class BluefinClient {
    */
   withdrawFromMarginBank = async (amount?: number): Promise<ResponseSchema> => {
     if (amount) {
-      return await this.contractCalls.withdrawFromMarginBankContractCall(
-        amount
-      );
+      return this.contractCalls.withdrawFromMarginBankContractCall(amount);
     }
-    return await this.contractCalls.withdrawAllFromMarginBankContractCall();
+    return this.contractCalls.withdrawAllFromMarginBankContractCall();
   };
 
   /**
@@ -651,7 +649,7 @@ export class BluefinClient {
     publicAddress: string,
     status: boolean
   ): Promise<ResponseSchema> => {
-    return await this.contractCalls.setSubAccount(publicAddress, status);
+    return this.contractCalls.setSubAccount(publicAddress, status);
   };
 
   /**
@@ -1012,6 +1010,9 @@ export class BluefinClient {
           this.signer
         );
       }
+
+      console.log("SIGNATUREEEEEE", signature);
+
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
@@ -1053,7 +1054,8 @@ export class BluefinClient {
    * */
   private getDeploymentJson = (): any => {
     // will be fetched from DAPI, may be stored in configs table
-    return readFile("./deployment.json");
+    const r = readFile("./deployment.json");
+    console.log("READFILE", r);
   };
 
   /**
@@ -1092,7 +1094,7 @@ export class BluefinClient {
       postOnly: params.postOnly || false,
       salt,
       orderbookOnly: params.orderbookOnly || true,
-      ioc: params.timeInForce == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,
+      ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,
     };
   };
 
@@ -1147,7 +1149,7 @@ export class BluefinClient {
       { isAuthenticationRequired: true },
       this.network.dmsURL
     );
-    if (response.status == 503) {
+    if (response.status === 503) {
       throw Error(
         `Cancel on Disconnect (dead-mans-switch) feature is currently unavailable`
       );
@@ -1173,7 +1175,7 @@ export class BluefinClient {
       { isAuthenticationRequired: true },
       this.network.dmsURL
     );
-    if (response.status == 503) {
+    if (response.status === 503) {
       throw Error(
         `Cancel on Disconnect (dead-mans-switch) feature is currently unavailable`
       );

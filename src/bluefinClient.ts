@@ -17,6 +17,9 @@ import {
   ORDER_TYPE,
   TIME_IN_FORCE,
   OnboardingSigner,
+  hexToBuffer,
+  bnToHex,
+  encodeOrderFlags,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -250,7 +253,6 @@ export class BluefinClient {
       throw Error("Signer not Initialized");
     }
     const _deployment = deployment || this.getDeploymentJson();
-    console.log("GPRP3", _deployment);
 
     this.contractCalls = new ContractCalls(
       this.getSigner(),
@@ -278,6 +280,57 @@ export class BluefinClient {
    * */
   getProvider = (): JsonRpcProvider => {
     return this.provider;
+  };
+
+  /**
+   * @description
+   * Creates message to be signed, creates signature and authorize it from dapi
+   * @returns auth token
+   */
+  userOnBoarding = async (token?: string) => {
+    let userAuthToken = token;
+    if (!userAuthToken) {
+      let signature: string;
+
+      if (this.kmsSigner !== undefined) {
+        // const hashedMessageSHA = sha256(
+        //   hexToBuffer(this.network.onboardingUrl)
+        // );
+        // /*
+        //   For every orderHash sent to etherium etherium will hash it and wrap
+        //   it with "\\x19Ethereum Signed Message:\\n" + message.length + message
+        //   Hence for that we have to hash it again.
+        // */
+        // //@ts-ignore
+        // const hashedMessageETH =
+        // this.signer.signData(hashedMessageSHA);
+        // (signature = await this.kmsSigner._signDigest(hashedMessageETH));
+      } else {
+        // sign onboarding message
+        signature = await OnboardingSigner.createOnboardSignature(
+          this.network.onboardingUrl,
+          this.signer
+        );
+      }
+
+      // authorize signature created by dAPI
+      const authTokenResponse = await this.authorizeSignedHash(signature);
+
+      if (!authTokenResponse.ok || !authTokenResponse.data) {
+        throw Error(
+          `Authorization error: ${authTokenResponse.response.message}`
+        );
+      }
+      userAuthToken = authTokenResponse.data.token;
+    }
+    // for api
+    this.apiService.setAuthToken(userAuthToken);
+    // this.apiService.setWalletAddress(this.getPublicAddress());
+    // for socket
+    this.sockets.setAuthToken(userAuthToken);
+    this.webSockets?.setAuthToken(userAuthToken);
+    // TODO: remove this when all endpoints on frontend are integrated from client library
+    return userAuthToken;
   };
 
   /**
@@ -311,14 +364,39 @@ export class BluefinClient {
    * @param order OrderSignatureRequest
    * */
 
-  createSignedOrder = (
+  getSerializedOrder(order: Order): string {
+    // encode order flags
+    const orderFlags = encodeOrderFlags(order);
+
+    const buffer = Buffer.alloc(144);
+    buffer.set(hexToBuffer(bnToHex(order.price)), 0);
+    buffer.set(hexToBuffer(bnToHex(order.quantity)), 16);
+    buffer.set(hexToBuffer(bnToHex(order.leverage)), 32);
+    buffer.set(hexToBuffer(bnToHex(order.salt)), 48);
+    buffer.set(hexToBuffer(bnToHex(order.expiration, 16)), 64);
+    buffer.set(hexToBuffer(order.maker), 72);
+    buffer.set(hexToBuffer(order.market), 104);
+    buffer.set(hexToBuffer(bnToHex(orderFlags, 2)), 136);
+    buffer.set(Buffer.from("Bluefin", "utf8"), 137);
+
+    return buffer.toString("hex");
+  }
+
+  signOrder = async (orderToSign: Order) => {
+    const serializedOrder = new TextEncoder().encode(
+      this.getSerializedOrder(orderToSign)
+    );
+    return this.signer.signData(serializedOrder);
+  };
+
+  createSignedOrder = async (
     order: OrderSignatureRequest
-  ): OrderSignatureResponse => {
+  ): Promise<OrderSignatureResponse> => {
     if (!this.orderSigner) {
       throw Error("Order Signer not initialized");
     }
     const orderToSign: Order = this.createOrderToSign(order);
-    const signature = this.orderSigner.signOrder(orderToSign);
+    const signature = await this.signOrder(orderToSign);
     const signedOrder: OrderSignatureResponse = {
       symbol: order.symbol,
       price: order.price,
@@ -350,6 +428,7 @@ export class BluefinClient {
    * @returns PlaceOrderResponse containing status and data. If status is not 201, order placement failed.
    */
   placeSignedOrder = async (params: PlaceOrderRequest) => {
+    
     const response = await this.apiService.post<PlaceOrderResponse>(
       SERVICE_URLS.ORDERS.ORDERS,
       {
@@ -366,6 +445,7 @@ export class BluefinClient {
         expiration: params.expiration,
         orderSignature: params.orderSignature,
         timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
+        orderbookOnly: true,
         postOnly: params.postOnly || false,
         clientId: params.clientId
           ? `bluefin-client: ${params.clientId}`
@@ -384,14 +464,14 @@ export class BluefinClient {
    * @returns PlaceOrderResponse
    */
   postOrder = async (params: PostOrderRequest) => {
-    console.log("===PO2", params);
 
-    const signedOrder = this.createSignedOrder(params);
+    const signedOrder = await this.createSignedOrder(params);
     const response = await this.placeSignedOrder({
       ...signedOrder,
       timeInForce: params.timeInForce,
       postOnly: params.postOnly,
       clientId: params.clientId,
+      orderbookOnly: true,
     });
 
     return response;
@@ -980,59 +1060,6 @@ export class BluefinClient {
     return response;
   };
 
-  /**
-   * @description
-   * Creates message to be signed, creates signature and authorize it from dapi
-   * @returns auth token
-   */
-  userOnBoarding = async (token?: string) => {
-    let userAuthToken = token;
-    if (!userAuthToken) {
-      let signature: string;
-
-      if (this.kmsSigner !== undefined) {
-        // const hashedMessageSHA = sha256(
-        //   hexToBuffer(this.network.onboardingUrl)
-        // );
-        // /*
-        //   For every orderHash sent to etherium etherium will hash it and wrap
-        //   it with "\\x19Ethereum Signed Message:\\n" + message.length + message
-        //   Hence for that we have to hash it again.
-        // */
-        // //@ts-ignore
-        // const hashedMessageETH =
-        // this.signer.signData(hashedMessageSHA);
-        // (signature = await this.kmsSigner._signDigest(hashedMessageETH));
-      } else {
-        // sign onboarding message
-        signature = await OnboardingSigner.createOnboardSignature(
-          this.network.onboardingUrl,
-          this.signer
-        );
-      }
-
-      console.log("SIGNATUREEEEEE", signature);
-
-      // authorize signature created by dAPI
-      const authTokenResponse = await this.authorizeSignedHash(signature);
-
-      if (!authTokenResponse.ok || !authTokenResponse.data) {
-        throw Error(
-          `Authorization error: ${authTokenResponse.response.message}`
-        );
-      }
-      userAuthToken = authTokenResponse.data.token;
-    }
-    // for api
-    this.apiService.setAuthToken(userAuthToken);
-    // this.apiService.setWalletAddress(this.getPublicAddress());
-    // for socket
-    this.sockets.setAuthToken(userAuthToken);
-    this.webSockets?.setAuthToken(userAuthToken);
-    // TODO: remove this when all endpoints on frontend are integrated from client library
-    return userAuthToken;
-  };
-
   //= ==============================================================//
   //                    PRIVATE HELPER FUNCTIONS
   //= ==============================================================//
@@ -1054,8 +1081,7 @@ export class BluefinClient {
    * */
   private getDeploymentJson = (): any => {
     // will be fetched from DAPI, may be stored in configs table
-    const r = readFile("./deployment.json");
-    console.log("READFILE", r);
+    return readFile("./deployment.json");
   };
 
   /**

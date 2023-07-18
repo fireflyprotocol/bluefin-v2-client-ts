@@ -3,6 +3,7 @@ import { getValue, isEmpty } from "@firefly-exchange/library-sui";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
 
+let TOKEN: string = "";
 export class APIService {
   private apiService: AxiosInstance;
 
@@ -112,6 +113,7 @@ export class APIService {
 
   setAuthToken = async (token: string) => {
     this.token = token;
+    TOKEN = token;
   };
 
   setWalletAddress = async (address: string) => {
@@ -122,7 +124,7 @@ export class APIService {
   //= ==============================================================//
 
   private transformRequest = (data: any, headers?: any) => {
-    headers.Authorization = `Bearer ${this.token}`;
+    headers.Authorization = `Bearer ${TOKEN}`;
     headers["x-wallet-address"] = this.walletAddress || "";
     return JSON.stringify(data);
   };

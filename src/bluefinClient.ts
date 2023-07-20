@@ -428,7 +428,6 @@ export class BluefinClient {
    * @returns PlaceOrderResponse containing status and data. If status is not 201, order placement failed.
    */
   placeSignedOrder = async (params: PlaceOrderRequest) => {
-    
     const response = await this.apiService.post<PlaceOrderResponse>(
       SERVICE_URLS.ORDERS.ORDERS,
       {
@@ -464,7 +463,6 @@ export class BluefinClient {
    * @returns PlaceOrderResponse
    */
   postOrder = async (params: PostOrderRequest) => {
-
     const signedOrder = await this.createSignedOrder(params);
     const response = await this.placeSignedOrder({
       ...signedOrder,

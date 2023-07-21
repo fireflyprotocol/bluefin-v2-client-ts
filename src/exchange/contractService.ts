@@ -6,8 +6,8 @@ import {
   toBigNumberStr,
   toBaseNumber,
 } from "@firefly-exchange/library-sui";
-import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
-import { default as interpolate } from "interpolate";
+import { RawSigner, JsonRpcProvider } from "@mysten/sui.js";
+import interpolate from "interpolate";
 import {
   ResponseSchema,
   SuccessMessages,

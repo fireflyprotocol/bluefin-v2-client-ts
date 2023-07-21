@@ -1113,7 +1113,7 @@ export class BluefinClient {
       maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
       reduceOnly: params.reduceOnly || false,
       expiration: toBigNumber(
-        params.expiration || Math.floor(expiration.getTime() / 1000)
+        params.expiration || Math.floor(expiration.getTime())
       ), // /1000 to convert time in seconds
       postOnly: params.postOnly || false,
       salt,

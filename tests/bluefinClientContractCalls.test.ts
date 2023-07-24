@@ -142,7 +142,7 @@ describe.only("BluefinClient", () => {
     beforeEach(async () => {});
 
     it("should create signed order", async () => {
-      const signedOrder = client.createSignedOrder({
+      const signedOrder = await client.createSignedOrder({
         symbol,
         price: 0,
         quantity: 0.1,
@@ -222,7 +222,7 @@ describe.only("BluefinClient", () => {
     });
 
     it("should create signed maker order", async () => {
-      signedMakerOrder = maker.createSignedOrder({
+      signedMakerOrder = await maker.createSignedOrder({
         symbol,
         price: tradePrice,
         quantity: tradeQty,
@@ -237,7 +237,7 @@ describe.only("BluefinClient", () => {
     });
 
     it("should create signed taker order", async () => {
-      signedTakerOrder = taker.createSignedOrder({
+      signedTakerOrder = await taker.createSignedOrder({
         symbol,
         price: tradePrice,
         quantity: tradeQty,

@@ -21,6 +21,7 @@ import {
   toBigNumber,
 } from "@firefly-exchange/library-sui";
 import { OrderSignatureResponse } from "../src/interfaces/routes";
+import deploymentData from "../deployment.json";
 
 /**
  * Generates random number
@@ -59,10 +60,18 @@ export function getSignerFromSeed(
   return getSignerFromKeyPair(getKeyPairFromSeed(seed), provider);
 }
 
-export function readFile(filePath: string): any {
+function readFileServer(filePath: string): any {
   return fs.existsSync(filePath)
     ? JSON.parse(fs.readFileSync(filePath).toString())
     : {};
+}
+
+function readFileBrowser(): any {
+  return deploymentData;
+}
+
+export function readFile(filePath: string): any {
+  return !window ? readFileServer(filePath) : readFileBrowser();
 }
 
 export async function setupTestAccounts(
@@ -113,7 +122,7 @@ export async function performTrade(
   // set specific price on oracle
   const tx3 = await onChain.updateOraclePrice({
     price: toBigNumberStr(tradePrice),
-    updateOPCapID: updateOPCapID,
+    updateOPCapID,
     perpID: onChain.getPerpetualID(makerOrder.symbol),
     gasBudget: 400000000,
   });
@@ -160,11 +169,11 @@ export async function performTrade(
   if (status == "success") {
     console.log("Transaction success");
     return [true, tx];
-  } else if (status == "failure") {
+  }
+  if (status == "failure") {
     console.log("Error:", Transaction.getError(tx));
     return [false, tx];
-  } else {
-    console.log("Transaction status %s", status);
-    return [false, tx];
   }
+  console.log("Transaction status %s", status);
+  return [false, tx];
 }

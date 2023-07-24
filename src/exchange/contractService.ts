@@ -6,13 +6,13 @@ import {
   toBigNumberStr,
   toBaseNumber,
 } from "@firefly-exchange/library-sui";
-import { RawSigner, SignerWithProvider, JsonRpcProvider } from "@mysten/sui.js";
+import { RawSigner, JsonRpcProvider } from "@mysten/sui.js";
+import interpolate from "interpolate";
 import {
   ResponseSchema,
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { default as interpolate } from "interpolate";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -25,7 +25,7 @@ export class ContractCalls {
 
   constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
     this.signer = signer;
-    const signerWithProvider: SignerWithProvider = this.signer.connect(rpc);
+    const signerWithProvider = this.signer.signData;
     this.onChainCalls = new OnChainCalls(signerWithProvider, deployment);
   }
 
@@ -79,7 +79,7 @@ export class ContractCalls {
    * @returns ResponseSchema
    * @description
    * Deposits funds to the margin bank contract
-   **/
+   * */
   depositToMarginBankContractCall = async (
     amount: number,
     coinID: string,
@@ -179,8 +179,8 @@ export class ContractCalls {
         ? interpolate(SuccessMessages.adjustMarginAdd, { amount })
         : interpolate(SuccessMessages.adjustMarginRemove, { amount });
     return TransformToResponseSchema(async () => {
-      if (operationType == ADJUST_MARGIN.Add) {
-        return await this.onChainCalls.addMargin(
+      if (operationType === ADJUST_MARGIN.Add) {
+        return this.onChainCalls.addMargin(
           {
             amount,
             perpID: perpId,

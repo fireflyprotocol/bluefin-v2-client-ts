@@ -1,6 +1,6 @@
 {
   "name": "@firefly-exchange/bluefin-client-sui",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "format-all": "yarn prettier --write .",
     "format-staged": "git-format-staged -f \"prettier '{}'\" '**/*.js' '**/*.json' '**/*.ts' ",
     "ci:code-formatting": "yarn prettier --check .",
-    "ci:code-style": "yarn eslint ."
+    "ci:code-style": "yarn eslint .",
+    "build:watch": "tsc-watch --onSuccess 'yarn build'"
   },
   "repository": {
     "type": "git",
@@ -47,13 +48,14 @@
     "prettier": "^2.8.8",
     "ts-loader": "^9.3.1",
     "ts-mocha": "^10.0.0",
+    "tsc-watch": "^6.0.4",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@firefly-exchange/library-sui": "^0.1.25",
+    "@firefly-exchange/library-sui": "0.1.29",
     "@mysten/sui.js": "^0.35.0",
     "@noble/hashes": "^1.2.0",
     "@noble/secp256k1": "^1.7.1",

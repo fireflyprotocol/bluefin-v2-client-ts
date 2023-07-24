@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
-import { getValue, isEmpty } from "@firefly-exchange//library-sui";
+import { getValue, isEmpty } from "@firefly-exchange/library-sui";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
 

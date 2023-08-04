@@ -718,9 +718,12 @@ export class BluefinClient {
     let coin = coinID;
     if (amount && !coinID) {
       coin = (
-        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
-          amount,
-        })
+        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+          {
+            amount,
+          },
+          this.signer
+        )
       )?.coinObjectId;
     }
     if (coin) {

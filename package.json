@@ -1,6 +1,6 @@
 {
   "name": "@firefly-exchange/bluefin-client-sui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
   "main": "dist/index.js",
   "scripts": {

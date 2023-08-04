@@ -3,13 +3,13 @@
 export const Networks = {
   TESTNET_SUI: {
     name: "testnet",
-    url: "https://fullnode.devnet.sui.io:443",
-    apiGateway: "https://dapi.api.arbitrum-staging.firefly.exchange",
-    dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
-    socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
-    webSocketURL: "wss://notifications.api.arbitrum-staging.firefly.exchange/",
-    onboardingUrl: "https://testnet.firefly.exchange",
-    faucet: "https://faucet.devnet.sui.io",
+    url: "https://rpc.ankr.com/sui_testnet/4a4cd7c3b641d0a38e81b12eefdba15c08ecc8b227b84f9052f1e8b7d7952af2",
+    apiGateway: "https://dapi.api.sui-staging.bluefin.io",
+    dmsURL: "https://dapi.api.sui-staging.bluefin.io/dead-man-switch",
+    socketURL: "wss://https://dapi.api.sui-staging.bluefin.io",
+    webSocketURL: "wss://notifications.api.sui-staging.bluefin.io",
+    
+    faucet: "https://rpc.ankr.com/sui_testnet/4a4cd7c3b641d0a38e81b12eefdba15c08ecc8b227b84f9052f1e8b7d7952af2/gas",
   },
   PRODUCTION_SUI: {
     name: "production",
@@ -24,11 +24,11 @@ export const Networks = {
   LOCAL_SUI: {
     name: "local",
     url: "http://127.0.0.1:9000",
-    apiGateway: "https://dapi.api.arbitrum-staging.firefly.exchange",
-    dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
-    socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
-    webSocketURL: "wss://notifications.api.arbitrum-staging.firefly.exchange/",
-    onboardingUrl: "https://testnet.firefly.exchange",
+    apiGateway: "https://dapi.api.sui-staging.bluefin.io",
+    dmsURL: "https://dapi.api.sui-staging.bluefin.io/dead-man-switch",
+    socketURL: "wss://https://dapi.api.sui-staging.bluefin.io",
+    webSocketURL: "wss://notifications.api.sui-staging.bluefin.io",
+    onboardingUrl: "https://testnet.bluefin.io",
     faucet: "http://127.0.0.1:5003/gas",
   },
 };

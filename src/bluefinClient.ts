@@ -173,7 +173,7 @@ export class BluefinClient {
     await this.initContractCalls();
     this.walletAddress = await this.signer.getAddress();
     if (userOnboarding) {
-      // await this.userOnBoarding(); // uncomment once DAPI-SUI is up
+      await this.userOnBoarding();
     }
   };
 

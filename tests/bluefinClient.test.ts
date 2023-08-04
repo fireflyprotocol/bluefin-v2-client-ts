@@ -46,7 +46,7 @@ let client: BluefinClient;
 describe("BluefinClient", () => {
   //* set environment from here
   const network = Networks.LOCAL_SUI;
-  const symbol = "ETH-PERP";
+  let symbol = "ETH-PERP";
   let defaultLeverage = 3;
   let buyPrice = 18000;
   let sellPrice = 20000;
@@ -75,7 +75,7 @@ describe("BluefinClient", () => {
     const marketData = await client.getMarketData(symbol);
     if (marketData.data && toBaseNumber(marketData.data.marketPrice) > 0) {
       marketPrice = toBaseNumber(marketData.data.marketPrice || "100"); // hard coding to 100 will remove once DAPI is live
-      indexPrice = toBaseNumber(marketData.data.indexPrice || "0");
+      indexPrice = toBaseNumber(marketData.data.indexPrice || "0", 0, 18);
       const percentChange = 3 / 100; // 3%
       buyPrice = Number((marketPrice - marketPrice * percentChange).toFixed(0));
       sellPrice = Number(

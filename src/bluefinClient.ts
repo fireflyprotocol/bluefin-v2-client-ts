@@ -165,12 +165,13 @@ export class BluefinClient {
    * @description
    * initializes the required objects
    * @param userOnboarding boolean indicating if user onboarding is required
+   * @param deployment
    */
-  init = async (userOnboarding: boolean = true) => {
+  init = async (userOnboarding: boolean = true, deployment: any = null) => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
-    await this.initContractCalls();
+    await this.initContractCalls(deployment);
     this.walletAddress = await this.signer.getAddress();
     if (userOnboarding) {
       // await this.userOnBoarding(); // uncomment once DAPI-SUI is up

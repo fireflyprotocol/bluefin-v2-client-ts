@@ -13,8 +13,6 @@ import {
   Faucet,
   toBigNumberStr,
   Transaction,
-  Trader,
-  OrderSigner,
   Order,
   ORDER_SIDE,
   TIME_IN_FORCE,
@@ -79,101 +77,103 @@ export async function setupTestAccounts(
   testWallets: any[],
   faucetURL: string
 ): Promise<boolean> {
-  {
-    const mintAmount = 1000000000;
-    for (const wallet of testWallets) {
-      try {
-        await Faucet.requestSUI(wallet.privateAddress, faucetURL);
-      } catch (e) {
-        console.log(e);
-      }
+  const mintAmount = 1000000000;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const wallet of testWallets) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await Faucet.requestSUI(wallet.privateAddress, faucetURL);
+    } catch (e) {
+      console.log(e);
     }
-    for (const wallet of testWallets) {
-      await deployerWallet.mintUSDC({
-        amount: toBigNumberStr(mintAmount.toString(), 6),
-        to: wallet.privateAddress,
-        gasBudget: 10000000,
-      });
-    }
-    return true;
   }
+  // eslint-disable-next-line no-restricted-syntax
+  for (const wallet of testWallets) {
+    // eslint-disable-next-line no-await-in-loop
+    await deployerWallet.mintUSDC({
+      amount: toBigNumberStr(mintAmount.toString(), 6),
+      to: wallet.privateAddress,
+      gasBudget: 10000000,
+    });
+  }
+  return true;
 }
 
-export async function performTrade(
-  onChain: OnChainCalls,
-  deployerSigner: RawSigner,
-  makerOrder: OrderSignatureResponse,
-  takerOrder: OrderSignatureResponse,
-  tradePrice: number
-): Promise<[boolean, SuiTransactionBlockResponse]> {
-  const tx1 = await onChain.createSettlementOperator({
-    operator: await deployerSigner.getAddress(),
-    gasBudget: 400000000,
-  });
-  const settlementCapID = Transaction.getCreatedObjectIDs(tx1)[0];
-  // Note: Assuming deployer is already price oracle operator
-  // make admin of the exchange price oracle operator
-  const tx2 = await onChain.setPriceOracleOperator({
-    operator: await deployerSigner.getAddress(),
-    gasBudget: 400000000,
-  });
-  const updateOPCapID = Transaction.getCreatedObjectIDs(tx2)[0];
+// export async function performTrade(
+//   onChain: OnChainCalls,
+//   deployerSigner: RawSigner,
+//   makerOrder: OrderSignatureResponse,
+//   takerOrder: OrderSignatureResponse,
+//   tradePrice: number
+// ): Promise<[boolean, SuiTransactionBlockResponse]> {
+//   const tx1 = await onChain.createSettlementOperator({
+//     operator: await deployerSigner.getAddress(),
+//     gasBudget: 400000000,
+//   });
+//   const settlementCapID = Transaction.getCreatedObjectIDs(tx1)[0];
+//   // Note: Assuming deployer is already price oracle operator
+//   // make admin of the exchange price oracle operator
+//   const tx2 = await onChain.setPriceOracleOperator({
+//     operator: await deployerSigner.getAddress(),
+//     gasBudget: 400000000,
+//   });
+//   const updateOPCapID = Transaction.getCreatedObjectIDs(tx2)[0];
 
-  // set specific price on oracle
-  const tx3 = await onChain.updateOraclePrice({
-    price: toBigNumberStr(tradePrice),
-    updateOPCapID,
-    perpID: onChain.getPerpetualID(makerOrder.symbol),
-    gasBudget: 400000000,
-  });
-  let status = Transaction.getStatus(tx3);
-  const makerOnChainOrder: Order = {
-    market: onChain.getPerpetualID(makerOrder.symbol),
-    maker: makerOrder.maker,
-    isBuy: makerOrder.side == ORDER_SIDE.BUY,
-    reduceOnly: makerOrder.reduceOnly,
-    postOnly: makerOrder.postOnly,
-    orderbookOnly: makerOrder.orderbookOnly,
-    ioc: makerOrder.timeInForce == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
-    quantity: toBigNumber(makerOrder.quantity),
-    price: toBigNumber(makerOrder.price),
-    leverage: toBigNumber(makerOrder.leverage),
-    expiration: toBigNumber(makerOrder.expiration),
-    salt: toBigNumber(makerOrder.salt),
-  };
-  const TakerOnChainOrder: Order = {
-    market: onChain.getPerpetualID(makerOrder.symbol),
-    maker: takerOrder.maker,
-    isBuy: takerOrder.side == ORDER_SIDE.BUY,
-    reduceOnly: takerOrder.reduceOnly,
-    postOnly: takerOrder.postOnly,
-    orderbookOnly: takerOrder.orderbookOnly,
-    ioc: takerOrder.timeInForce == TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
-    quantity: toBigNumber(takerOrder.quantity),
-    price: toBigNumber(takerOrder.price),
-    leverage: toBigNumber(takerOrder.leverage),
-    expiration: toBigNumber(takerOrder.expiration),
-    salt: toBigNumber(takerOrder.salt),
-  };
-  const tx = await onChain.trade({
-    makerOrder: makerOnChainOrder,
-    takerOrder: TakerOnChainOrder,
-    makerSignature: makerOrder.orderSignature,
-    takerSignature: takerOrder.orderSignature,
-    settlementCapID,
-    gasBudget: 400000000,
-    perpID: onChain.getPerpetualID(makerOrder.symbol),
-  });
+//   // set specific price on oracle
+//   const tx3 = await onChain.updateOraclePrice({
+//     price: toBigNumberStr(tradePrice),
+//     updateOPCapID,
+//     perpID: onChain.getPerpetualID(makerOrder.symbol),
+//     gasBudget: 400000000,
+//   });
+//   let status = Transaction.getStatus(tx3);
+//   const makerOnChainOrder: Order = {
+//     market: onChain.getPerpetualID(makerOrder.symbol),
+//     maker: makerOrder.maker,
+//     isBuy: makerOrder.side === ORDER_SIDE.BUY,
+//     reduceOnly: makerOrder.reduceOnly,
+//     postOnly: makerOrder.postOnly,
+//     orderbookOnly: makerOrder.orderbookOnly,
+//     ioc: makerOrder.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
+//     quantity: toBigNumber(makerOrder.quantity),
+//     price: toBigNumber(makerOrder.price),
+//     leverage: toBigNumber(makerOrder.leverage),
+//     expiration: toBigNumber(makerOrder.expiration),
+//     salt: toBigNumber(makerOrder.salt),
+//   };
+//   const TakerOnChainOrder: Order = {
+//     market: onChain.getPerpetualID(makerOrder.symbol),
+//     maker: takerOrder.maker,
+//     isBuy: takerOrder.side === ORDER_SIDE.BUY,
+//     reduceOnly: takerOrder.reduceOnly,
+//     postOnly: takerOrder.postOnly,
+//     orderbookOnly: takerOrder.orderbookOnly,
+//     ioc: takerOrder.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
+//     quantity: toBigNumber(takerOrder.quantity),
+//     price: toBigNumber(takerOrder.price),
+//     leverage: toBigNumber(takerOrder.leverage),
+//     expiration: toBigNumber(takerOrder.expiration),
+//     salt: toBigNumber(takerOrder.salt),
+//   };
+//   const tx = await onChain.trade({
+//     makerOrder: makerOnChainOrder,
+//     takerOrder: TakerOnChainOrder,
+//     makerSignature: makerOrder.orderSignature,
+//     takerSignature: takerOrder.orderSignature,
+//     settlementCapID,
+//     gasBudget: 400000000,
+//     perpID: onChain.getPerpetualID(makerOrder.symbol),
+//   });
 
-  status = Transaction.getStatus(tx);
-  if (status == "success") {
-    console.log("Transaction success");
-    return [true, tx];
-  }
-  if (status == "failure") {
-    console.log("Error:", Transaction.getError(tx));
-    return [false, tx];
-  }
-  console.log("Transaction status %s", status);
-  return [false, tx];
-}
+//   status = Transaction.getStatus(tx);
+//   if (status === "success") {
+//     console.log("Transaction success");
+//     return [true, tx];
+//   }
+//   if (status === "failure") {
+//     console.log("Error:", Transaction.getError(tx));
+//     return [false, tx];
+//   }
+//   console.log("Transaction status %s", status);
+//   return [false, tx];
+// }

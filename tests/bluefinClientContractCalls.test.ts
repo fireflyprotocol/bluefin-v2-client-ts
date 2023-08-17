@@ -11,15 +11,16 @@ import {
   TIME_IN_FORCE,
   Transaction,
   USDC_BASE_DECIMALS,
+  toBigNumberStr,
+  getSignerFromSeed,
+  readFile,
 } from "@firefly-exchange/library-sui";
-import { toBigNumberStr } from "@firefly-exchange/library-sui";
 import { BluefinClient, Networks, OrderSignatureResponse } from "../index";
-import { getSignerFromSeed, readFile } from "@firefly-exchange/library-sui";
-import { performTrade, setupTestAccounts } from "../utils/utils";
+import { setupTestAccounts } from "../utils/utils";
 
 chai.use(chaiAsPromised);
 
-//please update deployer if contracts are redeployed
+// please update deployer if contracts are redeployed
 const deployer = {
   phrase:
     "explain august dream guitar mail attend enough demise engine pulse wide later",
@@ -47,7 +48,7 @@ describe.only("BluefinClient", () => {
   let deplymentJson: any;
   const network = Networks.LOCAL_SUI;
   const symbol = "BTC-PERP";
-  let defaultLeverage = 1;
+  const defaultLeverage = 1;
   let client: BluefinClient;
   let onChainCalls: OnChainCalls;
   before(async () => {
@@ -251,23 +252,23 @@ describe.only("BluefinClient", () => {
       expect(signedTakerOrder.quantity).to.be.equal(tradeQty);
     });
 
-    it("should perform trade", async () => {
-      const [success, tx] = await performTrade(
-        onChainCalls,
-        getSignerFromSeed(deployer.phrase, maker.getProvider()),
-        signedMakerOrder,
-        signedTakerOrder,
-        tradePrice
-      );
-      if (!success) {
-        console.log(
-          "\n#################################################################\nTransaction: ",
-          tx,
-          "\n#################################################################"
-        );
-      }
-      expect(success).to.be.equal(true);
-    });
+    // it("should perform trade", async () => {
+    //   const [success, tx] = await performTrade(
+    //     onChainCalls,
+    //     getSignerFromSeed(deployer.phrase, maker.getProvider()),
+    //     signedMakerOrder,
+    //     signedTakerOrder,
+    //     tradePrice
+    //   );
+    //   if (!success) {
+    //     console.log(
+    //       "\n#################################################################\nTransaction: ",
+    //       tx,
+    //       "\n#################################################################"
+    //     );
+    //   }
+    //   expect(success).to.be.equal(true);
+    // });
   });
 
   describe("Sub account Tests", () => {

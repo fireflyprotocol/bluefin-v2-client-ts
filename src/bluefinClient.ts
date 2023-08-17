@@ -21,6 +21,7 @@ import {
   hexToBuffer,
   bnToHex,
   encodeOrderFlags,
+  SigPK,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -31,6 +32,7 @@ import {
   Secp256k1Keypair,
   SignerWithProvider,
 } from "@mysten/sui.js";
+import { WalletContextState } from "@suiet/wallet-kit";
 import {
   AdjustLeverageResponse,
   AuthorizeHashResponse,
@@ -72,22 +74,24 @@ import {
   TickerData,
   adjustLeverageRequest,
   verifyDepositResponse,
+  ExtendedNetwork,
+  ExtendedWalletContextState,
 } from "./interfaces/routes";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
 import { Sockets } from "./exchange/sockets";
-import { ExtendedNetwork, Networks } from "./constants";
 import { WebSockets } from "./exchange/WebSocket";
 import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
+import { Networks } from "./constants";
 
 // import { Contract } from "ethers";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
-  private orderSigner: OrderSigner | any;
+  private orderSigner: OrderSigner;
 
   private apiService: APIService;
 
@@ -102,6 +106,8 @@ export class BluefinClient {
   private walletAddress = ""; // to save user's public address when connecting from UI
 
   private signer: RawSigner | any; // to save signer when connecting from UI
+
+  private uiWallet: WalletContextState | any; // to save signer when connecting from UI
 
   private contractCalls: ContractCalls | undefined;
 
@@ -178,11 +184,13 @@ export class BluefinClient {
     }
   };
 
-  initializeWithHook = async (uiSignerObject: any): Promise<void> => {
+  initializeWithHook = async (
+    uiSignerObject: ExtendedWalletContextState
+  ): Promise<void> => {
     try {
       this.signer = uiSignerObject;
-      this.orderSigner = uiSignerObject;
       this.walletAddress = this.signer.getAddress();
+      this.uiWallet = uiSignerObject.wallet;
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -386,20 +394,29 @@ export class BluefinClient {
   }
 
   signOrder = async (orderToSign: Order) => {
-    const serializedOrder = new TextEncoder().encode(
-      this.getSerializedOrder(orderToSign)
+    if (this.uiWallet) {
+      const signature = await OrderSigner.signOrderUsingWallet(
+        orderToSign,
+        this.uiWallet
+      );
+      return signature;
+    }
+    if (this.orderSigner) {
+      return this.orderSigner.signOrder(orderToSign);
+    }
+    throw Error(
+      "On of OrderSginer or uiWallet needs to be initilized before signing order "
     );
-    return this.signer.signData(serializedOrder);
   };
 
   createSignedOrder = async (
     order: OrderSignatureRequest
   ): Promise<OrderSignatureResponse> => {
-    if (!this.orderSigner) {
+    if (!this.orderSigner && !this.uiWallet) {
       throw Error("Order Signer not initialized");
     }
     const orderToSign: Order = this.createOrderToSign(order);
-    let signature = "";
+    let signature: SigPK;
     try {
       signature = await this.signOrder(orderToSign);
     } catch (e) {
@@ -423,7 +440,7 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: signature,
+      orderSignature: `${signature?.signature}${signature?.publicKey}`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };

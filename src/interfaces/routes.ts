@@ -1,3 +1,5 @@
+import { WalletContextState, SuiProvider } from "@suiet/wallet-kit";
+
 import {
   ORDER_STATUS,
   ORDER_SIDE,
@@ -9,6 +11,7 @@ import {
   address,
   Interval,
 } from "@firefly-exchange/library-sui";
+
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
   pageSize?: number; // will get only provided number of orders must be <= 50
@@ -25,14 +28,14 @@ export interface GetFundingHistoryRequest {
 export interface GetTransferHistoryRequest {
   pageSize?: number; // will get only provided number of orders must be <= 50
   cursor?: number; // will fetch particular page records. A single page contains 50 records.
-  action?: string; //Deposit / Withdraw
+  action?: string; // Deposit / Withdraw
 }
 export interface GetOrderRequest extends GetTransactionHistoryRequest {
   symbol?: MarketSymbol;
   orderId?: number;
   orderHashes?: string[];
   statuses: ORDER_STATUS[]; // status of orders to be fetched
-  orderType?: ORDER_TYPE[]; //order type LIMIT / MARKET
+  orderType?: ORDER_TYPE[]; // order type LIMIT / MARKET
   pageSize?: number;
   pageNumber?: number;
   parentAddress?: string;
@@ -48,7 +51,7 @@ export interface RequiredOrderFields {
   quantity: number; // quantity/size of order
   side: ORDER_SIDE; // BUY/SELL
   orderType: ORDER_TYPE; // MARKET/LIMIT
-  triggerPrice?: number; //optional, send triggerPrice for stop orders
+  triggerPrice?: number; // optional, send triggerPrice for stop orders
   postOnly?: boolean; // true/false, default is false
   orderbookOnly?: boolean; // true/false, default is true
   timeInForce?: TIME_IN_FORCE; // IOC/GTT by default all orders are GTT
@@ -59,7 +62,7 @@ export interface OrderSignatureRequest extends RequiredOrderFields {
   reduceOnly?: boolean; // is order to be reduce only true/false, default its false
   salt?: number; // random number for uniqueness of order. Generated randomly if not provided
   expiration?: number; // time at which order will expire. Will be set to 1 month if not provided
-  maker?: address; //address of the parent account on behalf user wants to place the order
+  maker?: address; // address of the parent account on behalf user wants to place the order
   isBuy?: boolean;
 }
 
@@ -259,12 +262,6 @@ export interface GetUserTransactionHistoryResponse {
   traderType: string;
 }
 
-export interface GetUserTransferHistoryResponse {
-  data: UserTransferHistoryResponse[];
-  nextCursor: number;
-  isMoreDataAvailable: boolean;
-}
-
 export interface UserTransferHistoryResponse {
   id: number;
   status: string;
@@ -278,6 +275,12 @@ export interface UserTransferHistoryResponse {
   updatedAt: number;
 }
 
+export interface GetUserTransferHistoryResponse {
+  data: UserTransferHistoryResponse[];
+  nextCursor: number;
+  isMoreDataAvailable: boolean;
+}
+
 export interface GetFundingRateResponse {
   symbol: MarketSymbol;
   createdAt: number;
@@ -285,11 +288,6 @@ export interface GetFundingRateResponse {
   fundingRate: string;
 }
 
-export interface GetUserFundingHistoryResponse {
-  data: UserFundingHistoryResponse[];
-  nextCursor: number;
-  isMoreDataAvailable: boolean;
-}
 export interface UserFundingHistoryResponse {
   id: number;
   symbol: MarketSymbol;
@@ -304,6 +302,12 @@ export interface UserFundingHistoryResponse {
   side: ORDER_SIDE;
   blockNumber: number;
   isPositionPositive: boolean;
+}
+
+export interface GetUserFundingHistoryResponse {
+  data: UserFundingHistoryResponse[];
+  nextCursor: number;
+  isMoreDataAvailable: boolean;
 }
 
 export interface GetMarketRecentTradesRequest {
@@ -401,17 +405,17 @@ export interface MarketMeta {
   perpetualAddress: address;
 }
 
-export interface MasterInfo {
-  _24hrTrades: string;
-  _24hrVolume: string;
-  data: MasterInfoData[];
-}
-
 export interface MasterInfoData {
   symbol: string;
   meta: MarketMeta;
   exchangeInfo: ExchangeInfo;
   marketData: MarketData;
+}
+
+export interface MasterInfo {
+  _24hrTrades: string;
+  _24hrVolume: string;
+  data: MasterInfoData[];
 }
 
 export interface TickerData {
@@ -469,15 +473,41 @@ export interface PostTimerAttributes {
   countDowns: CountDown[];
   parentAddress?: string;
 }
-export interface PostTimerResponse {
-  acceptedToReset: string[];
-  failedReset: FailedCountDownResetResponse[];
-}
 export interface FailedCountDownResetResponse {
   symbol: string;
   reason: string;
 }
+export interface PostTimerResponse {
+  acceptedToReset: string[];
+  failedReset: FailedCountDownResetResponse[];
+}
 export interface GetCountDownsResponse {
   countDowns: CountDown[];
   timestamp: number;
+}
+
+export interface Network {
+  name?: string;
+  rpc?: string;
+  faucet?: string;
+  url?: string;
+}
+// adding this here as it's temporary support for socket.io
+export interface ExtendedNetwork extends Network {
+  apiGateway?: string; // making it optional for backward compatibility
+  socketURL?: string;
+  onboardingUrl?: string;
+  webSocketURL: string;
+  dmsURL?: string;
+}
+
+export interface ExtendedWalletContextState
+  extends Omit<WalletContextState, "signMessage"> {
+  wallet: WalletContextState;
+  provider: SuiProvider;
+  signData: (data: Uint8Array) => Promise<string>;
+  getAddress: () => string | undefined;
+  signMessage: (
+    data: Uint8Array
+  ) => Promise<{ messageBytes: string; signature: string }>;
 }

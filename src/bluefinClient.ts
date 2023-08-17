@@ -300,7 +300,7 @@ export class BluefinClient {
   userOnBoarding = async (token?: string) => {
     let userAuthToken = token;
     if (!userAuthToken) {
-      let signature: string;
+      let signature: SigPK;
 
       if (this.kmsSigner !== undefined) {
         // const hashedMessageSHA = sha256(
@@ -317,15 +317,24 @@ export class BluefinClient {
         // (signature = await this.kmsSigner._signDigest(hashedMessageETH));
       } else {
         // sign onboarding message
-
-        signature = await OnboardingSigner.createOnboardSignature(
-          this.network.onboardingUrl,
-          this.signer
-        );
+        // eslint-disable-next-line no-lonely-if
+        const onboardingSignature = {
+          onboardingUrl: this.network.onboardingUrl,
+        };
+        if (this.uiWallet) {
+          signature = await OrderSigner.signPayloadUsingWallet(
+            onboardingSignature,
+            this.uiWallet
+          );
+        } else {
+          signature = this.orderSigner.signPayload(onboardingSignature);
+        }
       }
 
       // authorize signature created by dAPI
-      const authTokenResponse = await this.authorizeSignedHash(signature);
+      const authTokenResponse = await this.authorizeSignedHash(
+        `${signature?.signature}${signature?.publicKey}`
+      );
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -509,10 +518,26 @@ export class BluefinClient {
    */
   createOrderCancellationSignature = async (
     params: OrderCancelSignatureRequest
-  ): Promise<string> => {
+  ): Promise<SigPK> => {
     // TODO: serialize correctly, this is the default method from suiet wallet docs
-    const serialized = new TextEncoder().encode(JSON.stringify(params));
-    return this.signer.signData(serialized);
+    // const serialized = new TextEncoder().encode(JSON.stringify(params));
+    // return this.signer.signData(serialized);
+    try {
+      let signature: SigPK;
+      if (this.uiWallet) {
+        signature = await OrderSigner.signPayloadUsingWallet(
+          { orderHashes: params.hashes },
+          this.uiWallet
+        );
+      } else {
+        signature = this.orderSigner.signPayload({
+          orderHashes: params.hashes,
+        });
+      }
+      return signature;
+    } catch {
+      throw Error("Siging cancelled by user");
+    }
   };
 
   /**
@@ -548,7 +573,7 @@ export class BluefinClient {
     const signature = await this.createOrderCancellationSignature(params);
     const response = await this.placeCancelOrder({
       ...params,
-      signature,
+      signature: `${signature?.signature}${signature?.publicKey}`,
     });
     return response;
   };

@@ -8,7 +8,7 @@ export const Networks = {
     dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
     socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
     webSocketURL: "wss://notifications.api.arbitrum-staging.firefly.exchange/",
-    onboardingUrl: "https://testnet.firefly.exchange",
+    onboardingUrl: "https://testnet.bluefin.io",
     faucet: "https://faucet.devnet.sui.io",
   },
   PRODUCTION_SUI: {
@@ -18,7 +18,7 @@ export const Networks = {
     socketURL: "wss://dapi.api.arbitrum-prod.firefly.exchange",
     dmsURL: "https://api.arbitrum-prod.firefly.exchange/dead-man-switch",
     webSocketURL: "wss://notifications.api.arbitrum-prod.firefly.exchange/",
-    onboardingUrl: "https://trade-arb.firefly.exchange",
+    onboardingUrl: "https://testnet.bluefin.io",
     faucet: "does not exist",
   },
   LOCAL_SUI: {
@@ -28,7 +28,7 @@ export const Networks = {
     dmsURL: "https://api.arbitrum-staging.firefly.exchange/dead-man-switch",
     socketURL: "wss://dapi.api.arbitrum-staging.firefly.exchange",
     webSocketURL: "wss://notifications.api.arbitrum-staging.firefly.exchange/",
-    onboardingUrl: "https://testnet.firefly.exchange",
+    onboardingUrl: "https://testnet.bluefin.io",
     faucet: "http://127.0.0.1:5003/gas",
   },
 };

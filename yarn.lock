@@ -1421,10 +1421,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@0.1.40":
-  version "0.1.40"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.1.40.tgz#118c847fe52cd7015bbe39f03460eb3552ed4406"
-  integrity sha512-l8bRtooTNiAQxdy6YVBSPFqwhen9uGOJ94pvbl2rpNfYrB/mZRpb484g5b9Gc10pA/7d9X4Q2hyfLDqg2gNCVA==
+"@firefly-exchange/library-sui@^0.1.41":
+  version "0.1.41"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.1.41.tgz#57c4edb69266edaa1a3e27ff801dd394e4708561"
+  integrity sha512-C9MJe11Vj8azo/RJGcmjiOlhGBRYKxrSCjv9F9UKR4Dr87lSfUlrnSBPcbkuI5aiPkeN/azI0ihyGcTnFWyfBA==
   dependencies:
     "@mysten/sui.js" "^0.35.0"
     "@noble/hashes" "^1.2.0"

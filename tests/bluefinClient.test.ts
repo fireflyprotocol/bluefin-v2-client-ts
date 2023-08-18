@@ -11,7 +11,7 @@ import {
   ORDER_TYPE,
   toBaseNumber,
   MinifiedCandleStick,
-  Faucet
+  Faucet,
 } from "@firefly-exchange/library-sui";
 import {
   BluefinClient,
@@ -21,16 +21,20 @@ import {
   PlaceOrderResponse,
   GetUserTradesResponse,
   GetAccountDataResponse,
-  TickerData
+  TickerData,
 } from "../index";
 
 chai.use(chaiAsPromised);
 
-const testAcctKey = "person essence firm tail chapter forest return pulse dismiss unlock zebra amateur";
-const testAcctPubAddr = "0x803da161f88726c43f1e17b230257d91eca0b84d851a4493b8341d7267e4dbc6";
+const testAcctKey =
+  "person essence firm tail chapter forest return pulse dismiss unlock zebra amateur";
+const testAcctPubAddr =
+  "0x803da161f88726c43f1e17b230257d91eca0b84d851a4493b8341d7267e4dbc6";
 
-const testSubAccKey = "inherit save afford act peanut retire fluid stool setup reject shallow already";
-const testSubAccPubAddr = "0x7c550b81ce7f8f458f5520d55623eb5dd1013310323607c0c7b5c3625e47079e";
+const testSubAccKey =
+  "inherit save afford act peanut retire fluid stool setup reject shallow already";
+const testSubAccPubAddr =
+  "0x7c550b81ce7f8f458f5520d55623eb5dd1013310323607c0c7b5c3625e47079e";
 
 Faucet.requestSUI(testAcctPubAddr, Networks.LOCAL_SUI.faucet);
 Faucet.requestSUI(testSubAccPubAddr, Networks.LOCAL_SUI.faucet);
@@ -72,7 +76,9 @@ describe("BluefinClient", () => {
       indexPrice = toBaseNumber(marketData.data.indexPrice || "0");
       const percentChange = 3 / 100; // 3%
       buyPrice = Number((marketPrice - marketPrice * percentChange).toFixed(0));
-      sellPrice = Number((marketPrice + marketPrice * percentChange).toFixed(0));
+      sellPrice = Number(
+        (marketPrice + marketPrice * percentChange).toFixed(0)
+      );
       console.log(`- market price: ${marketPrice}`);
       console.log(`- index price: ${indexPrice}`);
     }
@@ -98,17 +104,30 @@ describe("BluefinClient", () => {
   describe("Sub account Tests", () => {
     let clientSubAccount: BluefinClient;
     before(async () => {
-      clientSubAccount = new BluefinClient(true, network, testAcctKey, "Secp256k1");
+      clientSubAccount = new BluefinClient(
+        true,
+        network,
+        testAcctKey,
+        "Secp256k1"
+      );
       await clientSubAccount.init();
 
       // adding sub acc
-      const resp = await client.setSubAccount(testSubAccPubAddr.toLowerCase(), true);
+      const resp = await client.setSubAccount(
+        testSubAccPubAddr.toLowerCase(),
+        true
+      );
       if (!resp.ok) {
         throw Error(resp.message);
       }
     });
     beforeEach(async () => {
-      clientSubAccount = new BluefinClient(true, network, testAcctKey, "Secp256k1");
+      clientSubAccount = new BluefinClient(
+        true,
+        network,
+        testAcctKey,
+        "Secp256k1"
+      );
       await clientSubAccount.init();
     });
 
@@ -121,9 +140,12 @@ describe("BluefinClient", () => {
       const res = await clientSubAccount.adjustLeverage({
         symbol,
         leverage: newLeverage,
-        parentAddress: testAcctPubAddr.toLowerCase()
+        parentAddress: testAcctPubAddr.toLowerCase(),
       }); // set leverage will do contract call as the account using is new
-      const lev = await clientSubAccount.getUserDefaultLeverage(symbol, testAcctPubAddr.toLowerCase()); // get leverage
+      const lev = await clientSubAccount.getUserDefaultLeverage(
+        symbol,
+        testAcctPubAddr.toLowerCase()
+      ); // get leverage
 
       // Then
       expect(res.ok).to.eq(true);
@@ -141,10 +163,10 @@ describe("BluefinClient", () => {
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.MARKET,
         // parent account
-        maker: testAcctPubAddr
+        maker: testAcctPubAddr,
       });
       const response = await clientSubAccount.placeSignedOrder({
-        ...signedOrder
+        ...signedOrder,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -159,23 +181,24 @@ describe("BluefinClient", () => {
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.LIMIT,
-        maker: testAcctPubAddr
+        maker: testAcctPubAddr,
       });
       const response = await clientSubAccount.placeSignedOrder({
         ...signedOrder,
-        clientId: "test cancel order"
+        clientId: "test cancel order",
       });
-      const cancelSignature = await clientSubAccount.createOrderCancellationSignature({
-        symbol,
-        hashes: [response.response.data.hash],
-        parentAddress: testAcctPubAddr.toLowerCase()
-      });
+      const cancelSignature =
+        await clientSubAccount.createOrderCancellationSignature({
+          symbol,
+          hashes: [response.response.data.hash],
+          parentAddress: testAcctPubAddr.toLowerCase(),
+        });
 
       const cancellationResponse = await clientSubAccount.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
         signature: `${cancelSignature.signature}${cancelSignature.publicKey}`,
-        parentAddress: testAcctPubAddr.toLowerCase()
+        parentAddress: testAcctPubAddr.toLowerCase(),
       });
 
       expect(cancellationResponse.ok).to.be.equal(true);
@@ -187,7 +210,7 @@ describe("BluefinClient", () => {
       const data = await clientSubAccount.getUserOrders({
         statuses: [ORDER_STATUS.OPEN],
         symbol,
-        parentAddress: testAcctPubAddr.toLowerCase()
+        parentAddress: testAcctPubAddr.toLowerCase(),
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.gte(0);
@@ -198,7 +221,7 @@ describe("BluefinClient", () => {
       // and subaccount must be authenticated/initialized with the client.
       const response = await clientSubAccount.getUserPosition({
         symbol,
-        parentAddress: testAcctPubAddr.toLowerCase()
+        parentAddress: testAcctPubAddr.toLowerCase(),
       });
 
       const position = response.data as any as GetPositionResponse;
@@ -212,7 +235,7 @@ describe("BluefinClient", () => {
       // and subaccount must be authenticated/initialized with the client.
       const response = await clientSubAccount.getUserTrades({
         symbol,
-        parentAddress: testAcctPubAddr
+        parentAddress: testAcctPubAddr,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -220,7 +243,9 @@ describe("BluefinClient", () => {
       // make sure to first whitelist the subaccount with the below parent account to run this test.
       // To whitelist the subaccount use the above test {set sub account}
       // and subaccount must be authenticated/initialized with the client.
-      const response = await clientSubAccount.getUserAccountData(testAcctPubAddr);
+      const response = await clientSubAccount.getUserAccountData(
+        testAcctPubAddr
+      );
       expect(response.ok).to.be.equal(true);
     });
     it("should get Funding History records for user on behalf of parent account", async () => {
@@ -229,7 +254,7 @@ describe("BluefinClient", () => {
       // and subaccount must be authenticated/initialized with the client.
       const response = await clientSubAccount.getUserFundingHistory({
         symbol,
-        parentAddress: testAcctPubAddr
+        parentAddress: testAcctPubAddr,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -326,7 +351,7 @@ describe("BluefinClient", () => {
       const newLeverage = 4;
       const res = await clientTemp.adjustLeverage({
         symbol,
-        leverage: newLeverage
+        leverage: newLeverage,
       }); // set leverage will do contract call as the account using is new
       const lev = await clientTemp.getUserDefaultLeverage(symbol); // get leverage
       // Then
@@ -355,9 +380,11 @@ describe("BluefinClient", () => {
           price: 0,
           quantity: 0.1,
           side: ORDER_SIDE.SELL,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         })
-      ).to.be.eventually.rejectedWith("Provided Market Symbol(DOT-TEST) is not added to client library");
+      ).to.be.eventually.rejectedWith(
+        "Provided Market Symbol(DOT-TEST) is not added to client library"
+      );
     });
 
     it("should create signed order", async () => {
@@ -366,7 +393,7 @@ describe("BluefinClient", () => {
         price: 0,
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
-        orderType: ORDER_TYPE.MARKET
+        orderType: ORDER_TYPE.MARKET,
       });
 
       expect(signedOrder.leverage).to.be.equal(1);
@@ -380,7 +407,7 @@ describe("BluefinClient", () => {
         price: 0,
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
-        orderType: ORDER_TYPE.MARKET
+        orderType: ORDER_TYPE.MARKET,
       };
       const signedOrder = await client.createSignedOrder(params);
       // const isValid = client.verifyOrderSignature(signedOrder);
@@ -395,7 +422,7 @@ describe("BluefinClient", () => {
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
-        orderType: ORDER_TYPE.LIMIT
+        orderType: ORDER_TYPE.LIMIT,
       });
 
       const response = await client.placeSignedOrder({ ...signedOrder });
@@ -409,7 +436,7 @@ describe("BluefinClient", () => {
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
-        orderType: ORDER_TYPE.MARKET
+        orderType: ORDER_TYPE.MARKET,
       });
       const response = await client.placeSignedOrder({ ...signedOrder });
       expect(response.ok).to.be.equal(true);
@@ -423,7 +450,7 @@ describe("BluefinClient", () => {
         side: ORDER_SIDE.BUY,
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.LIMIT,
-        clientId: "Test limit order"
+        clientId: "Test limit order",
       });
 
       expect(response.ok).to.be.equal(true);
@@ -438,7 +465,7 @@ describe("BluefinClient", () => {
         orderType: ORDER_TYPE.STOP_LIMIT,
         clientId: "Test stop limit order",
         price: indexPrice + 4,
-        triggerPrice: indexPrice + 2
+        triggerPrice: indexPrice + 2,
       });
 
       expect(response.ok).to.be.equal(true);
@@ -453,7 +480,7 @@ describe("BluefinClient", () => {
         orderType: ORDER_TYPE.STOP_LIMIT,
         clientId: "Test stop limit order",
         price: indexPrice - 4,
-        triggerPrice: indexPrice - 2
+        triggerPrice: indexPrice - 2,
       });
 
       expect(response.ok).to.be.equal(true);
@@ -472,21 +499,21 @@ describe("BluefinClient", () => {
         quantity: 0.001,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
-        orderType: ORDER_TYPE.LIMIT
+        orderType: ORDER_TYPE.LIMIT,
       });
       const response = await client.placeSignedOrder({
         ...signedOrder,
-        clientId: "test cancel order"
+        clientId: "test cancel order",
       });
       const cancelSignature = await client.createOrderCancellationSignature({
         symbol,
-        hashes: [response.response.data.hash]
+        hashes: [response.response.data.hash],
       });
 
       const cancellationResponse = await client.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
-        signature: `${cancelSignature.signature}${cancelSignature.publicKey}`
+        signature: `${cancelSignature.signature}${cancelSignature.publicKey}`,
       });
 
       expect(cancellationResponse.ok).to.be.equal(true);
@@ -499,18 +526,20 @@ describe("BluefinClient", () => {
         quantity: 0.001,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
-        orderType: ORDER_TYPE.LIMIT
+        orderType: ORDER_TYPE.LIMIT,
       });
       const response = await client.placeSignedOrder({ ...signedOrder });
 
       const cancellationResponse = await client.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
-        signature: "0xSomeRandomStringWhichIsNotACorrectSignature"
+        signature: "0xSomeRandomStringWhichIsNotACorrectSignature",
       });
 
       expect(cancellationResponse.ok).to.be.equal(false);
-      expect(cancellationResponse.response.message).to.be.equal("Invalid Order Signature");
+      expect(cancellationResponse.response.message).to.be.equal(
+        "Invalid Order Signature"
+      );
     });
 
     it("should post a cancel order on exchange", async () => {
@@ -520,13 +549,13 @@ describe("BluefinClient", () => {
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
-        orderType: ORDER_TYPE.LIMIT
+        orderType: ORDER_TYPE.LIMIT,
       });
       expect(response.ok).to.be.equal(true);
 
       const cancelResponse = await client.postCancelOrder({
         symbol,
-        hashes: [response?.data?.hash as string]
+        hashes: [response?.data?.hash as string],
       });
 
       expect(cancelResponse.ok).to.be.equal(true);
@@ -538,7 +567,10 @@ describe("BluefinClient", () => {
     });
 
     it("should cancel all open orders on behalf of parent account", async () => {
-      const response = await client.cancelAllOpenOrders(symbol, testAcctPubAddr);
+      const response = await client.cancelAllOpenOrders(
+        symbol,
+        testAcctPubAddr
+      );
       expect(response.ok).to.be.equal(true);
     });
 
@@ -550,13 +582,13 @@ describe("BluefinClient", () => {
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.STOP_LIMIT,
         price: indexPrice - 4,
-        triggerPrice: indexPrice - 2
+        triggerPrice: indexPrice - 2,
       });
       expect(response.ok).to.be.equal(true);
 
       const cancelResponse = await client.postCancelOrder({
         symbol,
-        hashes: [response?.data?.hash as string]
+        hashes: [response?.data?.hash as string],
       });
 
       expect(cancelResponse.ok).to.be.equal(true);
@@ -570,13 +602,13 @@ describe("BluefinClient", () => {
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.STOP_MARKET,
         price: indexPrice - 4,
-        triggerPrice: indexPrice - 2
+        triggerPrice: indexPrice - 2,
       });
       expect(response.ok).to.be.equal(true);
 
       const cancelResponse = await client.postCancelOrder({
         symbol,
-        hashes: [response?.data?.hash as string]
+        hashes: [response?.data?.hash as string],
       });
 
       expect(cancelResponse.ok).to.be.equal(true);
@@ -587,7 +619,7 @@ describe("BluefinClient", () => {
     it("should get all open orders", async () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.OPEN],
-        symbol
+        symbol,
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.gte(0);
@@ -596,7 +628,7 @@ describe("BluefinClient", () => {
     it("should get all stand by stop orders", async () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.STAND_BY, ORDER_STATUS.STAND_BY_PENDING],
-        symbol
+        symbol,
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.gte(0);
@@ -609,7 +641,8 @@ describe("BluefinClient", () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.OPEN],
         symbol,
-        parentAddress: "0xFEa83f912CF21d884CDfb66640CfAB6029D940aF".toLowerCase()
+        parentAddress:
+          "0xFEa83f912CF21d884CDfb66640CfAB6029D940aF".toLowerCase(),
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.gte(0);
@@ -619,7 +652,7 @@ describe("BluefinClient", () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.OPEN],
         symbol,
-        orderHashes: ["test0"] // incorrect hash
+        orderHashes: ["test0"], // incorrect hash
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.eq(0);
@@ -628,13 +661,13 @@ describe("BluefinClient", () => {
     it("should get open orders of specific hashes", async () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.OPEN],
-        symbol
+        symbol,
       });
       if (data.ok && data.data!.length > 0) {
         const data1 = await client.getUserOrders({
           statuses: [ORDER_STATUS.OPEN],
           symbol,
-          orderHashes: data.response.data[0].hash
+          orderHashes: data.response.data[0].hash,
         });
 
         expect(data1.ok).to.be.equals(true);
@@ -647,7 +680,7 @@ describe("BluefinClient", () => {
     it("should get all cancelled orders", async () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.CANCELLED],
-        symbol
+        symbol,
       });
       expect(data.ok).to.be.equal(true);
     });
@@ -656,7 +689,7 @@ describe("BluefinClient", () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.CANCELLED],
         symbol,
-        pageSize: 1
+        pageSize: 1,
       });
       expect(data.ok).to.be.equals(true);
     });
@@ -665,7 +698,7 @@ describe("BluefinClient", () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.EXPIRED],
         symbol,
-        pageNumber: 10
+        pageNumber: 10,
       });
       expect(data.response.data.length).to.be.equals(0);
     });
@@ -674,7 +707,7 @@ describe("BluefinClient", () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.FILLED],
         orderType: [ORDER_TYPE.LIMIT],
-        symbol
+        symbol,
       });
       expect(data.ok).to.be.equals(true);
       expect(data.response.data.length).to.be.gte(0);
@@ -706,7 +739,7 @@ describe("BluefinClient", () => {
 
     it("should get user's BTC-PERP Position", async () => {
       const response = await client.getUserPosition({
-        symbol
+        symbol,
       });
 
       const position = response.data as any as GetPositionResponse;
@@ -745,7 +778,7 @@ describe("BluefinClient", () => {
 
     it("should get user's BTC-PERP Trades", async () => {
       const response = await client.getUserTrades({
-        symbol
+        symbol,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -755,7 +788,7 @@ describe("BluefinClient", () => {
     it(`should get ${symbol} orderbook with best ask and bid`, async () => {
       const response = await client.getOrderbook({
         symbol,
-        limit: 1
+        limit: 1,
       });
       expect(response.ok).to.be.equal(true);
       expect(response?.data?.limit).to.be.equal(1);
@@ -765,7 +798,7 @@ describe("BluefinClient", () => {
     it("should get no orderbook data as market for DOGE-PERP does not exist", async () => {
       const response = await client.getOrderbook({
         symbol: "DODGE-PERP",
-        limit: 1
+        limit: 1,
       });
       expect(response.ok).to.be.equal(false);
     });
@@ -781,7 +814,7 @@ describe("BluefinClient", () => {
       const response = await client.getUserTransactionHistory({
         symbol,
         pageSize: 2,
-        pageNumber: 1
+        pageNumber: 1,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -789,7 +822,7 @@ describe("BluefinClient", () => {
     it("should get Funding History records for user", async () => {
       const response = await client.getUserFundingHistory({
         pageSize: 2,
-        cursor: 1
+        cursor: 1,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -798,7 +831,7 @@ describe("BluefinClient", () => {
       const response = await client.getUserFundingHistory({
         symbol,
         pageSize: 2,
-        cursor: 1
+        cursor: 1,
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -810,7 +843,7 @@ describe("BluefinClient", () => {
 
     it("should get Transfer History of `Withdraw` records for user", async () => {
       const response = await client.getUserTransferHistory({
-        action: "Withdraw"
+        action: "Withdraw",
       });
       expect(response.ok).to.be.equal(true);
     });
@@ -823,7 +856,7 @@ describe("BluefinClient", () => {
 
   it("should get recent market trades of BTC-PERP Market", async () => {
     const response = await client.getMarketRecentTrades({
-      symbol
+      symbol,
     });
     expect(response.ok).to.be.equal(true);
   });
@@ -831,7 +864,7 @@ describe("BluefinClient", () => {
   it("should get candle stick data", async () => {
     const response = await client.getMarketCandleStickData({
       symbol,
-      interval: "1m"
+      interval: "1m",
     });
     expect(response.ok).to.be.equal(true);
   });
@@ -926,7 +959,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.SELL,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.LIMIT
+          orderType: ORDER_TYPE.LIMIT,
         });
       });
     });
@@ -941,7 +974,11 @@ describe("BluefinClient", () => {
     });
 
     it("should receive an event when a trade is performed", (done) => {
-      const callback = ({ trades }: { trades: GetMarketRecentTradesResponse[] }) => {
+      const callback = ({
+        trades,
+      }: {
+        trades: GetMarketRecentTradesResponse[];
+      }) => {
         expect(trades[0].symbol).to.be.equal(symbol);
         done();
       };
@@ -956,7 +993,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.SELL,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -977,14 +1014,16 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.SELL,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.LIMIT
+          orderType: ORDER_TYPE.LIMIT,
         });
       });
     });
 
     it("should receive position update event", (done) => {
       const callback = ({ position }: { position: GetPositionResponse }) => {
-        expect(position.userAddress).to.be.equal(client.getPublicAddress().toLocaleLowerCase());
+        expect(position.userAddress).to.be.equal(
+          client.getPublicAddress().toLocaleLowerCase()
+        );
         done();
       };
 
@@ -998,7 +1037,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -1020,14 +1059,20 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
 
     it("should receive user account update event", (done) => {
-      const callback = ({ accountData }: { accountData: GetAccountDataResponse }) => {
-        expect(accountData.address).to.be.equal(client.getPublicAddress().toLocaleLowerCase());
+      const callback = ({
+        accountData,
+      }: {
+        accountData: GetAccountDataResponse;
+      }) => {
+        expect(accountData.address).to.be.equal(
+          client.getPublicAddress().toLocaleLowerCase()
+        );
         done();
       };
 
@@ -1041,7 +1086,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -1083,7 +1128,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.SELL,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.LIMIT
+          orderType: ORDER_TYPE.LIMIT,
         });
       });
     });
@@ -1098,7 +1143,11 @@ describe("BluefinClient", () => {
     });
 
     it("WebSocket Client: should receive an event when a trade is performed", (done) => {
-      const callback = ({ trades }: { trades: GetMarketRecentTradesResponse[] }) => {
+      const callback = ({
+        trades,
+      }: {
+        trades: GetMarketRecentTradesResponse[];
+      }) => {
         expect(trades[0].symbol).to.be.equal(symbol);
         done();
       };
@@ -1113,7 +1162,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -1134,14 +1183,16 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.LIMIT
+          orderType: ORDER_TYPE.LIMIT,
         });
       });
     });
 
     it("WebSocket Client: should receive position update event", (done) => {
       const callback = ({ position }: { position: GetPositionResponse }) => {
-        expect(position.userAddress).to.be.equal(client.getPublicAddress().toLocaleLowerCase());
+        expect(position.userAddress).to.be.equal(
+          client.getPublicAddress().toLocaleLowerCase()
+        );
         done();
       };
 
@@ -1155,7 +1206,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -1177,14 +1228,20 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
 
     it("WebSocket Client: should receive user account update event", (done) => {
-      const callback = ({ accountData }: { accountData: GetAccountDataResponse }) => {
-        expect(accountData.address).to.be.equal(client.getPublicAddress().toLocaleLowerCase());
+      const callback = ({
+        accountData,
+      }: {
+        accountData: GetAccountDataResponse;
+      }) => {
+        expect(accountData.address).to.be.equal(
+          client.getPublicAddress().toLocaleLowerCase()
+        );
         done();
       };
 
@@ -1198,7 +1255,7 @@ describe("BluefinClient", () => {
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
           leverage: defaultLeverage,
-          orderType: ORDER_TYPE.MARKET
+          orderType: ORDER_TYPE.MARKET,
         });
       });
     });
@@ -1215,9 +1272,9 @@ describe("BluefinClient", () => {
         countDowns: [
           {
             symbol,
-            countDown: 200000
-          }
-        ]
+            countDown: 200000,
+          },
+        ],
       });
 
       // remove countdown
@@ -1225,13 +1282,15 @@ describe("BluefinClient", () => {
         countDowns: [
           {
             symbol,
-            countDown: 0
-          }
-        ]
+            countDown: 0,
+          },
+        ],
       });
       // Then
       expect(response.ok).to.be.equal(true);
-      expect(response.response.data.acceptedToReset.length).to.be.greaterThanOrEqual(1);
+      expect(
+        response.response.data.acceptedToReset.length
+      ).to.be.greaterThanOrEqual(1);
     });
 
     it("should get user's symbol's countdown", async () => {
@@ -1240,9 +1299,9 @@ describe("BluefinClient", () => {
         countDowns: [
           {
             symbol,
-            countDown: 200000
-          }
-        ]
+            countDown: 200000,
+          },
+        ],
       });
       const response = await client.getCancelOnDisconnectTimer(symbol);
       // Then
@@ -1251,12 +1310,14 @@ describe("BluefinClient", () => {
         countDowns: [
           {
             symbol,
-            countDown: 0
-          }
-        ]
+            countDown: 0,
+          },
+        ],
       });
       expect(response.ok).to.be.equal(true);
-      expect(response.response.data.countDowns.length).to.be.greaterThanOrEqual(1);
+      expect(response.response.data.countDowns.length).to.be.greaterThanOrEqual(
+        1
+      );
     });
 
     it("should cancel user's symbol's countdown", async () => {
@@ -1265,24 +1326,26 @@ describe("BluefinClient", () => {
         countDowns: [
           {
             symbol,
-            countDown: 200000
-          }
-        ]
+            countDown: 200000,
+          },
+        ],
       });
       // remove countdown
       await client.resetCancelOnDisconnectTimer({
         countDowns: [
           {
             symbol,
-            countDown: 0
-          }
-        ]
+            countDown: 0,
+          },
+        ],
       });
 
       const response = await client.getCancelOnDisconnectTimer(symbol);
       // Then
       expect(response.ok).to.be.equal(true);
-      expect(response.response.data.countDowns.length).to.be.greaterThanOrEqual(0);
+      expect(response.response.data.countDowns.length).to.be.greaterThanOrEqual(
+        0
+      );
     });
   });
 });

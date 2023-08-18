@@ -69,7 +69,9 @@ function readFileBrowser(): any {
 }
 
 export function readFile(filePath: string): any {
-  return !window ? readFileServer(filePath) : readFileBrowser();
+  return typeof window === "undefined"
+    ? readFileServer(filePath)
+    : readFileBrowser();
 }
 
 export async function setupTestAccounts(

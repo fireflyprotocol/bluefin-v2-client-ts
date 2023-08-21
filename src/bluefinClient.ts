@@ -180,7 +180,7 @@ export class BluefinClient {
     await this.initContractCalls(deployment);
     this.walletAddress = await this.signer.getAddress();
     if (userOnboarding) {
-      // await this.userOnBoarding(); // uncomment once DAPI-SUI is up
+      await this.userOnBoarding();
     }
   };
 
@@ -440,7 +440,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

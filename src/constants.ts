@@ -13,12 +13,12 @@ export const Networks = {
   },
   PRODUCTION_SUI: {
     name: "production",
-    url: "https://arb1.arbitrum.io/rpc/",
-    apiGateway: "https://dapi.api.arbitrum-prod.firefly.exchange",
-    socketURL: "wss://dapi.api.arbitrum-prod.firefly.exchange",
-    dmsURL: "https://api.arbitrum-prod.firefly.exchange/dead-man-switch",
-    webSocketURL: "wss://notifications.api.arbitrum-prod.firefly.exchange/",
-    onboardingUrl: "https://testnet.bluefin.io",
+    url: "https://fullnode.mainnet.sui.io:443",
+    apiGateway: "https://dapi.api.sui-prod.bluefin.io",
+    socketURL: "wss://dapi.api.sui-prod.bluefin.io",
+    dmsURL: "https://dapi.api.sui-prod.bluefin.io/dead-man-switch",
+    webSocketURL: "wss://notifications.api.sui-prod.bluefin.io",
+    onboardingUrl: "https://trade-sui.bluefin.exchange",
     faucet: "does not exist",
   },
   LOCAL_SUI: {

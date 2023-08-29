@@ -501,6 +501,43 @@ export interface ExtendedNetwork extends Network {
   dmsURL?: string;
 }
 
+export interface ConfigResponse {
+  deployment: {
+    objects: {
+      Bank: ObjectDetails;
+      package: ObjectDetails;
+      Currency?: ObjectDetails;
+      BankTable?: ObjectDetails;
+      UpgradeCap?: ObjectDetails;
+      OrderStatus?: ObjectDetails;
+      SubAccounts?: ObjectDetails;
+      TreasuryCap?: ObjectDetails;
+      SettlementCap?: ObjectDetails;
+      FundingRateCap?: ObjectDetails;
+      DeleveragingCap?: ObjectDetails;
+      CapabilitiesSafe?: ObjectDetails;
+      ExchangeAdminCap?: ObjectDetails;
+      ExchangeGuardianCap?: ObjectDetails;
+    };
+    markets: {
+      [market: string]: {
+        Objects: {
+          Perpetual?: ObjectDetails;
+          BankAccount?: ObjectDetails;
+          PriceOracle?: ObjectDetails;
+          PositionsTable?: ObjectDetails;
+        };
+      };
+    };
+  };
+}
+
+export interface ObjectDetails {
+  id: string;
+  owner: string;
+  dataType: string;
+}
+
 export interface ExtendedWalletContextState
   extends Omit<WalletContextState, "signMessage"> {
   wallet: WalletContextState;

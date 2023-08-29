@@ -76,6 +76,7 @@ import {
   verifyDepositResponse,
   ExtendedNetwork,
   ExtendedWalletContextState,
+  ConfigResponse,
 } from "./interfaces/routes";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
@@ -262,7 +263,7 @@ export class BluefinClient {
     if (!this.signer) {
       throw Error("Signer not Initialized");
     }
-    const _deployment = deployment || this.getDeploymentJson();
+    const _deployment = deployment || (await this.getDeploymentJson());
 
     this.contractCalls = new ContractCalls(
       this.getSigner(),
@@ -440,7 +441,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -1154,9 +1155,22 @@ export class BluefinClient {
    * Gets deployment json from local file (will get from DAPI in future)
    * @returns deployment json
    * */
-  private getDeploymentJson = (): any => {
-    // will be fetched from DAPI, may be stored in configs table
-    return readFile("./deployment.json");
+  private getDeploymentJson = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<ConfigResponse>(
+        SERVICE_URLS.MARKET.CONFIG
+      );
+      // The data property of the response object contains our configuration
+      return response.data.deployment;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
   };
 
   /**

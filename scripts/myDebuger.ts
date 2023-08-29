@@ -8,6 +8,7 @@ async function main() {
 
   const client = new BluefinClient(true, Networks.LOCAL_SUI);
   await client.initializeWithSeed(seed, "Secp256k1");
+  await client.initContractCalls();
 }
 
 main().then().catch();

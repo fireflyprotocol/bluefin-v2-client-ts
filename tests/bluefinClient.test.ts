@@ -197,7 +197,7 @@ describe("BluefinClient", () => {
       const cancellationResponse = await clientSubAccount.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
-        signature: `${cancelSignature.signature}${cancelSignature.publicKey}`,
+        signature: cancelSignature,
         parentAddress: testAcctPubAddr.toLowerCase(),
       });
 
@@ -513,7 +513,7 @@ describe("BluefinClient", () => {
       const cancellationResponse = await client.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
-        signature: `${cancelSignature.signature}${cancelSignature.publicKey}`,
+        signature: cancelSignature,
       });
 
       expect(cancellationResponse.ok).to.be.equal(true);

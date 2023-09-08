@@ -1,0 +1,105 @@
+{
+  "name": "@firefly-exchange/bluefin-v2-client",
+  "version": "0.0.15",
+  "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "ts-mocha --timeout 100000 tests/*.test.ts",
+    "prepare": "husky install",
+    "debug": "ts-node ./scripts/myDebuger.ts",
+    "lint": "yarn eslint --fix --cache --max-warnings=-1 .",
+    "format-all": "yarn prettier --write .",
+    "format-staged": "git-format-staged -f \"prettier '{}'\" '**/*.js' '**/*.json' '**/*.ts' ",
+    "ci:code-formatting": "yarn prettier --check .",
+    "ci:code-style": "yarn eslint .",
+    "build:watch": "tsc-watch --onSuccess 'yarn build'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fireflyprotocol/bluefin-v2-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fireflyprotocol/bluefin-v2-client/issues"
+  },
+  "homepage": "https://github.com/fireflyprotocol/bluefin-v2-client#readme",
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/es6-promisify": "^6.0.1",
+    "@types/expect": "^24.3.0",
+    "@types/lodash": "^4.14.182",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.36",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.42.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-node": "^0.3.6",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "mocha": "^10.0.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "prettier": "^2.8.8",
+    "ts-loader": "^9.3.1",
+    "ts-mocha": "^10.0.0",
+    "tsc-watch": "^6.0.4",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "@firefly-exchange/library-sui": "^0.1.41",
+    "@mysten/sui.js": "^0.35.0",
+    "@noble/hashes": "^1.2.0",
+    "@noble/secp256k1": "^1.7.1",
+    "add": "^2.0.6",
+    "avsc": "^5.7.6",
+    "axios": "^0.27.2",
+    "bignumber.js": "^9.1.0",
+    "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
+    "dotenv": "^16.1.4",
+    "es6-promisify": "^7.0.0",
+    "eth-rpc-errors": "^4.0.3",
+    "ethereumjs-wallet": "^1.0.2",
+    "ethers": "^5.6.9",
+    "ethers-aws-kms-signer": "^1.3.2",
+    "interpolate": "^0.1.0",
+    "lodash": "^4.17.21",
+    "socket.io-client": "^4.5.1",
+    "ts-binary-serializer": "^2.1.3",
+    "typescript": "^4.6.4",
+    "ws": "^8.11.0",
+    "yargs": "^17.6.2",
+    "yarn": "^1.22.19"
+  },
+  "keywords": [
+    "bluefin",
+    "exchange",
+    "client",
+    "decentralized",
+    "orderbook"
+  ],
+  "lint-staged": {
+    "**/*.{js,ts,json}": "prettier --write",
+    "**/*.{js,ts}": "eslint --fix"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "browser": {
+    "fs": false,
+    "net": false,
+    "tls": false
+  }
+}

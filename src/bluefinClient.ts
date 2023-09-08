@@ -441,7 +441,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -471,7 +471,10 @@ export class BluefinClient {
         userAddress: params.maker,
         orderType: params.orderType,
         price: toBigNumberStr(params.price, POST_ORDER_BASE),
-        triggerPrice: toBigNumberStr(params.triggerPrice || "0", POST_ORDER_BASE),
+        triggerPrice: toBigNumberStr(
+          params.triggerPrice || "0",
+          POST_ORDER_BASE
+        ),
         quantity: toBigNumberStr(params.quantity, POST_ORDER_BASE),
         leverage: toBigNumberStr(params.leverage, POST_ORDER_BASE),
         side: params.side,

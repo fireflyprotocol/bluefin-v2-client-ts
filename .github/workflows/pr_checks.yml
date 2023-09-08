@@ -7,7 +7,7 @@ on:
 jobs:
   code-format:
     name: Code Format
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -20,7 +20,7 @@ jobs:
       - run: yarn ci:code-formatting
   code-style:
     name: Code Style
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -33,7 +33,7 @@ jobs:
       - run: yarn ci:code-style
   build:
     name: build check
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

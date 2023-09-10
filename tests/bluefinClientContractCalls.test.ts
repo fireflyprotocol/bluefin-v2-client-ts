@@ -43,10 +43,10 @@ const TEST_WALLETS = [
   },
 ];
 
-describe.only("BluefinClient", () => {
+describe("BluefinClient", () => {
   //* set environment from here
   let deplymentJson: any;
-  const network = Networks.LOCAL_SUI;
+  const network = Networks.TESTNET_SUI;
   const symbol = "BTC-PERP";
   const defaultLeverage = 1;
   let client: BluefinClient;
@@ -167,14 +167,14 @@ describe.only("BluefinClient", () => {
     before(async () => {
       maker = new BluefinClient(
         true,
-        Networks.LOCAL_SUI,
+        Networks.TESTNET_SUI,
         TEST_WALLETS[0].phrase,
         "Secp256k1"
       );
       await maker.init();
       taker = new BluefinClient(
         true,
-        Networks.LOCAL_SUI,
+        Networks.TESTNET_SUI,
         TEST_WALLETS[1].phrase,
         "Secp256k1"
       );
@@ -182,7 +182,7 @@ describe.only("BluefinClient", () => {
       await setupTestAccounts(
         onChainCalls,
         TEST_WALLETS,
-        Networks.LOCAL_SUI.faucet
+        Networks.TESTNET_SUI.faucet
       );
       let tx = await onChainCalls.mintUSDC({
         amount: toBigNumberStr(10000, USDC_BASE_DECIMALS),
@@ -196,9 +196,9 @@ describe.only("BluefinClient", () => {
       expect(Transaction.getStatus(tx)).to.be.equal("success");
     });
 
-    beforeEach(async () => {});
+    beforeEach(async () => { });
 
-    afterEach(() => {});
+    afterEach(() => { });
 
     it("should have required USDCs", async () => {
       const balance = await maker.getUSDCBalance();

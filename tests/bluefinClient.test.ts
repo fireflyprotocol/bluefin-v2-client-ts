@@ -407,13 +407,16 @@ describe("BluefinClient", () => {
         side: ORDER_SIDE.SELL,
         orderType: ORDER_TYPE.MARKET,
         expiration: Date.now() + 3600,
-        salt: generateRandomNumber(1_000)
-
+        salt: generateRandomNumber(1_000),
       };
       const signedOrder = await client.createSignedOrder(params);
       const orderPayload = client.createOrderToSign(params);
       const parsedSigPk = parseSigPK(signedOrder.orderSignature);
-      const isValid = OrderSigner.verifySignatureUsingOrder(orderPayload, parsedSigPk.signature, parsedSigPk.publicKey);
+      const isValid = OrderSigner.verifySignatureUsingOrder(
+        orderPayload,
+        parsedSigPk.signature,
+        parsedSigPk.publicKey
+      );
 
       expect(isValid).to.be.equal(true);
     });
@@ -1347,5 +1350,3 @@ describe("BluefinClient", () => {
     });
   });
 });
-
-

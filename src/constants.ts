@@ -20,7 +20,7 @@ export const Networks = {
     webSocketURL: "wss://notifications.api.sui-prod.bluefin.io",
     onboardingUrl: "https://trade-sui.bluefin.exchange",
     faucet: "does not exist",
-  }
+  },
 };
 
 export const DEFAULT_PRECISION = 6;

@@ -196,9 +196,9 @@ describe("BluefinClient", () => {
       expect(Transaction.getStatus(tx)).to.be.equal("success");
     });
 
-    beforeEach(async () => { });
+    beforeEach(async () => {});
 
-    afterEach(() => { });
+    afterEach(() => {});
 
     it("should have required USDCs", async () => {
       const balance = await maker.getUSDCBalance();

@@ -191,7 +191,6 @@ export class BluefinClient {
     }
   };
 
-
   /**
    * @description
    * initializes web3 and wallet with the given account private key
@@ -280,7 +279,6 @@ export class BluefinClient {
     if (!userAuthToken) {
       let signature: SigPK;
 
-
       const onboardingSignature = {
         onboardingUrl: this.network.onboardingUrl,
       };
@@ -338,7 +336,6 @@ export class BluefinClient {
     return this.signer.connect(this.provider);
   };
 
-
   signOrder = async (orderToSign: Order) => {
     if (this.uiWallet) {
       const signature = await OrderSigner.signOrderUsingWallet(
@@ -383,7 +380,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

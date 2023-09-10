@@ -3,7 +3,7 @@
 export const Networks = {
   TESTNET_SUI: {
     name: "testnet",
-    url: "https://fullnode.devnet.sui.io:443",
+    url: "https://fullnode.testnet.sui.io:443",
     apiGateway: "https://dapi.api.sui-staging.bluefin.io",
     dmsURL: "https://dapi.api.sui-staging.bluefin.io/dead-man-switch",
     socketURL: "wss://dapi.api.sui-staging.bluefin.io",
@@ -20,16 +20,6 @@ export const Networks = {
     webSocketURL: "wss://notifications.api.sui-prod.bluefin.io",
     onboardingUrl: "https://trade-sui.bluefin.exchange",
     faucet: "does not exist",
-  },
-  LOCAL_SUI: {
-    name: "testnet",
-    url: "https://fullnode.devnet.sui.io:443",
-    apiGateway: "https://dapi.api.sui-staging.bluefin.io",
-    dmsURL: "https://dapi.api.sui-staging.bluefin.io/dead-man-switch",
-    socketURL: "wss://dapi.api.sui-staging.bluefin.io",
-    webSocketURL: "wss://notifications.api.sui-staging.bluefin.io",
-    onboardingUrl: "https://testnet.bluefin.io",
-    faucet: "https://faucet.devnet.sui.io",
   },
 };
 

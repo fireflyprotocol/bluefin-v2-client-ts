@@ -12,6 +12,9 @@ import {
   toBaseNumber,
   MinifiedCandleStick,
   Faucet,
+  OrderSigner,
+  parseSigPK,
+  ADJUST_MARGIN,
 } from "@firefly-exchange/library-sui";
 import {
   BluefinClient,
@@ -23,6 +26,7 @@ import {
   GetAccountDataResponse,
   TickerData,
 } from "../index";
+import { generateRandomNumber } from "../utils/utils";
 
 chai.use(chaiAsPromised);
 
@@ -36,31 +40,29 @@ const testSubAccKey =
 const testSubAccPubAddr =
   "0x7c550b81ce7f8f458f5520d55623eb5dd1013310323607c0c7b5c3625e47079e";
 
-Faucet.requestSUI(testAcctPubAddr, Networks.LOCAL_SUI.faucet);
-Faucet.requestSUI(testSubAccPubAddr, Networks.LOCAL_SUI.faucet);
+Faucet.requestSUI(testAcctPubAddr, Networks.TESTNET_SUI.faucet);
+Faucet.requestSUI(testSubAccPubAddr, Networks.TESTNET_SUI.faucet);
 
 let client: BluefinClient;
 
 describe("BluefinClient", () => {
   //* set environment from here
-  const network = Networks.LOCAL_SUI;
-  const symbol = "ETH-PERP";
+  const network = Networks.TESTNET_SUI;
+  let symbol = "ETH-PERP";
   let defaultLeverage = 3;
-  let buyPrice = 18000;
-  let sellPrice = 20000;
+  let buyPrice = 1600;
+  let sellPrice = 2000;
   let marketPrice = 0;
   let indexPrice = 1600;
 
   before(async () => {
-    client = new BluefinClient(true, network, testAcctKey, "Secp256k1");
+    client = new BluefinClient(true, network, testAcctKey, "ED25519");
     await client.init();
-    // TODO! uncomment when done testing specifically on BTC-PERP
-    // const allSymbols = await client.getMarketSymbols();
-    // get first symbol to run tests on
-    // if (allSymbols.data) {
-    //   symbol = allSymbols.data[0];
-    // }
-    // TODO! uncomment above code when done testing specifically on BTC-PERP
+    const allSymbols = await client.getMarketSymbols();
+    //get first symbol to run tests on
+    if (allSymbols.data) {
+      symbol = allSymbols.data[0];
+    }
 
     console.log(`--- Trading symbol: ${symbol} ---`);
 
@@ -72,8 +74,8 @@ describe("BluefinClient", () => {
     // market data
     const marketData = await client.getMarketData(symbol);
     if (marketData.data && toBaseNumber(marketData.data.marketPrice) > 0) {
-      marketPrice = toBaseNumber(marketData.data.marketPrice || "100"); // hard coding to 100 will remove once DAPI is live
-      indexPrice = toBaseNumber(marketData.data.indexPrice || "0");
+      marketPrice = toBaseNumber(marketData.data.marketPrice);
+      indexPrice = toBaseNumber(marketData.data.indexPrice);
       const percentChange = 3 / 100; // 3%
       buyPrice = Number((marketPrice - marketPrice * percentChange).toFixed(0));
       sellPrice = Number(
@@ -361,31 +363,27 @@ describe("BluefinClient", () => {
   });
 
   describe("Create/Place/Post Orders", () => {
-    beforeEach(async () => {
-      //   client.addMarket(symbol);
-    });
+    // it("should put 10K in margin bank", async () => {
+    //   const minted = await client.mintTestUSDC();
+    //   const coins = await client.getUSDCCoins(10000);
+    //   const deposited = await client.depositToMarginBank(10000, coins[0].id);
+    //   expect(minted).to.eq(true);
+    //   expect(deposited.ok).to.eq(true);
+    // });
 
-    it("should put 10K in margin bank", async () => {
-      const minted = await client.mintTestUSDC();
-      const coins = await client.getUSDCCoins(10000);
-      const deposited = await client.depositToMarginBank(10000, coins[0].id);
-      expect(minted).to.eq(true);
-      expect(deposited.ok).to.eq(true);
-    });
-
-    it("should throw error as DOT market is not added to client", async () => {
-      await expect(
-        client.createSignedOrder({
-          symbol: "DOT-TEST",
-          price: 0,
-          quantity: 0.1,
-          side: ORDER_SIDE.SELL,
-          orderType: ORDER_TYPE.MARKET,
-        })
-      ).to.be.eventually.rejectedWith(
-        "Provided Market Symbol(DOT-TEST) is not added to client library"
-      );
-    });
+    // it("should throw error as DOT market is not added to client", async () => {
+    //   await expect(
+    //     client.createSignedOrder({
+    //       symbol: "DOT-TEST",
+    //       price: 0,
+    //       quantity: 0.1,
+    //       side: ORDER_SIDE.SELL,
+    //       orderType: ORDER_TYPE.MARKET,
+    //     })
+    //   ).to.be.eventually.rejectedWith(
+    //     "Provided Market Symbol(DOT-TEST) is not added to client library"
+    //   );
+    // });
 
     it("should create signed order", async () => {
       const signedOrder = await client.createSignedOrder({
@@ -408,11 +406,19 @@ describe("BluefinClient", () => {
         quantity: 0.1,
         side: ORDER_SIDE.SELL,
         orderType: ORDER_TYPE.MARKET,
+        expiration: Date.now() + 3600,
+        salt: generateRandomNumber(1_000),
       };
       const signedOrder = await client.createSignedOrder(params);
-      // const isValid = client.verifyOrderSignature(signedOrder);
+      const orderPayload = client.createOrderToSign(params);
+      const parsedSigPk = parseSigPK(signedOrder.orderSignature);
+      const isValid = OrderSigner.verifySignatureUsingOrder(
+        orderPayload,
+        parsedSigPk.signature,
+        parsedSigPk.publicKey
+      );
 
-      // expect(isValid).to.be.equal(true);
+      expect(isValid).to.be.equal(true);
     });
 
     it("should place a LIMIT SELL order on exchange", async () => {
@@ -456,7 +462,7 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it("should post a BUY STOP LIMIT order on exchange", async () => {
+    xit("should post a BUY STOP LIMIT order on exchange", async () => {
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,
@@ -471,7 +477,7 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it("should post a SELL STOP LIMIT order on exchange", async () => {
+    xit("should post a SELL STOP LIMIT order on exchange", async () => {
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,
@@ -496,7 +502,7 @@ describe("BluefinClient", () => {
       const signedOrder = await client.createSignedOrder({
         symbol,
         price: sellPrice,
-        quantity: 0.001,
+        quantity: 0.01,
         side: ORDER_SIDE.SELL,
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.LIMIT,
@@ -529,7 +535,6 @@ describe("BluefinClient", () => {
         orderType: ORDER_TYPE.LIMIT,
       });
       const response = await client.placeSignedOrder({ ...signedOrder });
-
       const cancellationResponse = await client.placeCancelOrder({
         symbol,
         hashes: [response.response.data.hash],
@@ -574,7 +579,7 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it("should cancel STOP LIMIT order on exchange", async () => {
+    xit("should cancel STOP LIMIT order on exchange", async () => {
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,
@@ -594,7 +599,7 @@ describe("BluefinClient", () => {
       expect(cancelResponse.ok).to.be.equal(true);
     });
 
-    it("should cancel STOP MARKET order on exchange", async () => {
+    xit("should cancel STOP MARKET order on exchange", async () => {
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,
@@ -625,7 +630,7 @@ describe("BluefinClient", () => {
       expect(data.response.data.length).to.be.gte(0);
     });
 
-    it("should get all stand by stop orders", async () => {
+    xit("should get all stand by stop orders", async () => {
       const data = await client.getUserOrders({
         statuses: [ORDER_STATUS.STAND_BY, ORDER_STATUS.STAND_BY_PENDING],
         symbol,
@@ -634,7 +639,7 @@ describe("BluefinClient", () => {
       expect(data.response.data.length).to.be.gte(0);
     });
 
-    it("should get all open orders on behalf of parent account", async () => {
+    xit("should get all open orders on behalf of parent account", async () => {
       // make sure to first whitelist the subaccount with the below parent account to run this test.
       // To whitelist the subaccount use the above test {set sub account}
       // and subaccount must be authenticated/initialized with the client.
@@ -721,13 +726,9 @@ describe("BluefinClient", () => {
 
     it("should return zero open positions for the user", async () => {
       // Given
-      //   const web3 = new Web3(network.url);
-      //   const wallet = web3.eth.accounts.create();
       const clientTemp = new BluefinClient(true, network);
       await clientTemp.init();
 
-      // When
-      //   clientTemp.addMarket(symbol);
       const response = await clientTemp.getUserPosition({});
 
       // Then

@@ -1,5 +1,3 @@
-import { AwsKmsSigner } from "ethers-aws-kms-signer";
-
 import {
   toBigNumberStr,
   toBigNumber,
@@ -17,7 +15,6 @@ import {
   ORDER_STATUS,
   ORDER_TYPE,
   TIME_IN_FORCE,
-  OnboardingSigner,
   hexToBuffer,
   bnToHex,
   encodeOrderFlags,
@@ -100,8 +97,6 @@ export class BluefinClient {
 
   public webSockets: WebSockets | undefined;
 
-  public kmsSigner: AwsKmsSigner | undefined;
-
   public marketSymbols: string[] = []; // to save array market symbols [DOT-PERP, SOL-PERP]
 
   private walletAddress = ""; // to save user's public address when connecting from UI
@@ -131,7 +126,7 @@ export class BluefinClient {
   constructor(
     _isTermAccepted: boolean,
     _network: ExtendedNetwork,
-    _account?: string | Keypair | AwsKmsSigner,
+    _account?: string | Keypair,
     _scheme?: any,
     _isUI?: boolean,
     _uiSignerObject?: any
@@ -154,7 +149,7 @@ export class BluefinClient {
     if (_isUI) {
       this.initializeWithHook(_uiSignerObject);
     }
-    // if input is string then its seed phrase else it should be AwsKmsSigner object
+    // if input is string then its seed phrase otherwise KeyPair
     else if (_account && _scheme && typeof _account === "string") {
       this.initializeWithSeed(_account, _scheme);
     } else if (
@@ -163,8 +158,6 @@ export class BluefinClient {
         _account instanceof Ed25519Keypair)
     ) {
       this.initializeWithKeyPair(_account);
-    } else if (_account instanceof AwsKmsSigner) {
-      this.initializeWithKMS(_account);
     }
   }
 
@@ -195,23 +188,6 @@ export class BluefinClient {
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
-    }
-  };
-
-  /**
-   * @description
-   * initializes client with AwsKmsSigner object
-   * @param awsKmsSigner AwsKmsSigner object
-   * @returns void
-   * */
-  initializeWithKMS = async (awsKmsSigner: AwsKmsSigner): Promise<void> => {
-    try {
-      this.kmsSigner = awsKmsSigner;
-      // fetching public address of the account
-      this.walletAddress = await this.kmsSigner.getAddress();
-    } catch (err) {
-      console.log(err);
-      throw Error("Failed to initialize KMS");
     }
   };
 
@@ -303,35 +279,17 @@ export class BluefinClient {
     if (!userAuthToken) {
       let signature: SigPK;
 
-      if (this.kmsSigner !== undefined) {
-        // const hashedMessageSHA = sha256(
-        //   hexToBuffer(this.network.onboardingUrl)
-        // );
-        // /*
-        //   For every orderHash sent to etherium etherium will hash it and wrap
-        //   it with "\\x19Ethereum Signed Message:\\n" + message.length + message
-        //   Hence for that we have to hash it again.
-        // */
-        // //@ts-ignore
-        // const hashedMessageETH =
-        // this.signer.signData(hashedMessageSHA);
-        // (signature = await this.kmsSigner._signDigest(hashedMessageETH));
+      const onboardingSignature = {
+        onboardingUrl: this.network.onboardingUrl,
+      };
+      if (this.uiWallet) {
+        signature = await OrderSigner.signPayloadUsingWallet(
+          onboardingSignature,
+          this.uiWallet
+        );
       } else {
-        // sign onboarding message
-        // eslint-disable-next-line no-lonely-if
-        const onboardingSignature = {
-          onboardingUrl: this.network.onboardingUrl,
-        };
-        if (this.uiWallet) {
-          signature = await OrderSigner.signPayloadUsingWallet(
-            onboardingSignature,
-            this.uiWallet
-          );
-        } else {
-          signature = this.orderSigner.signPayload(onboardingSignature);
-        }
+        signature = this.orderSigner.signPayload(onboardingSignature);
       }
-
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(
         `${signature?.signature}${signature?.publicKey}`
@@ -378,31 +336,6 @@ export class BluefinClient {
     return this.signer.connect(this.provider);
   };
 
-  /**
-   * @description
-   * Gets a signed order from the client
-   * @returns OrderSignatureResponse
-   * @param order OrderSignatureRequest
-   * */
-
-  getSerializedOrder(order: Order): string {
-    // encode order flags
-    const orderFlags = encodeOrderFlags(order);
-
-    const buffer = Buffer.alloc(144);
-    buffer.set(hexToBuffer(bnToHex(order.price)), 0);
-    buffer.set(hexToBuffer(bnToHex(order.quantity)), 16);
-    buffer.set(hexToBuffer(bnToHex(order.leverage)), 32);
-    buffer.set(hexToBuffer(bnToHex(order.salt)), 48);
-    buffer.set(hexToBuffer(bnToHex(order.expiration, 16)), 64);
-    buffer.set(hexToBuffer(order.maker), 72);
-    buffer.set(hexToBuffer(order.market), 104);
-    buffer.set(hexToBuffer(bnToHex(orderFlags, 2)), 136);
-    buffer.set(Buffer.from("Bluefin", "utf8"), 137);
-
-    return buffer.toString("hex");
-  }
-
   signOrder = async (orderToSign: Order) => {
     if (this.uiWallet) {
       const signature = await OrderSigner.signOrderUsingWallet(
@@ -419,6 +352,12 @@ export class BluefinClient {
     );
   };
 
+  /**
+   * @description
+   * Gets a signed order from the client
+   * @returns OrderSignatureResponse
+   * @param order OrderSignatureRequest
+   * */
   createSignedOrder = async (
     order: OrderSignatureRequest
   ): Promise<OrderSignatureResponse> => {
@@ -470,13 +409,13 @@ export class BluefinClient {
         symbol: params.symbol,
         userAddress: params.maker,
         orderType: params.orderType,
-        price: toBigNumberStr(params.price, POST_ORDER_BASE),
+        price: toBigNumberStr(params.price),
         triggerPrice: toBigNumberStr(
           params.triggerPrice || "0",
           POST_ORDER_BASE
         ),
-        quantity: toBigNumberStr(params.quantity, POST_ORDER_BASE),
-        leverage: toBigNumberStr(params.leverage, POST_ORDER_BASE),
+        quantity: toBigNumberStr(params.quantity),
+        leverage: toBigNumberStr(params.leverage),
         side: params.side,
         reduceOnly: params.reduceOnly,
         salt: params.salt,
@@ -1177,11 +1116,11 @@ export class BluefinClient {
   };
 
   /**
-   * Private function to create order payload that is to be signed on-chain
+   * Function to create order payload that is to be signed on-chain
    * @param params OrderSignatureRequest
    * @returns Order
    */
-  private createOrderToSign = (
+  public createOrderToSign = (
     params: OrderSignatureRequest,
     parentAddress?: string
   ): Order => {
@@ -1246,7 +1185,7 @@ export class BluefinClient {
         address: params.parentAddress
           ? params.parentAddress
           : this.getPublicAddress(),
-        leverage: toBigNumberStr(params.leverage, 18),
+        leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
       },
       { isAuthenticationRequired: true }

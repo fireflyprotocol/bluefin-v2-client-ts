@@ -107,3 +107,4 @@ bundles
 # TernJS port file
 .tern-port
 bundles
+/public/build/

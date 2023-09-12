@@ -1,9 +1,7 @@
 /**
  * Deposits USDC from USDC contract to MarginBank
  */
-
-/* eslint-disable no-console */
-import { Networks, BluefinClient } from "../index";
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   // ensure that account has enough native gas tokens to perform on-chain contract call

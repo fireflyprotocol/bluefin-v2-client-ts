@@ -1,21 +1,8 @@
 /**
  *  Query user orders
  **/
-
-/* eslint-disable no-console */
-import {
-  ORDER_STATUS,
-  ORDER_SIDE,
-  // MinifiedCandleStick,
-  ORDER_TYPE,
-  toBaseNumber,
-  MinifiedCandleStick,
-  Faucet,
-  OrderSigner,
-  parseSigPK,
-  ADJUST_MARGIN,
-} from "@firefly-exchange/library-sui";
-import { Networks, BluefinClient } from "../index";
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
+import { ORDER_STATUS } from "@firefly-exchange/library-sui";
 
 async function main() {
   const dummyAccountKey =

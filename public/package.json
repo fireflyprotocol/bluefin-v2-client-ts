@@ -1,0 +1,17 @@
+{
+  "name": "bluefin-v2-client-use-cases",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node dist/index.js",
+    "adjust-margin": "ts-node ./src/examples/10.adjust_margin.ts"
+  },
+  "dependencies": {
+    "@bluefin-exchange/bluefin-v2-client": "^1.0.1",
+    "@firefly-exchange/library-sui": "^0.1.48"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}

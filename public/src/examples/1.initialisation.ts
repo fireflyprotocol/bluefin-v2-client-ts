@@ -3,7 +3,12 @@
  */
 
 /* eslint-disable no-console */
-import { Networks, BluefinClient, ExtendedNetwork } from "../index";
+
+import {
+  BluefinClient,
+  ExtendedNetwork,
+  Networks,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

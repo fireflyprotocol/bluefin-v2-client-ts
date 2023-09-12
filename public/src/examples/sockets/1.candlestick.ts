@@ -1,25 +1,8 @@
 /**
  * Client initialization code example
  */
-
-/* eslint-disable no-console */
-import {
-  ORDER_STATUS,
-  ORDER_SIDE,
-  ORDER_TYPE,
-  toBaseNumber,
-  MinifiedCandleStick,
-  Faucet,
-  OrderSigner,
-  parseSigPK,
-  ADJUST_MARGIN,
-} from "@firefly-exchange/library-sui";
-import {
-  Networks,
-  BluefinClient,
-  ExtendedNetwork,
-  TickerData,
-} from "../../index";
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
+import { MinifiedCandleStick } from "@firefly-exchange/library-sui";
 
 async function main() {
   const dummyAccountKey =
@@ -37,12 +20,11 @@ async function main() {
   client.sockets.subscribeGlobalUpdatesBySymbol("ETH-PERP");
   client.sockets.subscribeUserUpdateByToken();
 
-  const callback = (tickerUpdate: TickerData[]) => {
-    console.log(tickerUpdate);
+  let callback = (candle: MinifiedCandleStick) => {
+    console.log(candle);
     client.sockets.close();
   };
-
-  client.sockets.onTickerUpdate(callback);
+  client.sockets.onCandleStickUpdate("ETH-PERP", "1m", callback);
 }
 
 main().then().catch(console.warn);

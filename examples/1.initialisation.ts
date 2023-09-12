@@ -58,6 +58,5 @@ async function main() {
   ); // initialze client via readOnlyToken
 }
 
-}
 
 main().then().catch(console.warn);

@@ -1,8 +1,7 @@
 /**
  * Gets user open position on provided(all) markets
  */
-import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
-
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

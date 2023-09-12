@@ -14,8 +14,7 @@ import {
   parseSigPK,
   ADJUST_MARGIN,
 } from "@firefly-exchange/library-sui";
-import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
-
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

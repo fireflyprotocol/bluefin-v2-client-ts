@@ -1,9 +1,8 @@
 /**
  * Client initialization code example
  */
-import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
-import {MinifiedCandleStick} from "@firefly-exchange/library-sui";
-
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
+import { MinifiedCandleStick } from "@firefly-exchange/library-sui";
 
 async function main() {
   const dummyAccountKey =

@@ -1,0 +1,17 @@
+{
+  "name": "bluefin-v2-client-use-cases",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node dist/index.js",
+    "initialisation": "ts-node ./src/examples/3.deposit_and_withdraw_from_margin_bank.ts"
+  },
+  "dependencies": {
+    "@bluefin-exchange/bluefin-v2-client": "^1.0.1",
+    "@firefly-exchange/library-sui": "^0.1.48"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}

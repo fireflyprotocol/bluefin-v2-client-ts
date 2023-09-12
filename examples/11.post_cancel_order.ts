@@ -1,5 +1,5 @@
 /**
- * Creates cancellation signature and places the order on exchange for cancellation
+ * Post an order on exchange and then cancel the posted order
  */
 
 /* eslint-disable no-console */

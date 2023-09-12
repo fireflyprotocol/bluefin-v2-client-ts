@@ -5,17 +5,17 @@
 
 /* eslint-disable no-console */
 import {
-    ORDER_STATUS,
-    ORDER_SIDE,
-    // MinifiedCandleStick,
-    ORDER_TYPE,
-    toBaseNumber,
-    MinifiedCandleStick,
-    Faucet,
-    OrderSigner,
-    parseSigPK,
-    ADJUST_MARGIN,
-  } from "@firefly-exchange/library-sui";
+  ORDER_STATUS,
+  ORDER_SIDE,
+  // MinifiedCandleStick,
+  ORDER_TYPE,
+  toBaseNumber,
+  MinifiedCandleStick,
+  Faucet,
+  OrderSigner,
+  parseSigPK,
+  ADJUST_MARGIN,
+} from "@firefly-exchange/library-sui";
 import { Networks, BluefinClient } from "../index";
 
 async function main() {
@@ -23,10 +23,14 @@ async function main() {
   const dummyAccountKey =
     "trigger swim reunion gate hen black real deer light nature trial dust";
 
-  const client = new BluefinClient(true, Networks.TESTNET_SUI, dummyAccountKey,"ED25519"); //passing isTermAccepted = true for compliance and authorizarion
-  await client.init()
+  const client = new BluefinClient(
+    true,
+    Networks.TESTNET_SUI,
+    dummyAccountKey,
+    "ED25519"
+  ); //passing isTermAccepted = true for compliance and authorizarion
+  await client.init();
   let symbol = "ETH-PERP";
-
 
   // will post a limit order of 0.5 quantity at price 11
   const response = await client.postOrder({
@@ -35,7 +39,7 @@ async function main() {
     quantity: 0.5,
     side: ORDER_SIDE.BUY,
     orderType: ORDER_TYPE.LIMIT,
-    leverage: 3
+    leverage: 3,
   });
 
   console.log(response.data);

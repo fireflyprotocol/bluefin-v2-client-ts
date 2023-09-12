@@ -11,8 +11,13 @@ async function main() {
     "trigger swim reunion gate hen black real deer light nature trial dust";
 
   // using TESTNET network, getUSDCBalance does not work on MAINNET
-  const client = new BluefinClient(true, Networks.TESTNET_SUI, dummyAccountKey,"ED25519");  //passing isTermAccepted = true for compliance and authorizarion
-  await client.init()
+  const client = new BluefinClient(
+    true,
+    Networks.TESTNET_SUI,
+    dummyAccountKey,
+    "ED25519"
+  ); //passing isTermAccepted = true for compliance and authorizarion
+  await client.init();
   console.log(await client.getPublicAddress());
 
   // deposits 10 USDC to margin bank, uses default USDC/MarginBank Contracts

@@ -10,7 +10,12 @@ async function main() {
     "royal reopen journey royal enlist vote core cluster shield slush hill sample";
 
   // using predefined network
-  const client = new BluefinClient(true, Networks.TESTNET_SUI, dummyAccountKey,"ED25519"); //passing isTermAccepted = true for compliance and authorizarion
+  const client = new BluefinClient(
+    true,
+    Networks.TESTNET_SUI,
+    dummyAccountKey,
+    "ED25519"
+  ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   // prints client address
   console.log(client.getPublicAddress());
@@ -26,8 +31,13 @@ async function main() {
     onboardingUrl: "https://testnet.bluefin.io",
     faucet: "https://faucet.devnet.sui.io",
   };
-  const clientCustomNetwork = new BluefinClient(true, custNetwork, dummyAccountKey, "ED25519"); //passing isTermAccepted = true for compliance and authorizarion
-  await clientCustomNetwork.init()
+  const clientCustomNetwork = new BluefinClient(
+    true,
+    custNetwork,
+    dummyAccountKey,
+    "ED25519"
+  ); //passing isTermAccepted = true for compliance and authorizarion
+  await clientCustomNetwork.init();
   // prints client address
   console.log(clientCustomNetwork.getPublicAddress());
 }

@@ -4,17 +4,16 @@
 
 /* eslint-disable no-console */
 import {
-    ORDER_STATUS,
-    ORDER_SIDE,
-    // MinifiedCandleStick,
-    ORDER_TYPE,
-    toBaseNumber,
-    MinifiedCandleStick,
-    Faucet,
-    OrderSigner,
-    parseSigPK,
-    ADJUST_MARGIN,
-  } from "@firefly-exchange/library-sui";
+  ORDER_STATUS,
+  ORDER_SIDE,
+  ORDER_TYPE,
+  toBaseNumber,
+  MinifiedCandleStick,
+  Faucet,
+  OrderSigner,
+  parseSigPK,
+  ADJUST_MARGIN,
+} from "@firefly-exchange/library-sui";
 import { Networks, BluefinClient, ExtendedNetwork } from "../../index";
 
 async function main() {
@@ -33,17 +32,11 @@ async function main() {
   client.sockets.subscribeGlobalUpdatesBySymbol("ETH-PERP");
   client.sockets.subscribeUserUpdateByToken();
 
-
   let callback = (candle: MinifiedCandleStick) => {
     console.log(candle);
     client.sockets.close();
   };
   client.sockets.onCandleStickUpdate("ETH-PERP", "1m", callback);
-
-  
-
-
-
 }
 
 main().then().catch(console.warn);

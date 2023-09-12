@@ -4,18 +4,22 @@
 
 /* eslint-disable no-console */
 import {
-    ORDER_STATUS,
-    ORDER_SIDE,
-    // MinifiedCandleStick,
-    ORDER_TYPE,
-    toBaseNumber,
-    MinifiedCandleStick,
-    Faucet,
-    OrderSigner,
-    parseSigPK,
-    ADJUST_MARGIN,
-  } from "@firefly-exchange/library-sui";
-import { Networks, BluefinClient, ExtendedNetwork,TickerData } from "../../index";
+  ORDER_STATUS,
+  ORDER_SIDE,
+  ORDER_TYPE,
+  toBaseNumber,
+  MinifiedCandleStick,
+  Faucet,
+  OrderSigner,
+  parseSigPK,
+  ADJUST_MARGIN,
+} from "@firefly-exchange/library-sui";
+import {
+  Networks,
+  BluefinClient,
+  ExtendedNetwork,
+  TickerData,
+} from "../../index";
 
 async function main() {
   const dummyAccountKey =
@@ -33,14 +37,12 @@ async function main() {
   client.sockets.subscribeGlobalUpdatesBySymbol("ETH-PERP");
   client.sockets.subscribeUserUpdateByToken();
 
-
   const callback = (tickerUpdate: TickerData[]) => {
-   console.log(tickerUpdate);
-   client.sockets.close();
+    console.log(tickerUpdate);
+    client.sockets.close();
   };
 
   client.sockets.onTickerUpdate(callback);
-
 }
 
 main().then().catch(console.warn);

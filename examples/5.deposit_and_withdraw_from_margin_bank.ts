@@ -15,7 +15,7 @@ async function main() {
     true,
     Networks.TESTNET_SUI,
     dummyAccountKey,
-    "ED25519"
+    "ED25519" //valid values are ED25519 or Secp256k1
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   console.log(await client.getPublicAddress());
@@ -24,8 +24,13 @@ async function main() {
   // assuming user has 1 USDC locked in margin bank, else will throw
   console.log(
     "USDC Deposited to MarginBank: ",
-    await client.depositToMarginBank(1000)
+    await client.depositToMarginBank(10)
   );
+  console.log(
+    "USDC Withdrawn from MarginBank: ",
+    await client.withdrawFromMarginBank(1)
+  );
+  console.log("Current balance", await client.getUSDCBalance());
 }
 
 main().then().catch(console.warn);

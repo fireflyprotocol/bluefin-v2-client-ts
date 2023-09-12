@@ -7,7 +7,6 @@
 import {
   ORDER_STATUS,
   ORDER_SIDE,
-  // MinifiedCandleStick,
   ORDER_TYPE,
   toBaseNumber,
   MinifiedCandleStick,
@@ -19,7 +18,6 @@ import {
 import { Networks, BluefinClient } from "../index";
 
 async function main() {
-  // no gas fee is required to create order signature.
   const dummyAccountKey =
     "trigger swim reunion gate hen black real deer light nature trial dust";
 
@@ -27,7 +25,7 @@ async function main() {
     true,
     Networks.TESTNET_SUI,
     dummyAccountKey,
-    "ED25519"
+    "ED25519" //valid values are ED25519 or Secp256k1
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   let symbol = "ETH-PERP";
@@ -45,4 +43,4 @@ async function main() {
   console.log(response.data);
 }
 
-main().then().catch(console.warn);
+main().then().catch(console.error);

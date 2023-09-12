@@ -6,7 +6,6 @@
 import {
   ORDER_STATUS,
   ORDER_SIDE,
-  // MinifiedCandleStick,
   ORDER_TYPE,
   toBaseNumber,
   MinifiedCandleStick,
@@ -25,7 +24,7 @@ async function main() {
     true,
     Networks.TESTNET_SUI,
     dummyAccountKey,
-    "ED25519"
+    "ED25519" //valid for ED25519 and Secp246k1
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   let symbol = "ETH-PERP";

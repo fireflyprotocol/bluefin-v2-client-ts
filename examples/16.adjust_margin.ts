@@ -25,7 +25,7 @@ async function main() {
     true,
     Networks.TESTNET_SUI,
     dummyAccountKey,
-    "ED25519"
+    "ED25519" //valid values are ED25519 or Secp256k1
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   // ADD margin - will add 10 margin to ETH-PERP position

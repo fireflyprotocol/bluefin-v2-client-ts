@@ -6,7 +6,6 @@
 import {
   ORDER_STATUS,
   ORDER_SIDE,
-  // MinifiedCandleStick,
   ORDER_TYPE,
   toBaseNumber,
   MinifiedCandleStick,

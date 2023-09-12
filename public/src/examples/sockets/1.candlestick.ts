@@ -1,20 +1,9 @@
 /**
  * Client initialization code example
  */
+import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
+import {MinifiedCandleStick} from "@firefly-exchange/library-sui";
 
-/* eslint-disable no-console */
-import {
-  ORDER_STATUS,
-  ORDER_SIDE,
-  ORDER_TYPE,
-  toBaseNumber,
-  MinifiedCandleStick,
-  Faucet,
-  OrderSigner,
-  parseSigPK,
-  ADJUST_MARGIN,
-} from "@firefly-exchange/library-sui";
-import { Networks, BluefinClient, ExtendedNetwork } from "../../index";
 
 async function main() {
   const dummyAccountKey =

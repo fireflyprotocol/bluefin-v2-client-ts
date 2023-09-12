@@ -1,5 +1,5 @@
 /**
- * Places the order cancellation request to exchange
+ * Cancels all open orders for the given market
  */
 
 /* eslint-disable no-console */
@@ -14,7 +14,7 @@ import {
   parseSigPK,
   ADJUST_MARGIN,
 } from "@firefly-exchange/library-sui";
-import { Networks, BluefinClient } from "../index";
+import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =
@@ -24,35 +24,31 @@ async function main() {
     true,
     Networks.TESTNET_SUI,
     dummyAccountKey,
-    "ED25519" //valid values are ED25519 or Secp256k1
+    "ED25519" //valid for ED25519 and Secp246k1
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
-
   let symbol = "ETH-PERP";
-  // post a limit order
-  const response = await client.postOrder({
+  // open multiple limit orders
+  await client.postOrder({
     symbol: symbol,
-    price: 50,
+    price: 15,
     quantity: 0.5,
     side: ORDER_SIDE.SELL,
     orderType: ORDER_TYPE.LIMIT,
-    leverage: 3,
   });
 
-  // create signature
-  const cancelSignature = await client.createOrderCancellationSignature({
+  await client.postOrder({
     symbol: symbol,
-    hashes: [response.response.data.hash],
+    price: 15,
+    quantity: 0.5,
+    side: ORDER_SIDE.SELL,
+    orderType: ORDER_TYPE.LIMIT,
   });
 
-  // place order for cancellation on exchange
-  const cancellationResponse = await client.placeCancelOrder({
-    symbol: symbol,
-    hashes: [response.response.data.hash],
-    signature: cancelSignature,
-  });
+  // cancels all open order
+  const response = await client.cancelAllOpenOrders(symbol);
 
-  console.log(cancellationResponse.data);
+  console.log(response.data);
 }
 
 main().then().catch(console.warn);

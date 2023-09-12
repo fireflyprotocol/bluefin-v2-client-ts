@@ -1,9 +1,8 @@
 /**
  * Getting user's USDC balance locked in Margin Bank
  */
+import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
 
-/* eslint-disable no-console */
-import { Networks, BluefinClient } from "../index";
 
 async function main() {
   const dummyAccountKey =

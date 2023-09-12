@@ -5,17 +5,10 @@
 
 /* eslint-disable no-console */
 import {
-  ORDER_STATUS,
   ORDER_SIDE,
-  ORDER_TYPE,
-  toBaseNumber,
-  MinifiedCandleStick,
-  Faucet,
-  OrderSigner,
-  parseSigPK,
-  ADJUST_MARGIN,
+  ORDER_TYPE
 } from "@firefly-exchange/library-sui";
-import { Networks, BluefinClient } from "../index";
+import {BluefinClient, Networks} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

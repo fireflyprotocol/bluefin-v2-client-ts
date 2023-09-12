@@ -29,6 +29,7 @@ async function main() {
   ); //passing isTermAccepted = true for compliance and authorizarion
   await client.init();
   // ADD margin - will add 10 margin to ETH-PERP position
+  // Please ensure that you have a position open before this. otherwise it wont work.
   console.log(
     "Added margin: ",
     await client.adjustMargin("ETH-PERP", ADJUST_MARGIN.Add, 10)

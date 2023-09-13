@@ -35,7 +35,7 @@ async function main() {
     quantity: 0.5,
     side: ORDER_SIDE.SELL,
     orderType: ORDER_TYPE.LIMIT,
-    leverage:3
+    leverage: 3,
   });
 
   console.log(res1);
@@ -46,7 +46,7 @@ async function main() {
     quantity: 0.5,
     side: ORDER_SIDE.SELL,
     orderType: ORDER_TYPE.LIMIT,
-    leverage:3
+    leverage: 3,
   });
 
   console.log(res2);

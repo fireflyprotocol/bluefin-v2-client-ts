@@ -22,21 +22,27 @@ async function main() {
   await client.init();
   let symbol = "ETH-PERP";
   // open multiple limit orders
-  await client.postOrder({
+  const res1 = await client.postOrder({
     symbol: symbol,
-    price: 15,
+    price: 50,
     quantity: 0.5,
     side: ORDER_SIDE.SELL,
     orderType: ORDER_TYPE.LIMIT,
+    leverage: 3,
   });
 
-  await client.postOrder({
+  console.log(res1);
+
+  const res2 = await client.postOrder({
     symbol: symbol,
-    price: 15,
+    price: 50,
     quantity: 0.5,
     side: ORDER_SIDE.SELL,
     orderType: ORDER_TYPE.LIMIT,
+    leverage: 3,
   });
+
+  console.log(res2);
 
   // cancels all open order
   const response = await client.cancelAllOpenOrders(symbol);

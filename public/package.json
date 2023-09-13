@@ -8,8 +8,7 @@
     "adjust-margin": "ts-node ./src/examples/10.adjust_margin.ts"
   },
   "dependencies": {
-    "@bluefin-exchange/bluefin-v2-client": "^1.0.1",
-    "@firefly-exchange/library-sui": "^0.1.48"
+    "@bluefin-exchange/bluefin-v2-client": "^1.0.1"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

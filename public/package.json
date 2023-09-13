@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node dist/index.js",
-    "cancel-all-orders": "ts-node ./src/examples/8.cancel_all_open_orders.ts"
+    "build": "tsc"
   },
   "dependencies": {
     "@bluefin-exchange/bluefin-v2-client": "^1.0.1",

@@ -1,8 +1,11 @@
 /**
  *  Query user orders
  **/
-import { BluefinClient, Networks, ORDER_STATUS } from "@bluefin-exchange/bluefin-v2-client";
-
+import {
+  BluefinClient,
+  Networks,
+  ORDER_STATUS,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

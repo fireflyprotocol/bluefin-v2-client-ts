@@ -4,7 +4,11 @@
 
 /* eslint-disable no-console */
 
-import { BluefinClient, Networks ,ADJUST_MARGIN} from "@bluefin-exchange/bluefin-v2-client";
+import {
+  BluefinClient,
+  Networks,
+  ADJUST_MARGIN,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

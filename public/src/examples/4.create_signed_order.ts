@@ -6,7 +6,12 @@
 
 /* eslint-disable no-console */
 
-import { ORDER_SIDE, ORDER_TYPE, BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
+import {
+  ORDER_SIDE,
+  ORDER_TYPE,
+  BluefinClient,
+  Networks,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   // no gas fee is required to create order signature.

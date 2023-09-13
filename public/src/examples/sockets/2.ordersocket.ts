@@ -1,7 +1,12 @@
 /**
  * Client initialization code example
  */
-import { BluefinClient, Networks, ORDER_SIDE, ORDER_TYPE } from "@bluefin-exchange/bluefin-v2-client";
+import {
+  BluefinClient,
+  Networks,
+  ORDER_SIDE,
+  ORDER_TYPE,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

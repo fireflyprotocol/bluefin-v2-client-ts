@@ -6,7 +6,9 @@
 
 import {
   ORDER_SIDE,
-  ORDER_TYPE, BluefinClient, Networks
+  ORDER_TYPE,
+  BluefinClient,
+  Networks,
 } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {

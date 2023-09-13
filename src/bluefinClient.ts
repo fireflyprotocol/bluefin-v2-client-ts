@@ -277,22 +277,11 @@ export class BluefinClient {
   userOnBoarding = async (token?: string) => {
     let userAuthToken = token;
     if (!userAuthToken) {
-      let signature: SigPK;
 
-      const onboardingSignature = {
-        onboardingUrl: this.network.onboardingUrl,
-      };
-      if (this.uiWallet) {
-        signature = await OrderSigner.signPayloadUsingWallet(
-          onboardingSignature,
-          this.uiWallet
-        );
-      } else {
-        signature = this.orderSigner.signPayload(onboardingSignature);
-      }
+      const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(
-        `${signature?.signature}${signature?.publicKey}`
+        signature
       );
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
@@ -311,6 +300,24 @@ export class BluefinClient {
     // TODO: remove this when all endpoints on frontend are integrated from client library
     return userAuthToken;
   };
+
+  createOnboardingSignature = async () => {
+    let signature: SigPK;
+
+    const onboardingSignature = {
+      onboardingUrl: this.network.onboardingUrl,
+    };
+    if (this.uiWallet) {
+      signature = await OrderSigner.signPayloadUsingWallet(
+        onboardingSignature,
+        this.uiWallet
+      );
+    } else {
+      signature = this.orderSigner.signPayload(onboardingSignature);
+    }
+
+    return `${signature?.signature}${signature?.publicKey}`;
+  }
 
   /**
    * @description
@@ -380,7 +387,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

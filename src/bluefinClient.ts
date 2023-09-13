@@ -277,12 +277,9 @@ export class BluefinClient {
   userOnBoarding = async (token?: string) => {
     let userAuthToken = token;
     if (!userAuthToken) {
-
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
-      const authTokenResponse = await this.authorizeSignedHash(
-        signature
-      );
+      const authTokenResponse = await this.authorizeSignedHash(signature);
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -317,7 +314,7 @@ export class BluefinClient {
     }
 
     return `${signature?.signature}${signature?.publicKey}`;
-  }
+  };
 
   /**
    * @description
@@ -387,7 +384,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

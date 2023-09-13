@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc && node dist/index.js",
-    "adjust-margin": "ts-node ./src/examples/10.adjust_margin.ts"
+    "cancel-all-orders": "ts-node ./src/examples/8.cancel_all_open_orders.ts"
   },
   "dependencies": {
     "@bluefin-exchange/bluefin-v2-client": "^1.0.1",

@@ -14,6 +14,8 @@ export class APIService {
 
   private baseUrl: string | undefined = undefined;
 
+  private uuid: string = "";
+
   constructor(url: string) {
     this.baseUrl = url;
     this.apiService = axios.create({
@@ -120,6 +122,10 @@ export class APIService {
     this.apiToken = apiToken;
   };
 
+  setUUID = async (uuid: string) => {
+    this.uuid = uuid;
+  };
+
   setWalletAddress = async (address: string) => {
     this.walletAddress = address;
   };
@@ -133,6 +139,10 @@ export class APIService {
     }
     else {
       headers.Authorization = `Bearer ${this.token}`;
+    }
+    if (this.uuid && this.uuid != "") {
+      console.log(this.uuid);
+      headers["x-mm-id"] = this.uuid;
     }
     headers["x-wallet-address"] = this.walletAddress || "";
     return JSON.stringify(data);

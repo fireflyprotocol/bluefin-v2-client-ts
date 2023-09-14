@@ -184,6 +184,10 @@ export class BluefinClient {
     else if (userOnboarding) {
       await this.userOnBoarding();
     }
+
+    if (this.network.UUID) {
+      this.setUUID(this.network.UUID);
+    }
   };
 
   initializeWithHook = async (
@@ -199,6 +203,12 @@ export class BluefinClient {
     }
   };
 
+  /***
+  * Set UUID to api headers for colocation partners
+  */
+  setUUID = (uuid: string) => {
+    this.apiService.setUUID(uuid);
+  };
   /**
    * @description
    * initializes web3 and wallet with the given account private key
@@ -281,7 +291,7 @@ export class BluefinClient {
    * Generate and receive readOnlyToken, this can only be accessed at the time of generation
    * @returns readOnlyToken string
    */
-   generateReadOnlyToken = async () => {
+  generateReadOnlyToken = async () => {
     const response = await this.apiService.post<string>(
       SERVICE_URLS.USER.GENERATE_READONLY_TOKEN,
       {},
@@ -406,7 +416,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

@@ -28,9 +28,12 @@ export class Sockets {
 
   private callbacks: Callbacks = {};
 
+  private apiToken: string;
+
   constructor(url: string) {
     this.url = url;
     this.token = "";
+    this.apiToken = "";
   }
 
   createDynamicUrl(dynamicUrl: string, object: any) {
@@ -95,6 +98,10 @@ export class Sockets {
   async listen(event: string, callback: Function): Promise<void> {
     this.callbacks[event] = callback;
   }
+  
+  setApiToken = async (apiToken: string) => {
+    this.apiToken = apiToken;
+  };
 
   subscribeUserUpdateByToken(callback?: UserSubscriptionAck): boolean {
     if (!this.socketInstance) return false;
@@ -103,6 +110,7 @@ export class Sockets {
       [
         {
           e: SOCKET_EVENTS.UserUpdatesRoom,
+          rt: this.apiToken ? this.apiToken : "",
           t: this.token,
         },
       ],
@@ -120,6 +128,7 @@ export class Sockets {
       [
         {
           e: SOCKET_EVENTS.UserUpdatesRoom,
+          rt: this.apiToken ? this.apiToken : "",
           t: this.token,
         },
       ],

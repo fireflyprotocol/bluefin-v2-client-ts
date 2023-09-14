@@ -167,13 +167,25 @@ export class BluefinClient {
    * @param userOnboarding boolean indicating if user onboarding is required
    * @param deployment
    */
-  init = async (userOnboarding: boolean = true, deployment: any = null) => {
+  init = async (
+    userOnboarding: boolean = true,
+    deployment: any = null,
+    apiToken = ""
+  ) => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
     await this.initContractCalls(deployment);
     this.walletAddress = await this.signer.getAddress();
-    if (userOnboarding) {
+
+    if (apiToken) {
+      this.apiService.setApiToken(apiToken);
+      // for socket
+      this.sockets.setApiToken(apiToken);
+      this.webSockets?.setApiToken(apiToken);
+    }
+    // onboard user if not onboarded
+    else if (userOnboarding) {
       await this.userOnBoarding();
     }
   };
@@ -267,6 +279,19 @@ export class BluefinClient {
    * */
   getProvider = (): JsonRpcProvider => {
     return this.provider;
+  };
+
+  /**
+   * Generate and receive readOnlyToken, this can only be accessed at the time of generation
+   * @returns readOnlyToken string
+   */
+  generateReadOnlyToken = async () => {
+    const response = await this.apiService.post<string>(
+      SERVICE_URLS.USER.GENERATE_READONLY_TOKEN,
+      {},
+      { isAuthenticationRequired: true }
+    );
+    return response;
   };
 
   /**

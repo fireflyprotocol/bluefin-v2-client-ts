@@ -27,6 +27,7 @@ export const SERVICE_URLS = {
     TRANSFER_HISTORY: "/userTransferHistory",
     FUNDING_HISTORY: "/userFundingHistory",
     CANCEL_ON_DISCONNECT: "/dms-countdown",
+    GENERATE_READONLY_TOKEN: "/generateReadOnlyToken",
   },
   ORDERS: {
     ORDERS: "/orders",

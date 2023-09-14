@@ -486,14 +486,14 @@ export interface GetCountDownsResponse {
   timestamp: number;
 }
 
-export interface Network {
+export interface NetworkConfigs {
   name?: string;
   rpc?: string;
   faucet?: string;
   url?: string;
 }
 // adding this here as it's temporary support for socket.io
-export interface ExtendedNetwork extends Network {
+export interface ExtendedNetwork extends NetworkConfigs {
   apiGateway?: string; // making it optional for backward compatibility
   socketURL?: string;
   onboardingUrl?: string;

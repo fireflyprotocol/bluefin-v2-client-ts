@@ -1,3 +1,5 @@
+// firefly Library
+export * from "@firefly-exchange/library-sui";
 // interfaces
 export * from "./src/interfaces/routes";
 

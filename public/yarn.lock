@@ -1048,7 +1048,7 @@
     yargs "^17.6.2"
     yarn "^1.22.19"
 
-"@firefly-exchange/library-sui@^0.1.47", "@firefly-exchange/library-sui@^0.1.48":
+"@firefly-exchange/library-sui@^0.1.47":
   version "0.1.48"
   resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.1.48.tgz#2380fbc43b41de038a68a17f72efaff8730f00d0"
   integrity sha512-Jb7GoALdlo+hV7MckABS0UD3vCqHrFYfxUbqCwtw6lh/wV4UxwIhnIHXxw26jLn9IwKtsA22niDPixQXp93Nxw==

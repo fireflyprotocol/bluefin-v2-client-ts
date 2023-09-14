@@ -4,8 +4,11 @@
 
 /* eslint-disable no-console */
 
-import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
-import { ADJUST_MARGIN } from "@firefly-exchange/library-sui";
+import {
+  BluefinClient,
+  Networks,
+  ADJUST_MARGIN,
+} from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =

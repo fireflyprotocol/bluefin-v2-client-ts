@@ -26,8 +26,6 @@ export class Sockets {
 
   private token: string;
 
-  private apiToken: string;
-
   private callbacks: Callbacks = {};
 
   constructor(url: string) {

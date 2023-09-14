@@ -208,8 +208,8 @@ export class BluefinClient {
   };
 
   /***
-  * Set UUID to api headers for colocation partners
-  */
+   * Set UUID to api headers for colocation partners
+   */
   setUUID = (uuid: string) => {
     this.apiService.setUUID(uuid);
   };
@@ -419,7 +419,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

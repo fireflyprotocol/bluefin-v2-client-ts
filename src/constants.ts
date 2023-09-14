@@ -10,7 +10,7 @@ export const Networks = {
     webSocketURL: "wss://notifications.api.sui-staging.bluefin.io",
     onboardingUrl: "https://testnet.bluefin.io",
     faucet: "https://faucet.devnet.sui.io",
-    UUID: ""
+    UUID: "",
   },
   PRODUCTION_SUI: {
     name: "production",
@@ -21,7 +21,7 @@ export const Networks = {
     webSocketURL: "wss://notifications.api.sui-prod.bluefin.io",
     onboardingUrl: "https://trade-sui.bluefin.exchange",
     faucet: "does not exist",
-    UUID: ""
+    UUID: "",
   },
 };
 

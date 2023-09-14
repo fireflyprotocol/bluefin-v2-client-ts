@@ -29,7 +29,6 @@ export class Sockets {
   private apiToken: string;
 
   private callbacks: Callbacks = {};
-  
 
   constructor(url: string) {
     this.url = url;
@@ -93,9 +92,9 @@ export class Sockets {
   };
 
   /**
-     * Assigns callbacks to desired events
-     */
-   async listen(event: string, callback: Function): Promise<void> {
+   * Assigns callbacks to desired events
+   */
+  async listen(event: string, callback: Function): Promise<void> {
     this.callbacks[event] = callback;
   }
 
@@ -207,21 +206,25 @@ export class Sockets {
 
   async onDisconnect(): Promise<void> {
     this.socketInstance.on("disconnect", async () => {
-      console.log('Disconnected From Socket Server');
-      if ('disconnect' in this.callbacks && typeof this.callbacks['disconnect'] === 'function') {
-        await this.callbacks['disconnect']();
+      console.log("Disconnected From Socket Server");
+      if (
+        "disconnect" in this.callbacks &&
+        typeof this.callbacks["disconnect"] === "function"
+      ) {
+        await this.callbacks["disconnect"]();
       }
     });
-
   }
 
   async onConnect(): Promise<void> {
     this.socketInstance.on("connect", async () => {
-      console.log('Connected To Socket Server');
-      if ('connect' in this.callbacks && typeof this.callbacks['connect'] === 'function') {
-        await this.callbacks['connect']();
+      console.log("Connected To Socket Server");
+      if (
+        "connect" in this.callbacks &&
+        typeof this.callbacks["connect"] === "function"
+      ) {
+        await this.callbacks["connect"]();
       }
     });
-
   }
 }

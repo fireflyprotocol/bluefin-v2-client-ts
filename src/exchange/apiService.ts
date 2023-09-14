@@ -126,6 +126,10 @@ export class APIService {
     this.uuid = uuid;
   };
 
+  setApiToken = async (apiToken: string) => {
+    this.apiToken = apiToken;
+  };
+
   setWalletAddress = async (address: string) => {
     this.walletAddress = address;
   };
@@ -144,6 +148,7 @@ export class APIService {
       console.log(this.uuid);
       headers["x-mm-id"] = this.uuid;
     }
+
     headers["x-wallet-address"] = this.walletAddress || "";
     return JSON.stringify(data);
   };

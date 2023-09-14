@@ -16,6 +16,7 @@ import {
   MarketData,
   UserSubscriptionAck,
   TickerData,
+  Callbacks,
 } from "../interfaces/routes";
 
 export class Sockets {
@@ -25,8 +26,9 @@ export class Sockets {
 
   private token: string;
 
+  private callbacks: Callbacks = {};
+
   private apiToken: string;
-  
 
   constructor(url: string) {
     this.url = url;
@@ -49,6 +51,9 @@ export class Sockets {
     this.socketInstance = io(this.url, {
       transports: ["websocket"],
     });
+
+    this.onConnect();
+    this.onDisconnect();
   }
 
   /**
@@ -87,8 +92,14 @@ export class Sockets {
     this.token = token;
   };
 
-
-  setAPIToken = async (apiToken: string) => {
+  /**
+   * Assigns callbacks to desired events
+   */
+  async listen(event: string, callback: Function): Promise<void> {
+    this.callbacks[event] = callback;
+  }
+  
+  setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;
   };
 
@@ -99,7 +110,7 @@ export class Sockets {
       [
         {
           e: SOCKET_EVENTS.UserUpdatesRoom,
-          rt: this.apiToken? this.apiToken: "",
+          rt: this.apiToken ? this.apiToken : "",
           t: this.token,
         },
       ],
@@ -117,6 +128,7 @@ export class Sockets {
       [
         {
           e: SOCKET_EVENTS.UserUpdatesRoom,
+          rt: this.apiToken ? this.apiToken : "",
           t: this.token,
         },
       ],
@@ -198,4 +210,28 @@ export class Sockets {
   ) => {
     this.socketInstance.on(SOCKET_EVENTS.AccountDataUpdateKey, cb);
   };
+
+  async onDisconnect(): Promise<void> {
+    this.socketInstance.on("disconnect", async () => {
+      console.log("Disconnected From Socket Server");
+      if (
+        "disconnect" in this.callbacks &&
+        typeof this.callbacks["disconnect"] === "function"
+      ) {
+        await this.callbacks["disconnect"]();
+      }
+    });
+  }
+
+  async onConnect(): Promise<void> {
+    this.socketInstance.on("connect", async () => {
+      console.log("Connected To Socket Server");
+      if (
+        "connect" in this.callbacks &&
+        typeof this.callbacks["connect"] === "function"
+      ) {
+        await this.callbacks["connect"]();
+      }
+    });
+  }
 }

@@ -549,3 +549,7 @@ export interface ExtendedWalletContextState
     data: Uint8Array
   ) => Promise<{ messageBytes: string; signature: string }>;
 }
+
+export interface Callbacks {
+  [event: string]: Function;
+}

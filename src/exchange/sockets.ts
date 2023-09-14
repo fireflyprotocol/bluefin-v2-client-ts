@@ -88,7 +88,7 @@ export class Sockets {
   };
 
 
-  setAPIToken = async (apiToken: string) => {
+  setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;
   };
 

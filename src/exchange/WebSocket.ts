@@ -152,7 +152,7 @@ export class WebSockets {
     this.token = token;
   };
 
-  setAPIToken = async (apiToken: string) => {
+  setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;
   };
 

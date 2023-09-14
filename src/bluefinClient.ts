@@ -175,10 +175,10 @@ export class BluefinClient {
     this.walletAddress = await this.signer.getAddress();
     
     if (apiToken) {
-      this.apiService.setAPIToken(apiToken);
+      this.apiService.setApiToken(apiToken);
       // for socket
-      this.sockets.setAPIToken(apiToken);
-      this.webSockets?.setAPIToken(apiToken);
+      this.sockets.setApiToken(apiToken);
+      this.webSockets?.setApiToken(apiToken);
     }
     // onboard user if not onboarded
     else if (userOnboarding) {

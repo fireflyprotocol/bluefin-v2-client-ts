@@ -8,6 +8,8 @@ export class APIService {
 
   private token: string | undefined = undefined;
 
+  private apiToken: string | undefined = undefined;
+
   private walletAddress: string | undefined = undefined;
 
   private baseUrl: string | undefined = undefined;
@@ -114,6 +116,10 @@ export class APIService {
     this.token = token;
   };
 
+  setAPIToken = async (apiToken: string) => {
+    this.apiToken = apiToken;
+  };
+
   setWalletAddress = async (address: string) => {
     this.walletAddress = address;
   };
@@ -122,7 +128,12 @@ export class APIService {
   //= ==============================================================//
 
   private transformRequest = (data: any, headers?: any) => {
-    headers.Authorization = `Bearer ${this.token}`;
+    if (this.apiToken) {
+      headers["x-api-token"] = this.apiToken;
+    }
+    else {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
     headers["x-wallet-address"] = this.walletAddress || "";
     return JSON.stringify(data);
   };

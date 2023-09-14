@@ -27,9 +27,12 @@ export class WebSockets {
 
   private url: string;
 
+  private apiToken: string;
+
   constructor(url: string) {
     this.url = url;
     this.token = "";
+    this.apiToken = "";
   }
 
   createDynamicUrl(dynamicUrl: string, object: any) {
@@ -120,6 +123,7 @@ export class WebSockets {
         [
           {
             e: SOCKET_EVENTS.UserUpdatesRoom,
+            rt: this.apiToken? this.apiToken: "",
             t: this.token,
           },
         ],
@@ -146,6 +150,10 @@ export class WebSockets {
 
   setAuthToken = (token: string) => {
     this.token = token;
+  };
+
+  setAPIToken = async (apiToken: string) => {
+    this.apiToken = apiToken;
   };
 
   // Emitted when any price bin on the oderbook is updated.

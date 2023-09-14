@@ -3,11 +3,7 @@
  */
 
 /* eslint-disable no-console */
-import {
-  BluefinClient,
-  MARKET_SYMBOLS,
-  Networks,
-} from "../index";
+import { BluefinClient, MARKET_SYMBOLS, Networks } from "../index";
 
 async function main() {
   const dummyAccountKey =
@@ -21,7 +17,7 @@ async function main() {
   ); //passing isTermAccepted = true for compliance and authorizarion
 
   // load/init contract addresses
-  await client.init()
+  await client.init();
 
   //receive read-only token in response
   const resp = await client.generateReadOnlyToken();

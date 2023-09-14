@@ -117,7 +117,7 @@ export class APIService {
   setAuthToken = async (token: string) => {
     this.token = token;
   };
-  
+
   setUUID = async (uuid: string) => {
     this.uuid = uuid;
   };
@@ -140,7 +140,6 @@ export class APIService {
       headers.Authorization = `Bearer ${this.token}`;
     }
     if (this.uuid && this.uuid != "") {
-      console.log(this.uuid);
       headers["x-mm-id"] = this.uuid;
     }
 

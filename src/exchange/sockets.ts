@@ -27,7 +27,6 @@ export class Sockets {
 
   private apiToken: string;
 
-
   constructor(url: string) {
     this.url = url;
     this.token = "";
@@ -86,7 +85,6 @@ export class Sockets {
   setAuthToken = (token: string) => {
     this.token = token;
   };
-
 
   setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;

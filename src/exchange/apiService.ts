@@ -130,8 +130,7 @@ export class APIService {
   private transformRequest = (data: any, headers?: any) => {
     if (this.apiToken) {
       headers["x-api-token"] = this.apiToken;
-    }
-    else {
+    } else {
       headers.Authorization = `Bearer ${this.token}`;
     }
     headers["x-wallet-address"] = this.walletAddress || "";

@@ -167,13 +167,17 @@ export class BluefinClient {
    * @param userOnboarding boolean indicating if user onboarding is required
    * @param deployment
    */
-  init = async (userOnboarding: boolean = true, deployment: any = null, apiToken = "") => {
+  init = async (
+    userOnboarding: boolean = true,
+    deployment: any = null,
+    apiToken = ""
+  ) => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
     await this.initContractCalls(deployment);
     this.walletAddress = await this.signer.getAddress();
-    
+
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -281,7 +285,7 @@ export class BluefinClient {
    * Generate and receive readOnlyToken, this can only be accessed at the time of generation
    * @returns readOnlyToken string
    */
-   generateReadOnlyToken = async () => {
+  generateReadOnlyToken = async () => {
     const response = await this.apiService.post<string>(
       SERVICE_URLS.USER.GENERATE_READONLY_TOKEN,
       {},
@@ -289,7 +293,6 @@ export class BluefinClient {
     );
     return response;
   };
-
 
   /**
    * @description

@@ -117,11 +117,7 @@ export class APIService {
   setAuthToken = async (token: string) => {
     this.token = token;
   };
-
-  setAPIToken = async (apiToken: string) => {
-    this.apiToken = apiToken;
-  };
-
+  
   setUUID = async (uuid: string) => {
     this.uuid = uuid;
   };

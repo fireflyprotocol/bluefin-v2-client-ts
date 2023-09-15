@@ -6,7 +6,6 @@ import {
   Networks,
   ORDER_SIDE,
   ORDER_TYPE,
-  PlaceOrderResponse,
 } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
@@ -16,7 +15,7 @@ async function main() {
   // using predefined network
   const client = new BluefinClient(
     true,
-    Networks.PRODUCTION_SUI,
+    Networks.TESTNET_SUI,
     dummyAccountKey,
     "ED25519"
   ); //passing isTermAccepted = true for compliance and authorizarion
@@ -46,7 +45,6 @@ async function main() {
 
   console.log("Making socket connection to firefly exchange");
   client.sockets.open();
-
 
   // wait for 1 sec as room might not had been subscribed
 

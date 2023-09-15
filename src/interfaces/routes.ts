@@ -499,6 +499,7 @@ export interface ExtendedNetwork extends NetworkConfigs {
   onboardingUrl?: string;
   webSocketURL: string;
   dmsURL?: string;
+  UUID?: string;
 }
 
 export interface ConfigResponse {

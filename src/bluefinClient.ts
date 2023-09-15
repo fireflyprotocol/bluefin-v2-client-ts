@@ -188,6 +188,10 @@ export class BluefinClient {
     else if (userOnboarding) {
       await this.userOnBoarding();
     }
+
+    if (this.network.UUID) {
+      this.setUUID(this.network.UUID);
+    }
   };
 
   initializeWithHook = async (
@@ -203,6 +207,12 @@ export class BluefinClient {
     }
   };
 
+  /***
+   * Set UUID to api headers for colocation partners
+   */
+  setUUID = (uuid: string) => {
+    this.apiService.setUUID(uuid);
+  };
   /**
    * @description
    * initializes web3 and wallet with the given account private key

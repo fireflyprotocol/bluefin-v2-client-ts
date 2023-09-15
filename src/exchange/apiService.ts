@@ -14,6 +14,8 @@ export class APIService {
 
   private baseUrl: string | undefined = undefined;
 
+  private uuid: string = "";
+
   constructor(url: string) {
     this.baseUrl = url;
     this.apiService = axios.create({
@@ -116,6 +118,10 @@ export class APIService {
     this.token = token;
   };
 
+  setUUID = async (uuid: string) => {
+    this.uuid = uuid;
+  };
+
   setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;
   };
@@ -133,6 +139,10 @@ export class APIService {
     } else {
       headers.Authorization = `Bearer ${this.token}`;
     }
+    if (this.uuid) {
+      headers["x-mm-id"] = this.uuid;
+    }
+
     headers["x-wallet-address"] = this.walletAddress || "";
     return JSON.stringify(data);
   };

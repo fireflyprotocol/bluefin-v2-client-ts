@@ -98,7 +98,7 @@ export class Sockets {
   async listen(event: string, callback: Function): Promise<void> {
     this.callbacks[event] = callback;
   }
-  
+
   setApiToken = async (apiToken: string) => {
     this.apiToken = apiToken;
   };

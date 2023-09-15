@@ -23,6 +23,17 @@ export const Networks = {
     faucet: "does not exist",
     UUID: "",
   },
+  PRODUCTION_SUI_INTERNAL: {
+    name: "production",
+    url: "https://fullnode.mainnet.sui.io:443",
+    apiGateway: "https://dapi.api.sui-prod.int.bluefin.io",
+    socketURL: "wss://dapi.api.sui-prod.int.bluefin.io",
+    dmsURL: "https://dapi.api.sui-prod.int.bluefin.io/dead-man-switch",
+    webSocketURL: "wss://notifications.api.sui-prod.int.bluefin.io",
+    onboardingUrl: "https://trade-sui.bluefin.exchange",
+    faucet: "does not exist",
+    UUID: "",
+  },
 };
 
 export const DEFAULT_PRECISION = 6;

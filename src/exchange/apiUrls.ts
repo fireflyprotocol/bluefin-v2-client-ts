@@ -40,12 +40,13 @@ export const SERVICE_URLS = {
     USER_REWARDS_SUMMARY: "/growth/userRewards/summary",
     REWARDS_OVERVIEW: "/growth/tradeAndEarn/rewardsOverview",
     REWARDS_DETAILS: "/growth/tradeAndEarn/rewardsDetail",
-    TOTAL_HISTORICAL_TRADING_REWARDS: "/growth/tradeAndEarn/totalHistoricalTradingRewards",
+    TOTAL_HISTORICAL_TRADING_REWARDS:
+      "/growth/tradeAndEarn/totalHistoricalTradingRewards",
     MAKER_REWARDS_SUMMARY: "/growth/marketMaker/maker-rewards-summary",
     MAKER_REWARDS_DETAILS: "/growth/marketMaker/maker-rewards-detail",
     MAKER_WHITELIST_STATUS: "/growth/marketMaker/whitelist-status",
     GENERATE_CODE: "/growth/generateCode",
-    LINK_REFERRED_USER: "/growth/linkReferredUser"
+    LINK_REFERRED_USER: "/growth/linkReferredUser",
   },
   ORDERS: {
     ORDERS: "/orders",

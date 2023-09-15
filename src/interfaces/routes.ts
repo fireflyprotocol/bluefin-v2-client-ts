@@ -550,7 +550,6 @@ export interface ExtendedWalletContextState
   ) => Promise<{ messageBytes: string; signature: string }>;
 }
 
-
 export interface GetReferrerInfoResponse {
   isReferee: boolean;
 }
@@ -617,8 +616,8 @@ export interface GetAffiliateRefereeCountResponse {
 }
 
 export interface GetUserRewardsHistoryRequest {
-  pageSize?: number
-  cursor?: number
+  pageSize?: number;
+  cursor?: number;
 }
 export interface GetUserRewardsHistoryResponse {
   data: UserRewardsHistoryData[];
@@ -661,8 +660,8 @@ export interface GetTradeAndEarnRewardsOverviewResponse {
 
 export interface GetTradeAndEarnRewardsDetailRequest {
   campaignId: number;
-  pageSize?: number
-  cursor?: number
+  pageSize?: number;
+  cursor?: number;
 }
 
 export interface GetTradeAndEarnRewardsDetailResponse {
@@ -681,7 +680,7 @@ interface TradeAndEarnRewardsDetailData {
   epochNumber: string;
 }
 
-export interface GetTotalHistoricalTradingRewardsResponse{
+export interface GetTotalHistoricalTradingRewardsResponse {
   totalTokenRewards: string;
 }
 
@@ -695,8 +694,8 @@ export interface GetMakerRewardsSummaryResponse {
 }
 export interface GetMakerRewardDetailsRequest {
   symbol?: string;
-  pageSize?: number
-  cursor?: number
+  pageSize?: number;
+  cursor?: number;
 }
 
 export interface GetMakerRewardDetailsResponse {
@@ -719,7 +718,7 @@ interface MakerRewardDetailsData {
 }
 
 export interface GetUserWhiteListStatusForMarkeMakerResponse {
-  isWhitelist: boolean
+  isWhitelist: boolean;
 }
 
 export interface GenerateReferralCodeRequest {
@@ -742,7 +741,6 @@ export interface LinkReferredUserResponse {
   campaignId: number;
   message?: string;
 }
-
 
 export interface Callbacks {
   [event: string]: Function;

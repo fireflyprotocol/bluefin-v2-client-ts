@@ -1139,224 +1139,233 @@ export class BluefinClient {
     return response;
   };
 
-   /**
+  /**
    * Generates referral code
    * @param params GenerateReferralCodeRequest
    * @returns GenerateReferralCodeResponse
    */
-    generateReferralCode = async (params: GenerateReferralCodeRequest) => {
-      const response = await this.apiService.post<GenerateReferralCodeResponse>(
-        SERVICE_URLS.GROWTH.GENERATE_CODE,
-        params,
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    }
-  
-    /**
-     * Links referred user
-     * @param params LinkReferredUserRequest
-     * @returns LinkReferredUserResponse
-     */
-    linkReferredUser = async (params: LinkReferredUserRequest) => {
-      const response = await this.apiService.post<LinkReferredUserResponse>(
-        SERVICE_URLS.GROWTH.LINK_REFERRED_USER,
-        params,
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    }
-  
-    /**
-     * Gets referrer Info
-     * @param campaignId
-     * @returns GetReferrerInfoResponse
-     */
-    getReferrerInfo = async (campaignId: number) => {
-      const response = await this.apiService.get<GetReferrerInfoResponse>(
-        SERVICE_URLS.GROWTH.REFERRER_INFO,
-        { campaignId },
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets campaign details
-     * @returns Array of GetCampaignDetailsResponse 
-     */
-    getCampaignDetails = async () => {
-      const response = await this.apiService.get<GetCampaignDetailsResponse[]>(
-        SERVICE_URLS.GROWTH.CAMPAIGN_DETAILS,
-      );
-      return response;
-    };
-  
-    /**
-     * Gets campaign reward details
-     * @param campaignId
-     * @returns GetCampaignRewardsResponse
-     */
-    getCampaignRewards = async (campaignId: number) => {
-      const response = await this.apiService.get<GetCampaignRewardsResponse>(
-        SERVICE_URLS.GROWTH.CAMPAIGN_REWARDS,
-        { campaignId },
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets affiliate payout details
-     * @param campaignId
-     * @returns Array of GetAffiliatePayoutsResponse
-     */
-    getAffiliatePayouts = async (campaignId: number) => {
-      const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
-        SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
-        { campaignId },
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-  
-    /**
-     * Gets affiliate referree details
-     * @param GetAffiliateRefereeDetailsRequest
-     * @returns GetAffiliateRefereeDetailsResponse
-     */
-    getAffiliateRefereeDetails = async (params: GetAffiliateRefereeDetailsRequest) => {
-      const response = await this.apiService.get<GetAffiliateRefereeDetailsResponse>(
+  generateReferralCode = async (params: GenerateReferralCodeRequest) => {
+    const response = await this.apiService.post<GenerateReferralCodeResponse>(
+      SERVICE_URLS.GROWTH.GENERATE_CODE,
+      params,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Links referred user
+   * @param params LinkReferredUserRequest
+   * @returns LinkReferredUserResponse
+   */
+  linkReferredUser = async (params: LinkReferredUserRequest) => {
+    const response = await this.apiService.post<LinkReferredUserResponse>(
+      SERVICE_URLS.GROWTH.LINK_REFERRED_USER,
+      params,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets referrer Info
+   * @param campaignId
+   * @returns GetReferrerInfoResponse
+   */
+  getReferrerInfo = async (campaignId: number) => {
+    const response = await this.apiService.get<GetReferrerInfoResponse>(
+      SERVICE_URLS.GROWTH.REFERRER_INFO,
+      { campaignId },
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets campaign details
+   * @returns Array of GetCampaignDetailsResponse
+   */
+  getCampaignDetails = async () => {
+    const response = await this.apiService.get<GetCampaignDetailsResponse[]>(
+      SERVICE_URLS.GROWTH.CAMPAIGN_DETAILS
+    );
+    return response;
+  };
+
+  /**
+   * Gets campaign reward details
+   * @param campaignId
+   * @returns GetCampaignRewardsResponse
+   */
+  getCampaignRewards = async (campaignId: number) => {
+    const response = await this.apiService.get<GetCampaignRewardsResponse>(
+      SERVICE_URLS.GROWTH.CAMPAIGN_REWARDS,
+      { campaignId },
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets affiliate payout details
+   * @param campaignId
+   * @returns Array of GetAffiliatePayoutsResponse
+   */
+  getAffiliatePayouts = async (campaignId: number) => {
+    const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
+      SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
+      { campaignId },
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets affiliate referree details
+   * @param GetAffiliateRefereeDetailsRequest
+   * @returns GetAffiliateRefereeDetailsResponse
+   */
+  getAffiliateRefereeDetails = async (
+    params: GetAffiliateRefereeDetailsRequest
+  ) => {
+    const response =
+      await this.apiService.get<GetAffiliateRefereeDetailsResponse>(
         SERVICE_URLS.GROWTH.AFFILIATE_REFEREE_DETAILS,
         params,
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
-    /**
-     * Gets affiliate referree count
-     * @param campaignId
-     * @returns GetAffiliateRefereeCountResponse
-     */
-    getAffiliateRefereeCount = async (campaignId: number) => {
-      const response = await this.apiService.get<GetAffiliateRefereeCountResponse>(
+    return response;
+  };
+
+  /**
+   * Gets affiliate referree count
+   * @param campaignId
+   * @returns GetAffiliateRefereeCountResponse
+   */
+  getAffiliateRefereeCount = async (campaignId: number) => {
+    const response =
+      await this.apiService.get<GetAffiliateRefereeCountResponse>(
         SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
         { campaignId },
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
-    /**
-     * Gets user rewards history
-     * @param optional params GetUserRewardsHistoryRequest
-     * @returns GetUserRewardsHistoryResponse
-     */
-    getUserRewardsHistory = async (params?: GetUserRewardsHistoryRequest) => {
-      const response = await this.apiService.get<GetUserRewardsHistoryResponse>(
-        SERVICE_URLS.GROWTH.USER_REWARDS_HISTORY,
-        params,
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets user rewards summary
-     * @returns GetUserRewardsSummaryResponse
-     */
-    getUserRewardsSummary = async () => {
-      const response = await this.apiService.get<GetUserRewardsSummaryResponse>(
-        SERVICE_URLS.GROWTH.USER_REWARDS_SUMMARY,
-        {},
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets rewards overview
-     * @param campaignId
-     * @returns GetTradeAndEarnRewardsOverviewResponse
-     */
-    getTradeAndEarnRewardsOverview = async (campaignId: number) => {
-      const response = await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
+    return response;
+  };
+
+  /**
+   * Gets user rewards history
+   * @param optional params GetUserRewardsHistoryRequest
+   * @returns GetUserRewardsHistoryResponse
+   */
+  getUserRewardsHistory = async (params?: GetUserRewardsHistoryRequest) => {
+    const response = await this.apiService.get<GetUserRewardsHistoryResponse>(
+      SERVICE_URLS.GROWTH.USER_REWARDS_HISTORY,
+      params,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets user rewards summary
+   * @returns GetUserRewardsSummaryResponse
+   */
+  getUserRewardsSummary = async () => {
+    const response = await this.apiService.get<GetUserRewardsSummaryResponse>(
+      SERVICE_URLS.GROWTH.USER_REWARDS_SUMMARY,
+      {},
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets rewards overview
+   * @param campaignId
+   * @returns GetTradeAndEarnRewardsOverviewResponse
+   */
+  getTradeAndEarnRewardsOverview = async (campaignId: number) => {
+    const response =
+      await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
         SERVICE_URLS.GROWTH.REWARDS_OVERVIEW,
         { campaignId },
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
-    /**
-     * Gets rewards details
-     * @param GetTradeAndEarnRewardsDetailRequest
-     * @returns GetTradeAndEarnRewardsDetailResponse
-     */
-    getTradeAndEarnRewardsDetail = async (params: GetTradeAndEarnRewardsDetailRequest) => {
-      const response = await this.apiService.get<GetTradeAndEarnRewardsDetailResponse>(
+    return response;
+  };
+
+  /**
+   * Gets rewards details
+   * @param GetTradeAndEarnRewardsDetailRequest
+   * @returns GetTradeAndEarnRewardsDetailResponse
+   */
+  getTradeAndEarnRewardsDetail = async (
+    params: GetTradeAndEarnRewardsDetailRequest
+  ) => {
+    const response =
+      await this.apiService.get<GetTradeAndEarnRewardsDetailResponse>(
         SERVICE_URLS.GROWTH.REWARDS_DETAILS,
         params,
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
-    /**
-     * Gets total historical trading reward details
-     * @returns GetTotalHistoricalTradingRewardsResponse
-     */
-    getTotalHistoricalTradingRewards = async () => {
-      const response = await this.apiService.get<GetTotalHistoricalTradingRewardsResponse>(
+    return response;
+  };
+
+  /**
+   * Gets total historical trading reward details
+   * @returns GetTotalHistoricalTradingRewardsResponse
+   */
+  getTotalHistoricalTradingRewards = async () => {
+    const response =
+      await this.apiService.get<GetTotalHistoricalTradingRewardsResponse>(
         SERVICE_URLS.GROWTH.TOTAL_HISTORICAL_TRADING_REWARDS,
         {},
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
-    /**
-     * Gets maker rewards summary
-     * @returns GetMakerRewardsSummaryResponse
-     */
-    getMakerRewardsSummary = async () => {
-      const response = await this.apiService.get<GetMakerRewardsSummaryResponse>(
-        SERVICE_URLS.GROWTH.MAKER_REWARDS_SUMMARY,
-        {},
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets maker reward details
-     * @param GetMakerRewardDetailsRequest
-     * @returns GetMakerRewardDetailsResponse
-     */
-    getMakerRewardDetails = async (params: GetMakerRewardDetailsRequest) => {
-      const response = await this.apiService.get<GetMakerRewardDetailsResponse>(
-        SERVICE_URLS.GROWTH.MAKER_REWARDS_DETAILS,
-        params,
-        { isAuthenticationRequired: true }
-      );
-      return response;
-    };
-  
-    /**
-     * Gets market maker whitelist status
-     * @returns GetUserWhiteListStatusForMarkeMaker
-     */
-    getUserWhiteListStatusForMarketMaker = async () => {
-      const response = await this.apiService.get<GetUserWhiteListStatusForMarkeMakerResponse>(
+    return response;
+  };
+
+  /**
+   * Gets maker rewards summary
+   * @returns GetMakerRewardsSummaryResponse
+   */
+  getMakerRewardsSummary = async () => {
+    const response = await this.apiService.get<GetMakerRewardsSummaryResponse>(
+      SERVICE_URLS.GROWTH.MAKER_REWARDS_SUMMARY,
+      {},
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets maker reward details
+   * @param GetMakerRewardDetailsRequest
+   * @returns GetMakerRewardDetailsResponse
+   */
+  getMakerRewardDetails = async (params: GetMakerRewardDetailsRequest) => {
+    const response = await this.apiService.get<GetMakerRewardDetailsResponse>(
+      SERVICE_URLS.GROWTH.MAKER_REWARDS_DETAILS,
+      params,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * Gets market maker whitelist status
+   * @returns GetUserWhiteListStatusForMarkeMaker
+   */
+  getUserWhiteListStatusForMarketMaker = async () => {
+    const response =
+      await this.apiService.get<GetUserWhiteListStatusForMarkeMakerResponse>(
         SERVICE_URLS.GROWTH.MAKER_WHITELIST_STATUS,
         {},
         { isAuthenticationRequired: true }
       );
-      return response;
-    };
-  
+    return response;
+  };
+
   //= ==============================================================//
   //                    PRIVATE HELPER FUNCTIONS
   //= ==============================================================//

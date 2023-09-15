@@ -3,7 +3,7 @@
  */
 
 /* eslint-disable no-console */
-import { BluefinClient, MARKET_SYMBOLS, Networks } from "../index";
+import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
   const dummyAccountKey =
@@ -16,13 +16,17 @@ async function main() {
     "ED25519" // valid values are ED25519 or Secp256k1
   ); //passing isTermAccepted = true for compliance and authorizarion
 
-  // load/init contract addresses
-  await client.init();
+  // load/init contract addresses using read-only token
+  await client.init(
+    false,
+    null,
+    "80a5d86820821aeae483f7cdda715e0215c1fdad612b982e7ce22c88de3ac9e2"
+  );
 
-  //receive read-only token in response
-  const resp = await client.generateReadOnlyToken();
+  //receive user positions using readonly client
+  const response = await client.getUserPosition({ symbol: "ETH-PERP" });
 
-  console.log(resp.data);
+  console.log(response.data);
 }
 
 main().then().catch(console.warn);

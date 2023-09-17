@@ -17,6 +17,7 @@ import {
   UserSubscriptionAck,
   TickerData,
   Callbacks,
+  OrderSentForSettlementUpdateResponse,
 } from "../interfaces/routes";
 
 export class Sockets {
@@ -154,6 +155,10 @@ export class Sockets {
     cb: ({ status, symbol }: { status: MARKET_STATUS; symbol: string }) => void
   ) => {
     this.socketInstance.on(SOCKET_EVENTS.MarketHealthKey, cb);
+  };
+
+  onUserOrderSentForSettlementUpdate = (cb: (update: OrderSentForSettlementUpdateResponse) => void) => {
+    this.socketInstance.on(SOCKET_EVENTS.OrderSentForSettlementUpdate, cb);
   };
 
   onCandleStickUpdate = (

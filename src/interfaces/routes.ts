@@ -742,6 +742,15 @@ export interface LinkReferredUserResponse {
   message?: string;
 }
 
+export interface OrderSentForSettlementUpdateResponse {
+  orderHash: string;
+  userAddress: string;
+  symbol: string;
+  message: string;
+  quantitySentForSettlement: string;
+  orderQuantity: string;
+}
+
 export interface Callbacks {
   [event: string]: Function;
 }

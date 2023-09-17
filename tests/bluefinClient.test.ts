@@ -1183,7 +1183,6 @@ describe("BluefinClient", () => {
         });
       });
     });
-
   });
 
   describe("WebSockets", () => {

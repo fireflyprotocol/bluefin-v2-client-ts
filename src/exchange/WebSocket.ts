@@ -169,7 +169,9 @@ export class WebSockets {
     callbackListeners[SOCKET_EVENTS.MarketDataUpdateKey] = cb;
   };
 
-  onUserOrderSentForSettlementUpdate = (cb: (update: OrderSentForSettlementUpdateResponse) => void) => {
+  onUserOrderSentForSettlementUpdate = (
+    cb: (update: OrderSentForSettlementUpdateResponse) => void
+  ) => {
     callbackListeners[SOCKET_EVENTS.OrderSentForSettlementUpdate] = cb;
   };
 

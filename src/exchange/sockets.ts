@@ -157,7 +157,9 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.MarketHealthKey, cb);
   };
 
-  onUserOrderSentForSettlementUpdate = (cb: (update: OrderSentForSettlementUpdateResponse) => void) => {
+  onUserOrderSentForSettlementUpdate = (
+    cb: (update: OrderSentForSettlementUpdateResponse) => void
+  ) => {
     this.socketInstance.on(SOCKET_EVENTS.OrderSentForSettlementUpdate, cb);
   };
 

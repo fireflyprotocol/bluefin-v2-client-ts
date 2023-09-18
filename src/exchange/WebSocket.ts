@@ -15,6 +15,7 @@ import {
   MarketData,
   TickerData,
   OrderSentForSettlementUpdateResponse,
+  OrderRequeueUpdateResponse,
 } from "../interfaces/routes";
 
 // @ts-ignore

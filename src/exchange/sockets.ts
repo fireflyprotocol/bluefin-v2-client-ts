@@ -18,6 +18,7 @@ import {
   TickerData,
   Callbacks,
   OrderSentForSettlementUpdateResponse,
+  OrderRequeueUpdateResponse,
 } from "../interfaces/routes";
 
 export class Sockets {

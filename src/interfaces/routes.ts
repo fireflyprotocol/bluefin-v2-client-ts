@@ -751,6 +751,14 @@ export interface OrderSentForSettlementUpdateResponse {
   orderQuantity: string;
 }
 
+export interface OrderRequeueUpdateResponse {
+  orderHash: string;
+  userAddress: string;
+  symbol: string;
+  message: string;
+  quantitySentForRequeue: string;
+}
+
 export interface Callbacks {
   [event: string]: Function;
 }

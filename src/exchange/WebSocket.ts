@@ -175,6 +175,10 @@ export class WebSockets {
     callbackListeners[SOCKET_EVENTS.OrderSentForSettlementUpdate] = cb;
   };
 
+  onUserOrderRequeueUpdate = (cb: (update: OrderRequeueUpdateResponse) => void) => {
+    callbackListeners[SOCKET_EVENTS.OrderRequeueUpdate] = cb;
+  };
+
   onMarketHealthChange = (
     cb: ({ status, symbol }: { status: MARKET_STATUS; symbol: string }) => void
   ) => {

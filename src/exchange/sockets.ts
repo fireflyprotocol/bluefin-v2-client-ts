@@ -163,6 +163,10 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.OrderSentForSettlementUpdate, cb);
   };
 
+  onUserOrderRequeueUpdate = (cb: (update: OrderRequeueUpdateResponse) => void) => {
+    this.socketInstance.on(SOCKET_EVENTS.OrderRequeueUpdate, cb);
+  };
+
   onCandleStickUpdate = (
     symbol: string,
     interval: string,

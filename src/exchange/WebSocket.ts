@@ -14,6 +14,8 @@ import {
   GetAccountDataResponse,
   MarketData,
   TickerData,
+  OrderSentForSettlementUpdateResponse,
+  OrderRequeueUpdateResponse,
 } from "../interfaces/routes";
 
 // @ts-ignore
@@ -166,6 +168,18 @@ export class WebSockets {
     cb: ({ marketData }: { marketData: MarketData }) => void
   ) => {
     callbackListeners[SOCKET_EVENTS.MarketDataUpdateKey] = cb;
+  };
+
+  onUserOrderSentForSettlementUpdate = (
+    cb: (update: OrderSentForSettlementUpdateResponse) => void
+  ) => {
+    callbackListeners[SOCKET_EVENTS.OrderSentForSettlementUpdate] = cb;
+  };
+
+  onUserOrderRequeueUpdate = (
+    cb: (update: OrderRequeueUpdateResponse) => void
+  ) => {
+    callbackListeners[SOCKET_EVENTS.OrderRequeueUpdate] = cb;
   };
 
   onMarketHealthChange = (

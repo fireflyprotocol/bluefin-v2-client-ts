@@ -25,6 +25,7 @@ import {
   GetUserTradesResponse,
   GetAccountDataResponse,
   TickerData,
+  OrderSentForSettlementUpdateResponse,
 } from "../index";
 import { generateRandomNumber } from "../utils/utils";
 
@@ -1162,6 +1163,26 @@ describe("BluefinClient", () => {
         });
       });
     });
+    it("should receive an sent for settlement event when trade is performed", (done) => {
+      const callback = (update: OrderSentForSettlementUpdateResponse) => {
+        expect(update.symbol).to.be.equal(symbol);
+        done();
+      };
+
+      client.sockets.onUserOrderSentForSettlementUpdate(callback);
+
+      // wait for 1 sec as room might not had been subscribed
+      setTimeout(1000).then(async () => {
+        client.postOrder({
+          symbol,
+          price: 0,
+          quantity: 0.001,
+          side: ORDER_SIDE.SELL,
+          leverage: defaultLeverage,
+          orderType: ORDER_TYPE.MARKET,
+        });
+      });
+    });
   });
 
   describe("WebSockets", () => {
@@ -1326,6 +1347,26 @@ describe("BluefinClient", () => {
           price: 0,
           quantity: 0.1,
           side: ORDER_SIDE.BUY,
+          leverage: defaultLeverage,
+          orderType: ORDER_TYPE.MARKET,
+        });
+      });
+    });
+    it("WebSocket Client: should receive an sent for settlement event when trade is performed", (done) => {
+      const callback = (update: OrderSentForSettlementUpdateResponse) => {
+        expect(update.symbol).to.be.equal(symbol);
+        done();
+      };
+
+      client.webSockets?.onUserOrderSentForSettlementUpdate(callback);
+
+      // wait for 1 sec as room might not had been subscribed
+      setTimeout(1000).then(async () => {
+        client.postOrder({
+          symbol,
+          price: 0,
+          quantity: 0.001,
+          side: ORDER_SIDE.SELL,
           leverage: defaultLeverage,
           orderType: ORDER_TYPE.MARKET,
         });

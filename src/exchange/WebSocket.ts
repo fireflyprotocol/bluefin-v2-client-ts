@@ -176,7 +176,9 @@ export class WebSockets {
     callbackListeners[SOCKET_EVENTS.OrderSentForSettlementUpdate] = cb;
   };
 
-  onUserOrderRequeueUpdate = (cb: (update: OrderRequeueUpdateResponse) => void) => {
+  onUserOrderRequeueUpdate = (
+    cb: (update: OrderRequeueUpdateResponse) => void
+  ) => {
     callbackListeners[SOCKET_EVENTS.OrderRequeueUpdate] = cb;
   };
 

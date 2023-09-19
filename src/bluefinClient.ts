@@ -892,7 +892,7 @@ export class BluefinClient {
 
   /**
    * @description
-   * Gets user trades history
+   * Gets user trades
    * @param params GetUserTradesRequest
    * @returns GetUserTradesResponse
    */
@@ -907,8 +907,8 @@ export class BluefinClient {
   };
 
    /**
-   * Gets user trades
-   * @param params PlaceOrderResponse
+   * Gets user trades history
+   * @param params GetUserTradesHistoryRequest
    * @returns GetUserTradesHistoryResponse
    */
    getUserTradesHistory = async (params: GetUserTradesHistoryRequest) => {

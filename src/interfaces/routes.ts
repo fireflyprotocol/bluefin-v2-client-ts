@@ -220,6 +220,24 @@ export interface GetUserTradesResponse {
   tradeType: string;
 }
 
+export interface GetUserTradesHistoryRequest {
+  symbol?: MarketSymbol;
+  maker?: boolean;
+  fromId?: number;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+  cursor?: number;
+  type?: ORDER_TYPE;
+  parentAddress?: string;
+}
+
+export interface GetUserTradesHistoryResponse {
+  data: GetUserTradesResponse[];
+  nextCursor: number;
+  isMoreDataAvailable: boolean;
+}
+
 export interface MarketAccountData {
   symbol: MarketSymbol;
   positionQtyReduced: string;

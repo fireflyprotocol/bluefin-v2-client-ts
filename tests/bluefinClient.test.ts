@@ -243,6 +243,18 @@ describe("BluefinClient", () => {
       });
       expect(response.ok).to.be.equal(true);
     });
+
+    it("should get user's Trades history on behalf of parent account", async () => {
+      // make sure to first whitelist the subaccount with the below parent account to run this test.
+      // To whitelist the subaccount use the above test {set sub account}
+      // and subaccount must be authenticated/initialized with the client.
+      const response = await clientSubAccount.getUserTradesHistory({
+        symbol,
+        parentAddress: testAcctPubAddr,
+      });
+      expect(response.ok).to.be.equal(true);
+    });
+
     it("should get User Account Data on behalf of parent account", async () => {
       // make sure to first whitelist the subaccount with the below parent account to run this test.
       // To whitelist the subaccount use the above test {set sub account}
@@ -779,8 +791,31 @@ describe("BluefinClient", () => {
       clientTemp.sockets.close();
     });
 
+    it("should return zero trades history for the user", async () => {
+      // Given
+      const clientTemp = new BluefinClient(true, network);
+      await clientTemp.init();
+      const clientTemp = new FireflyClient(true, network, wallet.privateKey);
+      await clientTemp.init();
+
+      // When
+      const response = await clientTemp.getUserTradesHistory({});
+
+      // Then
+      expect(response.ok).to.be.equal(true);
+      expect(response.response.data.length).to.be.equal(0);
+      clientTemp.sockets.close();
+    });
+
     it("should get user's BTC-PERP Trades", async () => {
       const response = await client.getUserTrades({
+        symbol,
+      });
+      expect(response.ok).to.be.equal(true);
+    });
+
+    it("should get user's BTC-PERP Trades", async () => {
+      const response = await client.getUserTradesHistory({
         symbol,
       });
       expect(response.ok).to.be.equal(true);
@@ -1633,6 +1668,13 @@ describe("BluefinClient via ReadOnlyToken", () => {
   describe("Get User Trades", () => {
     it("should get user's BTC-PERP Trades", async () => {
       const response = await readOnlyClient.getUserTrades({
+        symbol,
+      });
+      expect(response.ok).to.be.equal(true);
+    });
+
+    it("should get user's BTC-PERP Trades History", async () => {
+      const response = await readOnlyClient.getUserTradesHistory({
         symbol,
       });
       expect(response.ok).to.be.equal(true);

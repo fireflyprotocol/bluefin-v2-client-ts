@@ -96,6 +96,8 @@ import {
   LinkReferredUserResponse,
   GenerateReferralCodeResponse,
   GenerateReferralCodeRequest,
+  GetUserTradesHistoryRequest,
+  GetUserTradesHistoryResponse,
 } from "./interfaces/routes";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
@@ -890,13 +892,28 @@ export class BluefinClient {
 
   /**
    * @description
-   * Gets user trades
+   * Gets user trades history
    * @param params GetUserTradesRequest
    * @returns GetUserTradesResponse
    */
   getUserTrades = async (params: GetUserTradesRequest) => {
     const response = await this.apiService.get<GetUserTradesResponse>(
       SERVICE_URLS.USER.USER_TRADES,
+      { ...params },
+      { isAuthenticationRequired: true }
+    );
+
+    return response;
+  };
+
+   /**
+   * Gets user trades
+   * @param params PlaceOrderResponse
+   * @returns GetUserTradesHistoryResponse
+   */
+   getUserTradesHistory = async (params: GetUserTradesHistoryRequest) => {
+    const response = await this.apiService.get<GetUserTradesHistoryResponse>(
+      SERVICE_URLS.USER.USER_TRADES_HISTORY,
       { ...params },
       { isAuthenticationRequired: true }
     );

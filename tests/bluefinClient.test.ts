@@ -752,20 +752,6 @@ describe("BluefinClient", () => {
       clientTemp.sockets.close();
     });
 
-    it("should return zero trades history for the user", async () => {
-      // Given
-      const clientTemp = new BluefinClient(true, network);
-      await clientTemp.init();
-
-      // When
-      const response = await clientTemp.getUserTradesHistory({});
-
-      // Then
-      expect(response.ok).to.be.equal(true);
-      expect(response.response.data.length).to.be.equal(0);
-      clientTemp.sockets.close();
-    });
-
     it("should get user's BTC-PERP Position", async () => {
       const response = await client.getUserPosition({
         symbol,
@@ -805,15 +791,31 @@ describe("BluefinClient", () => {
       clientTemp.sockets.close();
     });
 
-    it("should get user's BTC-PERP Trades History", async () => {
-      const response = await client.getUserTradesHistory({
+    it("should get user's BTC-PERP Trades", async () => {
+      const response = await client.getUserTrades({
         symbol,
       });
       expect(response.ok).to.be.equal(true);
     });
 
-    it("should get user's BTC-PERP Trades", async () => {
-      const response = await client.getUserTrades({
+    it("should return zero trades history for the user", async () => {
+      // Given
+      //   const web3 = new Web3(network.url);
+      //   const wallet = web3.eth.accounts.create();
+      const clientTemp = new BluefinClient(true, network);
+      await clientTemp.init();
+
+      // When
+      //   clientTemp.addMarket(symbol);
+      const response = await clientTemp.getUserTradesHistory({});
+
+      // Then
+      expect(response.ok).to.be.equal(true);
+      expect(response.response.data.length).to.be.equal(0);
+      clientTemp.sockets.close();
+    });
+    it("should get user's BTC-PERP Trades History", async () => {
+      const response = await client.getUserTradesHistory({
         symbol,
       });
       expect(response.ok).to.be.equal(true);

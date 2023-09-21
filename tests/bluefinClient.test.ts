@@ -811,7 +811,7 @@ describe("BluefinClient", () => {
 
       // Then
       expect(response.ok).to.be.equal(true);
-      expect(response.response.data.length).to.be.equal(0);
+      expect(response.response.data.data.length).to.be.equal(0);
       clientTemp.sockets.close();
     });
     it("should get user's BTC-PERP Trades History", async () => {

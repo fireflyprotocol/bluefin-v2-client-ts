@@ -21,8 +21,6 @@ export class ContractCalls {
 
   marginBankId: string | undefined;
 
-  defaultGas: number = 100000000;
-
   constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
     this.signer = signer;
     const signerWithProvider = this.signer.signData;

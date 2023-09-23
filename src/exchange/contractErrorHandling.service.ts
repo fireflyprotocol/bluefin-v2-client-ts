@@ -48,8 +48,8 @@ export const TransformToResponseSchema = async (
   successMessage: string,
   maxRetries = 5
 ): Promise<ResponseSchema> => {
-  try {
-    for (let i = 0; i < maxRetries; i++) {
+  for (let retryNo = 0; retryNo < maxRetries; retryNo++) {
+    try {
       const tx = await contactCall();
       if (Transaction.getStatus(tx) == "success") {
         return handleResponse(
@@ -60,8 +60,6 @@ export const TransformToResponseSchema = async (
           },
           true
         );
-      } else if (Transaction.getError(tx).indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
-        console.log("Locked error issue, retrying... ");
       } else {
         return handleResponse(
           {
@@ -72,9 +70,13 @@ export const TransformToResponseSchema = async (
           false
         );
       }
+    } catch (error: any) {
+      if (error.toString().indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
+        console.log("Retrying ", retryNo+1);
+      } else {
+        return handleResponse({ ...serializeError(error) }, false);
+      }
     }
-  } catch (error: any) {
-    return handleResponse({ ...serializeError(error) }, false);
   }
 };
 

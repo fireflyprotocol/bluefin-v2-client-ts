@@ -3,6 +3,8 @@ import { serializeError } from "eth-rpc-errors";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";
 
 const lockErrorRetryDelayMS = 2000;
+const lockErrorMaxRetries = 5;
+
 export const LOCKED_ERROR_MESSAGE =
   "Failed to sign transaction by a quorum of validators because of locked objects";
 export type ResponseSchema = {
@@ -46,10 +48,9 @@ export const handleResponse = (
 
 export const TransformToResponseSchema = async (
   contactCall: () => Promise<SuiTransactionBlockResponse>,
-  successMessage: string,
-  maxRetries = 5
+  successMessage: string
 ): Promise<ResponseSchema> => {
-  for (let retryNo = 0; retryNo < maxRetries; retryNo++) {
+  for (let retryNo = 0; retryNo < lockErrorMaxRetries; retryNo++) {
     try {
       const tx = await contactCall();
       if (Transaction.getStatus(tx) === "success") {

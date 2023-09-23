@@ -1,7 +1,8 @@
 import { getValue, Transaction } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
 import { SuiTransactionBlockResponse } from "@mysten/sui.js";
-
+import { max } from "lodash";
+export const LOCKED_ERROR_MESSAGE="Failed to sign transaction by a quorum of validators because of locked objects";
 export type ResponseSchema = {
   ok: boolean;
   data: any;
@@ -43,9 +44,11 @@ export const handleResponse = (
 
 export const TransformToResponseSchema = async (
   contactCall: () => Promise<SuiTransactionBlockResponse>,
-  successMessage: string
+  successMessage: string,
+  maxRetries=5,
 ): Promise<ResponseSchema> => {
   try {
+    for (let i=0; i<maxRetries; i++){
     const tx = await contactCall();
     if (Transaction.getStatus(tx) == "success") {
       return handleResponse(
@@ -56,15 +59,18 @@ export const TransformToResponseSchema = async (
         },
         true
       );
+    }else if (Transaction.getError(tx).indexOf(LOCKED_ERROR_MESSAGE)>=0){
+      console.log("Locked error issue, retrying... ");
+    }else{
+      return handleResponse(
+        {
+          data: tx,
+          message: Transaction.getError(tx),
+          code: 400,
+        },
+        false);
     }
-    return handleResponse(
-      {
-        data: tx,
-        message: Transaction.getError(tx),
-        code: 400,
-      },
-      false
-    );
+  }
   } catch (error: any) {
     return handleResponse({ ...serializeError(error) }, false);
   }

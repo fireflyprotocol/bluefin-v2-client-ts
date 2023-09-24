@@ -37,7 +37,7 @@ export class ContractCalls {
    * Withdraws funds from the margin bank contract
    * */
   withdrawFromMarginBankContractCall = async (
-    amount: Number,
+    amount: Number
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.onChainCalls.withdrawFromBank(
@@ -58,12 +58,9 @@ export class ContractCalls {
    * @description
    * Withdraws all funds from the margin bank contract
    * */
-  withdrawAllFromMarginBankContractCall = async (
-  ): Promise<ResponseSchema> => {
+  withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.withdrawAllMarginFromBank(
-        this.signer,
-      );
+      return await this.onChainCalls.withdrawAllMarginFromBank(this.signer);
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
 
@@ -76,7 +73,7 @@ export class ContractCalls {
    * */
   depositToMarginBankContractCall = async (
     amount: number,
-    coinID: string,
+    coinID: string
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.onChainCalls.depositToBank(
@@ -84,7 +81,7 @@ export class ContractCalls {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: await this.signer.getAddress()
+          accountAddress: await this.signer.getAddress(),
         },
         this.signer
       );
@@ -132,13 +129,13 @@ export class ContractCalls {
 
   setSubAccount = async (
     publicAddress: address,
-    status: boolean,
+    status: boolean
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.setSubAccount(
         {
           account: publicAddress,
-          status
+          status,
         },
         this.signer
       );

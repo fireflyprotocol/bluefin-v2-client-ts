@@ -173,13 +173,13 @@ export class WebSockets {
   onUserOrderSentForSettlementUpdate = (
     cb: (update: OrderSentForSettlementUpdateResponse) => void
   ) => {
-    callbackListeners[SOCKET_EVENTS.OrderSentForSettlementUpdate] = cb;
+    callbackListeners[SOCKET_EVENTS.GET_LAST_KLINE_WITH_INTERVAL] = cb;
   };
 
   onUserOrderRequeueUpdate = (
     cb: (update: OrderRequeueUpdateResponse) => void
   ) => {
-    callbackListeners[SOCKET_EVENTS.OrderRequeueUpdate] = cb;
+    callbackListeners[SOCKET_EVENTS.GET_LAST_KLINE_WITH_INTERVAL] = cb;
   };
 
   onMarketHealthChange = (

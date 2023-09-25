@@ -4,15 +4,13 @@
 
 /* eslint-disable no-console */
 
-import {
-  BluefinClient,
-  Networks,
-  ADJUST_MARGIN,
-} from "@bluefin-exchange/bluefin-v2-client";
+import { Networks, ADJUST_MARGIN } from "@bluefin-exchange/bluefin-v2-client";
+import { BluefinClient } from "../../../src/bluefinClient";
 
 async function main() {
   const dummyAccountKey =
-    "trigger swim reunion gate hen black real deer light nature trial dust";
+    "include give donate pudding glue mouse bean know hope volume edit expand";
+  // "include give donate pudding glue mouse bean know hope volume edit expand";
 
   const client = new BluefinClient(
     true,
@@ -31,7 +29,7 @@ async function main() {
   // REMOVE MARGIN - will remove 10 margin from ETH-PERP position
   console.log(
     "Removed margin: ",
-    await client.adjustMargin("ETH-PERP", ADJUST_MARGIN.Remove, 10)
+    await client.adjustMargin("ETH-PERP", ADJUST_MARGIN.Remove, 8)
   );
 }
 

@@ -161,13 +161,13 @@ export class Sockets {
   onUserOrderSentForSettlementUpdate = (
     cb: (update: OrderSentForSettlementUpdateResponse) => void
   ) => {
-    this.socketInstance.on(SOCKET_EVENTS.OrderSentForSettlementUpdate, cb);
+    this.socketInstance.on(SOCKET_EVENTS.AccountDataUpdateKey, cb);
   };
 
   onUserOrderRequeueUpdate = (
     cb: (update: OrderRequeueUpdateResponse) => void
   ) => {
-    this.socketInstance.on(SOCKET_EVENTS.OrderRequeueUpdate, cb);
+    this.socketInstance.on(SOCKET_EVENTS.AdjustMarginKey, cb);
   };
 
   onCandleStickUpdate = (

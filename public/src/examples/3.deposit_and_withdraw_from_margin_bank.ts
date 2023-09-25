@@ -1,12 +1,14 @@
 /**
  * Deposits USDC from USDC contract to MarginBank
  */
-import { BluefinClient, Networks } from "@bluefin-exchange/bluefin-v2-client";
+import { Networks } from "@bluefin-exchange/bluefin-v2-client";
+
+import { BluefinClient } from "../../../src/bluefinClient";
 
 async function main() {
   // ensure that account has enough native gas tokens to perform on-chain contract call
   const dummyAccountKey =
-    "trigger swim reunion gate hen black real deer light nature trial dust";
+    "include give donate pudding glue mouse bean know hope volume edit expand";
 
   // using TESTNET network, getUSDCBalance does not work on MAINNET
   const client = new BluefinClient(
@@ -18,15 +20,17 @@ async function main() {
   await client.init();
   console.log(await client.getPublicAddress());
 
+  await client.adjustLeverage({ symbol: "ETH-PERP", leverage: 3 });
+
   // deposits 10 USDC to margin bank, uses default USDC/MarginBank Contracts
   // assuming user has 1 USDC locked in margin bank, else will throw
   console.log(
     "USDC Deposited to MarginBank: ",
-    await client.depositToMarginBank(10)
+    await client.depositToMarginBank(1000)
   );
   console.log(
     "USDC Withdrawn from MarginBank: ",
-    await client.withdrawFromMarginBank(1)
+    await client.withdrawFromMarginBank(1000)
   );
   console.log("Current balance", await client.getUSDCBalance());
 }

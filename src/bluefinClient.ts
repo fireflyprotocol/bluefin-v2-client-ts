@@ -19,6 +19,8 @@ import {
   bnToHex,
   encodeOrderFlags,
   SigPK,
+  getSuiAddressFromPublicKey,
+  getSuiAddressFromSigPk,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -107,8 +109,6 @@ import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
-
-// import { Contract } from "ethers";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -371,6 +371,8 @@ export class BluefinClient {
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
+
+    const publicAddress = getSuiAddressFromSigPk(signature);
 
     return `${signature?.signature}${signature?.publicKey}`;
   };

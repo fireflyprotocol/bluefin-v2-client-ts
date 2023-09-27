@@ -212,10 +212,10 @@ export class BluefinClient {
       if (userOnboarding) {
         await this.userOnBoarding();
       }
+    }
 
-      if (this.network.UUID) {
-        this.setUUID(this.network.UUID);
-      }
+    if (this.network.UUID) {
+      this.setUUID(this.network.UUID);
     }
   };
 

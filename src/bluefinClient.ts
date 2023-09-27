@@ -196,21 +196,21 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    await this.initContractCalls(deployment);
-    this.walletAddress = await this.signer.getAddress();
-
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
       this.sockets.setApiToken(apiToken);
       this.webSockets?.setApiToken(apiToken);
-    }
-    // onboard user if not onboarded
-    else if (userOnboarding) {
-      await this.userOnBoarding();
+    } else {
+      if (!this.signer) {
+        throw Error("Signer not initialized");
+      }
+      await this.initContractCalls(deployment);
+      this.walletAddress = await this.signer.getAddress();
+      // onboard user if not onboarded
+      if (userOnboarding) {
+        await this.userOnBoarding();
+      }
     }
 
     if (this.network.UUID) {

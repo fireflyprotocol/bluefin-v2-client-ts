@@ -194,11 +194,7 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    await this.initContractCalls(deployment);
-    this.walletAddress = await this.signer.getAddress();
+
 
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
@@ -206,13 +202,20 @@ export class BluefinClient {
       this.sockets.setApiToken(apiToken);
       this.webSockets?.setApiToken(apiToken);
     }
-    // onboard user if not onboarded
-    else if (userOnboarding) {
-      await this.userOnBoarding();
-    }
+    else {
+      if (!this.signer) {
+        throw Error("Signer not initialized");
+      }
+      await this.initContractCalls(deployment);
+      this.walletAddress = await this.signer.getAddress();
+      // onboard user if not onboarded
+      if (userOnboarding) {
+        await this.userOnBoarding();
+      }
 
-    if (this.network.UUID) {
-      this.setUUID(this.network.UUID);
+      if (this.network.UUID) {
+        this.setUUID(this.network.UUID);
+      }
     }
   };
 
@@ -441,7 +444,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

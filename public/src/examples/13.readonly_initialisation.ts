@@ -11,16 +11,15 @@ async function main() {
 
   const client = new BluefinClient(
     true,
-    Networks.TESTNET_SUI, // i.e. TESTNET_SUI or PRODUCTION_SUI
-    dummyAccountKey,
-    "ED25519" // valid values are ED25519 or Secp256k1
+    Networks.TESTNET_SUI // i.e. TESTNET_SUI or PRODUCTION_SUI
+   
   ); //passing isTermAccepted = true for compliance and authorizarion
 
   // load/init contract addresses using read-only token
   await client.init(
     false,
     null,
-    "80a5d86820821aeae483f7cdda715e0215c1fdad612b982e7ce22c88de3ac9e2"
+    "52b5c5d010f5de84880d4b5bfcd9f79513bfa93ae367d884412cedb57c0c2a97"
   );
 
   //receive user positions using readonly client

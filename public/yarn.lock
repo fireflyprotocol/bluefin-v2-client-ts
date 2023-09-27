@@ -1021,12 +1021,12 @@
     "@babel/helper-validator-identifier" "^7.22.15"
     to-fast-properties "^2.0.0"
 
-"@bluefin-exchange/bluefin-v2-client@^2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin-v2-client/-/bluefin-v2-client-2.5.0.tgz#3f05baa93b261adaee05a52bf607c7ce135ad288"
-  integrity sha512-mthc4fh3K5tYpKoML1Bf0mEMwoGyN02iV9muGCbf163nLdUzBBb+KkTXvzFDiCNeL85qf5XsxRjabdWwQyKkzQ==
+"@bluefin-exchange/bluefin-v2-client@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin-v2-client/-/bluefin-v2-client-1.0.1.tgz#c824fc99aa919f544a909cba8334660c8fc7ef40"
+  integrity sha512-ORn0O2urj/1ReceLBaTNTMMdk/p70MKQngsgQj22zkfchZCceMiEcoGmeCCVgwUWji+v2O3ZF2bMS/0IZZuCfw==
   dependencies:
-    "@firefly-exchange/library-sui" "^0.1.54"
+    "@firefly-exchange/library-sui" "^0.1.47"
     "@mysten/sui.js" "^0.35.0"
     "@noble/hashes" "^1.2.0"
     "@noble/secp256k1" "^1.7.1"
@@ -1048,10 +1048,10 @@
     yargs "^17.6.2"
     yarn "^1.22.19"
 
-"@firefly-exchange/library-sui@^0.1.54":
-  version "0.1.55"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.1.55.tgz#d89f8fdc2205773b961cfb0812daaae65f294850"
-  integrity sha512-fnCV26VMgWd2wfjg+ajF2Lmks7keNLzSDswVNoilLIoCGbGevAF8uzSo2/7decIC4lh1aaU9gIRG2sghefhewQ==
+"@firefly-exchange/library-sui@^0.1.47":
+  version "0.1.48"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.1.48.tgz#2380fbc43b41de038a68a17f72efaff8730f00d0"
+  integrity sha512-Jb7GoALdlo+hV7MckABS0UD3vCqHrFYfxUbqCwtw6lh/wV4UxwIhnIHXxw26jLn9IwKtsA22niDPixQXp93Nxw==
   dependencies:
     "@mysten/sui.js" "^0.35.0"
     "@noble/hashes" "^1.2.0"

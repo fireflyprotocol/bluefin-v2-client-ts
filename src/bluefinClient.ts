@@ -196,15 +196,12 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-
-
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
       this.sockets.setApiToken(apiToken);
       this.webSockets?.setApiToken(apiToken);
-    }
-    else {
+    } else {
       if (!this.signer) {
         throw Error("Signer not initialized");
       }
@@ -446,7 +443,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

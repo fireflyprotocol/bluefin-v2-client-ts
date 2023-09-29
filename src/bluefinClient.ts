@@ -174,20 +174,23 @@ export class BluefinClient {
     if (_isUI) {
       this.initializeWithHook(_uiSignerObject);
     }
-    // if input is string then its seed phrase otherwise KeyPair
-    else if (_account && _scheme && typeof _account === "string" && _account.split(" ")[1]) {
-      this.initializeWithSeed(_account, _scheme);
+    // if input is string
+    else if (_account && _scheme && typeof _account === "string") {
+      if (_account.split(" ")[1]) // can split with a space then its seed phrase
+      {
+        this.initializeWithSeed(_account, _scheme);
+      }
+      else if (!_account.split(" ")[1]) // splitting with a space gives undefined then its a private key
+      {
+        const keyPair = this.getKeyPairFromPvtKey(_account, _scheme);
+        this.initializeWithKeyPair(keyPair);
+      }
     } else if (
       _account &&
       (_account instanceof Secp256k1Keypair ||
         _account instanceof Ed25519Keypair)
     ) {
       this.initializeWithKeyPair(_account);
-    }
-    // if private key is provided
-    else if (_account && _scheme && typeof _account === "string" && !_account.split(" ")[1]) {
-      const keyPair = this.getKeyPairFromPvtKey(_account, _scheme);
-      this.initializeWithKeyPair(keyPair);
     }
   }
 

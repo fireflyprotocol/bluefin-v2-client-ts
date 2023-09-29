@@ -36,9 +36,5 @@ export const Networks = {
   },
 };
 
-export const DEFAULT_PRECISION = 6;
 export const SUI_NETWROK = "sui";
-
-export const EXTRA_FEES = 10000;
-
 export const POST_ORDER_BASE = 18;

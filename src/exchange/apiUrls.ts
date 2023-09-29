@@ -28,6 +28,7 @@ export const SERVICE_URLS = {
     FUNDING_HISTORY: "/userFundingHistory",
     CANCEL_ON_DISCONNECT: "/dms-countdown",
     GENERATE_READONLY_TOKEN: "/generateReadOnlyToken",
+    USER_TRADES_HISTORY: "/userTradesHistory",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",

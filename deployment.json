@@ -1,100 +1,106 @@
 {
-  "deployer": "0xa7966620030bb486fca34508e588018af3ad9b197790b2830ac3a84be1c872ca",
+  "deployer": "0x17826aa78491a3dd76a13187cdd4b35b2cc5acbbcb6712582fced3856dbb12ec",
   "objects": {
-    "SettlementCap": {
-      "id": "0x07e82b91904fc4d88352f4402ca41bf4bd15d99659b97f68875c02a66227d249",
-      "owner": "Shared",
-      "dataType": "SettlementCap"
+    "Currency": {
+      "id": "0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946",
+      "owner": "Immutable",
+      "dataType": "0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::coin::COIN"
     },
     "ExchangeGuardianCap": {
-      "id": "0x085680c6403974d83d184452311ce3d64fe70dabc074d51abeb782fb26355479",
+      "id": "0x18e7a86539986216401bfd5bb5d21a803f3a8c2404265fe142ea17be4dd9f614",
       "owner": "Owned",
       "dataType": "ExchangeGuardianCap"
     },
-    "package": {
-      "id": "0x1ea63ac1d57e0537a40e76caec1c94e43cbf65c6ac424f8097e02d4e0fbebfd0",
-      "owner": "Immutable",
-      "dataType": "package"
-    },
-    "UpgradeCap": {
-      "id": "0x22cf7fc1651b741677a437b6d44663edc0e2c34bddaa8087ddc1df29d4f60737",
-      "owner": "Owned",
-      "dataType": "UpgradeCap"
-    },
     "SubAccounts": {
-      "id": "0x451688617bef9299a7d5a9a4ea559b137a24a75f563d44169b093cefd44ec942",
+      "id": "0x2e100cc2407ea221a922b9dd0e6cd796adbacdc48e11adcc1977ac861ab43e0c",
       "owner": "Shared",
       "dataType": "SubAccounts"
     },
-    "FundingRateCap": {
-      "id": "0x6f7ed38ca88344d9a736341227c273164dfc614dab77970f2a8ec7a545f8a4d7",
-      "owner": "Owned",
-      "dataType": "FundingRateCap"
-    },
-    "TreasuryCap": {
-      "id": "0x90522c389d3a1db969128541d2c8c55f2677676f3402c62b96e371e905d9fee0",
-      "owner": "Owned",
-      "dataType": "TreasuryCap"
-    },
-    "CapabilitiesSafe": {
-      "id": "0xac59d3823abe31defa6dc736df580f185739313a79adec87e2fc47b0ea848dc4",
-      "owner": "Shared",
-      "dataType": "CapabilitiesSafe"
-    },
-    "Currency": {
-      "id": "0xb21c9b3e4e2e737f40db0981ce4ac9e92b95fe038b9c404726e2c69442a28066",
-      "owner": "Immutable",
-      "dataType": "0x1ea63ac1d57e0537a40e76caec1c94e43cbf65c6ac424f8097e02d4e0fbebfd0::tusdc::TUSDC"
-    },
-    "DeleveragingCap": {
-      "id": "0xd110e252af789f2d991ed9ea982bbeb5d0cadbfa73f78e7552732137882a6a58",
-      "owner": "Owned",
-      "dataType": "DeleveragingCap"
-    },
-    "Bank": {
-      "id": "0xd72a5a28687520049d1f2d9820a886df718da8eab90cb91c72f669aa18d9674a",
-      "owner": "Shared",
-      "dataType": "Bank"
-    },
     "ExchangeAdminCap": {
-      "id": "0xea31e0ea7ed71b84adf4061fc00473e7006f4f748ef6abd0ed742d39a03f4f63",
+      "id": "0x41047e18bd64cfc20db37ea644b7789311d4aac710a34ba009f014e1b99c1283",
       "owner": "Owned",
       "dataType": "ExchangeAdminCap"
     },
+    "TreasuryCap": {
+      "id": "0x52e18f588232a581330d4373d9b81a0dfc7ec33acf898043e03f02dc5cdca709",
+      "owner": "Owned",
+      "dataType": "TreasuryCap"
+    },
+    "FundingRateCap": {
+      "id": "0xe42bc3d32cb88e75a7a5c7ac7152c9eb69088f5bbb1407975998d4c5cc6e4aeb",
+      "owner": "Owned",
+      "dataType": "FundingRateCap"
+    },
+    "UpgradeCap": {
+      "id": "0x7c1fd1a0c2cd3fe99f1bcaf946fbc3079062e1a1ded1e99b2b8bc718293d4aab",
+      "owner": "Owned",
+      "dataType": "UpgradeCap"
+    },
+    "package": {
+      "id": "0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946",
+      "owner": "Immutable",
+      "dataType": "package"
+    },
+    "CapabilitiesSafe": {
+      "id": "0xc1af297f05860b9edb67dcedeae7198d04012c1e99d942ff2d81724eaf0eabde",
+      "owner": "Shared",
+      "dataType": "CapabilitiesSafe"
+    },
+    "DeleveragingCap": {
+      "id": "0xb2487c3914143acc858fb0770788d90f51fa3388d6f91b616d97375f082c5bd7",
+      "owner": "Owned",
+      "dataType": "DeleveragingCap"
+    },
     "OrderStatus": {
-      "id": "0xf6759d3ce8afb4a85dda294f7cc11da6a179fb72bf478f0226ac271297e8ecb8",
+      "id": "0xd8729865157825a85dc6bda39bbb86f2ce2f5a2a5d7881882e95a8ffd26f6534",
       "owner": "Shared",
       "dataType": "OrderStatus"
     },
+    "SettlementCap": {
+      "id": "0xf0549b723ea4c99e0ac79d13aed4b5b8a387417a1265843bbde004feaf5321ed",
+      "owner": "Shared",
+      "dataType": "SettlementCap"
+    },
+    "Bank": {
+      "id": "0xc2adfcb47c8b8dc3ab7ae9c744df6a4e385b889c11a1a905ef4c0a4815d8bd25",
+      "owner": "Shared",
+      "dataType": "0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::margin_bank::Bank<0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::coin::COIN>"
+    },
     "BankTable": {
       "owner": "Shared",
-      "id": "0x8453d47347a75c4ea2a570ac1213295ee0886804bdfafed28333fb5688eae41b",
-      "dataType": "0x2::table::Table<address, 0x1ea63ac1d57e0537a40e76caec1c94e43cbf65c6ac424f8097e02d4e0fbebfd0::margin_bank::BankAccount>"
+      "id": "0xf099ec3ccacba20f1718b55b060709e9e3ecb80a8bd9fdd07602a077a54ff4b6",
+      "dataType": "0x2::table::Table<address, 0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::margin_bank::BankAccount>"
     },
     "settlementOperators": [
+      {
+        "address": "0x17826aa78491a3dd76a13187cdd4b35b2cc5acbbcb6712582fced3856dbb12ec",
+        "phrase": "",
+        "privateKey": "",
+        "capID": "0xc12d4eba207fe8a27a272e99aac106b7e9b0958ec1242626beda4b38c7a7dd25"
+      },
       {
         "address": "0x9a96c0fefb710c3aa55ceff0d3ba945b8aff6ecfd2f6b686f949e3b909cb213b",
         "phrase": "level ridge bulb jacket want timber wave unfold bamboo album infant grass",
         "privateKey": "",
-        "capID": "0xea931a587bb79e8b6b9178e8024818bb51cbbdd2fc6590f71585ed67b7f78c78"
+        "capID": "0x68fbb0cc5e9e0ec7ba9b5a0d88ec8f7921c4d8adca8333e58598c3dc2bd1fe84"
       },
       {
         "address": "0x3306094933d05b860518e5dc1b713347bfc1085863598aa4b74d1d2e822fd4ab",
         "phrase": "spring paper mercy hip water slam winner coffee battle globe vague van",
         "privateKey": "",
-        "capID": "0x673c83b43ca0d2d87e7b7a365d96a3ed2fe74f22b71f80e23b839d033dac3a01"
+        "capID": "0x167fb84c6d106e4b656fc49b34f8440b15b81635935118d8cfe2f706a01989b1"
       },
       {
         "address": "0xfd175e40d2b18665036ac744326692a70e836bd49fe4a2bc406651ade908aff8",
         "phrase": "indicate hole private code grant canyon space rebuild buzz lift senior trouble",
         "privateKey": "",
-        "capID": "0x5be9659b460f5b8d74f1e8021a47e7ebf2a8604a2dd698ada56c514aa4661c2c"
+        "capID": "0xd649024e9ad7fa6cd937b3211496fc0b1592c4ce8570278bef0dc5d7dbc09564"
       },
       {
         "address": "0x18f2bee301371bf96aa3dd2b3ed4bba0901ff388c39a465d9c997601984779b7",
         "phrase": "squirrel twice swim trick gold forum history siren payment morning fever beach",
         "privateKey": "",
-        "capID": "0x51f44ed8c973160381d50ff77863301390fdc899bf354c2008c886416475375b"
+        "capID": "0x61897f1ad1fe8b2056be9877d243756b1b49eea7c47bf9e779582571cf8fc20c"
       }
     ]
   },
@@ -106,70 +112,70 @@
         "quoteAssetName": "Circle USD",
         "baseAssetSymbol": "ETH",
         "baseAssetName": "Ethereum",
-        "defaultLeverage": "3000000000",
-        "minOrderPrice": "1000000000",
-        "maxOrderPrice": "100000000000000",
-        "tickSize": "100000000",
-        "minTradeQty": "10000000",
-        "maxTradeQtyLimit": "100000000000000",
-        "maxTradeQtyMarket": "1000000000000",
-        "stepSize": "10000000",
-        "mtbLong": "20000000",
-        "mtbShort": "20000000",
+        "defaultLeverage": "3000000000000000000",
+        "minOrderPrice": "50000000000000000000",
+        "maxOrderPrice": "50000000000000000000000",
+        "tickSize": "10000000000000000",
+        "minTradeQty": "10000000000000000",
+        "maxTradeQtyLimit": "1000000000000000000000",
+        "maxTradeQtyMarket": "100000000000000000000",
+        "stepSize": "10000000000000000",
+        "mtbLong": "20000000000000000",
+        "mtbShort": "20000000000000000",
         "maxAllowedOIOpen": [
-          "5000000000000000",
-          "5000000000000000",
-          "2500000000000000",
-          "2500000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000"
+          "5000000000000000000000000",
+          "5000000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000"
         ],
-        "initialMarginReq": "45000000",
-        "maintenanceMarginReq": "30000000",
-        "defaultMakerFee": "1500000",
-        "defaultTakerFee": "5500000",
-        "maxFundingRate": "1000000",
-        "maxAllowedPriceDiffInOP": "1000000000",
-        "insurancePoolRatio": "300000000",
+        "initialMarginReq": "45000000000000000",
+        "maintenanceMarginReq": "30000000000000000",
+        "defaultMakerFee": "150000000000000",
+        "defaultTakerFee": "550000000000000",
+        "maxFundingRate": "1000000000000000",
+        "maxAllowedPriceDiffInOP": "1000000000000000000",
+        "insurancePoolRatio": "300000000000000000",
         "insurancePool": "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88",
         "feePool": "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073",
-        "tradingStartTime": 1692342051173,
+        "tradingStartTime": 1695388892063,
         "priceInfoFeedId": "c6c75c89f14810ec1c54c03ab8f1864a4c4032791f05747f560faec380a695d1"
       },
       "Objects": {
-        "Perpetual": {
-          "id": "0xa3ae3a7110e98c844e48ad8d1890833973c31ed16406d6a2bd7022a2093f45b6",
-          "owner": "Shared",
-          "dataType": "Perpetual"
-        },
         "BankAccount": {
-          "id": "0xd2c03dca688de7d723efa731e6df6e0dd2baa7b916d21dd394d26fffe31873be",
+          "id": "0xc6fb3b912fed5f0dd3b2d13bb5e93f71cc4a07486609a6dbe36e13c66d38fd7c",
           "owner": "Owned",
           "dataType": "BankAccount"
         },
+        "Perpetual": {
+          "id": "0xfdc2901bcee786bdf124d712cdd0821bed185402414050b57bc8dd5b5329c912",
+          "owner": "Shared",
+          "dataType": "Perpetual"
+        },
         "PositionsTable": {
           "owner": "Shared",
-          "id": "0x5b9cf7a3b9179e8f7c471f0ebab228d6bd84bcdaabe5dac7aa0bb40d4355d745",
-          "dataType": "0x2::table::Table<address, 0x1ea63ac1d57e0537a40e76caec1c94e43cbf65c6ac424f8097e02d4e0fbebfd0::position::UserPosition>"
+          "id": "0x23b833758c89d97f023c1ea27e1f2621fc2d1590928bc6745abdfc24cf11f6ce",
+          "dataType": "0x2::table::Table<address, 0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::position::UserPosition>"
         },
         "PriceOracle": {
           "owner": "Shared",
-          "id": "0xfe0a462f0e40933a817b35ff0e7744917da2d7402883a9aedba8917c952cce7f",
-          "dataType": "0x5a06b18af64e936744a248128b4747f9a5ecf5db97a03feb3a3a51688ed7b0fb::price_info::PriceInfo"
+          "id": "0xbf655d5dd2262fe977ca0e722b7e3de580562c80a53f543f3c59acfaf01c573e",
+          "dataType": "0x1a124c14e8782ca1c65d0982d15e648d0d3e2d01c12f4b47fb8292ced49543f1::price_info::PriceInfo"
         }
       }
     },
@@ -180,70 +186,70 @@
         "quoteAssetName": "Circle USD",
         "baseAssetSymbol": "BTC",
         "baseAssetName": "Bitcoin",
-        "defaultLeverage": "3000000000",
-        "minOrderPrice": "1000000000",
-        "maxOrderPrice": "100000000000000",
-        "tickSize": "1000000000",
-        "minTradeQty": "1000000",
-        "maxTradeQtyLimit": "100000000000000",
-        "maxTradeQtyMarket": "1000000000000",
-        "stepSize": "1000000",
-        "mtbLong": "20000000",
-        "mtbShort": "20000000",
+        "defaultLeverage": "3000000000000000000",
+        "minOrderPrice": "500000000000000000000",
+        "maxOrderPrice": "500000000000000000000000",
+        "tickSize": "100000000000000000",
+        "minTradeQty": "1000000000000000",
+        "maxTradeQtyLimit": "100000000000000000000",
+        "maxTradeQtyMarket": "10000000000000000000",
+        "stepSize": "1000000000000000",
+        "mtbLong": "20000000000000000",
+        "mtbShort": "20000000000000000",
         "maxAllowedOIOpen": [
-          "5000000000000000",
-          "5000000000000000",
-          "2500000000000000",
-          "2500000000000000",
-          "2500000000000000",
-          "2500000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000",
-          "1000000000000000"
+          "5000000000000000000000000",
+          "5000000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "2500000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000",
+          "1000000000000000000000000"
         ],
-        "initialMarginReq": "45000000",
-        "maintenanceMarginReq": "30000000",
-        "defaultMakerFee": "1500000",
-        "defaultTakerFee": "5500000",
-        "maxAllowedPriceDiffInOP": "1000000000",
-        "maxFundingRate": "1000000",
-        "insurancePoolRatio": "300000000",
+        "initialMarginReq": "45000000000000000",
+        "maintenanceMarginReq": "30000000000000000",
+        "defaultMakerFee": "150000000000000",
+        "defaultTakerFee": "550000000000000",
+        "maxAllowedPriceDiffInOP": "1000000000000000000",
+        "maxFundingRate": "1000000000000000",
+        "insurancePoolRatio": "300000000000000000",
         "insurancePool": "0x90c55f2a388a0e31ebca93cbf87fdd08e9716be082ca8a3c479bb14bcb5e1b88",
         "feePool": "0x05ada716962dec8788b53ddad34827ffe46acfe16bfe9d7d064838fcda285073",
-        "tradingStartTime": 1692342051174,
+        "tradingStartTime": 1695388892063,
         "priceInfoFeedId": "3b9551a68d01d954d6387aff4df1529027ffb2fee413082e509feb29cc4904fe"
       },
       "Objects": {
         "BankAccount": {
-          "id": "0x089063b89b387ff86b2f8a7a1df7ac42eee03c079fa601e2fba3c96dc3b4ed85",
+          "id": "0x1d6a717534512b815687934c710ef1d8309d13cf1da9431abc428d6770c795fc",
           "owner": "Owned",
           "dataType": "BankAccount"
         },
         "Perpetual": {
-          "id": "0x19c82f00ff1ab382b5c58724e6731a1abce8dda7ccfc28d603612438606ef2ae",
+          "id": "0xe23dee7c0f977f40cd8eda2cefed6f49a62b4c42f7c743199804a2bb899e49f5",
           "owner": "Shared",
           "dataType": "Perpetual"
         },
         "PositionsTable": {
           "owner": "Shared",
-          "id": "0xf95db2181595e8a2318c4997cbef0d506cc1643955a0dc6aa27f41615dbdd8b5",
-          "dataType": "0x2::table::Table<address, 0x1ea63ac1d57e0537a40e76caec1c94e43cbf65c6ac424f8097e02d4e0fbebfd0::position::UserPosition>"
+          "id": "0x00e9ab393bd2e0ff96e23a8a34304e5cf367263f69502ccb7f0b82e687517444",
+          "dataType": "0x2::table::Table<address, 0xb9b92f069eb185d9fe1fcc988e7d89b3b48e5f58d879a0dbc4187bff8f8e6946::position::UserPosition>"
         },
         "PriceOracle": {
           "owner": "Shared",
-          "id": "0x8c392069f37876997c75c6ca9610f7b3dff3b054ea7f08adf442320c45ee51ec",
-          "dataType": "0x5a06b18af64e936744a248128b4747f9a5ecf5db97a03feb3a3a51688ed7b0fb::price_info::PriceInfo"
+          "id": "0xf7594631b44c26b43f29e17be7e7fcfc05769ccd91ab571bd5f09658f7a4f9ac",
+          "dataType": "0x1a124c14e8782ca1c65d0982d15e648d0d3e2d01c12f4b47fb8292ced49543f1::price_info::PriceInfo"
         }
       }
     }

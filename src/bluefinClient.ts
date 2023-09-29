@@ -19,6 +19,7 @@ import {
   bnToHex,
   encodeOrderFlags,
   SigPK,
+  getKeyPairFromPvtKey,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -182,7 +183,7 @@ export class BluefinClient {
       }
       else if (!_account.split(" ")[1]) // splitting with a space gives undefined then its a private key
       {
-        const keyPair = this.getKeyPairFromPvtKey(_account, _scheme);
+        const keyPair = getKeyPairFromPvtKey(_account, _scheme);
         this.initializeWithKeyPair(keyPair);
       }
     } else if (
@@ -285,23 +286,6 @@ export class BluefinClient {
     }
   };
 
-  getKeyPairFromPvtKey = (
-    key: string,
-    scheme: SignatureScheme = "Secp256k1"
-  ): Keypair => {
-
-    if (key.startsWith("0x")) {
-      key = key.substring(2); // Remove the first two characters (0x)
-    }
-    switch (scheme) {
-      case "ED25519":
-        return Ed25519Keypair.fromSecretKey(Buffer.from(key, "hex"));
-      case "Secp256k1":
-        return Secp256k1Keypair.fromSecretKey(Buffer.from(key, "hex"));
-      default:
-        throw new Error("Provided key is invalid");
-    }
-  };
   /**
    * @description
    * initializes contract calls

@@ -19,6 +19,7 @@ import {
   bnToHex,
   encodeOrderFlags,
   SigPK,
+  getKeyPairFromPvtKey,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -27,6 +28,7 @@ import {
   Keypair,
   RawSigner,
   Secp256k1Keypair,
+  SignatureScheme,
   SignerWithProvider,
 } from "@mysten/sui.js";
 import { WalletContextState } from "@suiet/wallet-kit";
@@ -173,9 +175,17 @@ export class BluefinClient {
     if (_isUI) {
       this.initializeWithHook(_uiSignerObject);
     }
-    // if input is string then its seed phrase otherwise KeyPair
+    // if input is string
     else if (_account && _scheme && typeof _account === "string") {
-      this.initializeWithSeed(_account, _scheme);
+      if (_account.split(" ")[1]) // can split with a space then its seed phrase
+      {
+        this.initializeWithSeed(_account, _scheme);
+      }
+      else if (!_account.split(" ")[1]) // splitting with a space gives undefined then its a private key
+      {
+        const keyPair = getKeyPairFromPvtKey(_account, _scheme);
+        this.initializeWithKeyPair(keyPair);
+      }
     } else if (
       _account &&
       (_account instanceof Secp256k1Keypair ||

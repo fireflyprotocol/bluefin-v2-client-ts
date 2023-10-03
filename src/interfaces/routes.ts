@@ -762,6 +762,11 @@ export interface LinkReferredUserResponse {
   message?: string;
 }
 
+export interface MatchedOrderData {
+  fillPrice: string;
+  quantity: string;
+}
+
 export interface OrderSentForSettlementUpdateResponse {
   orderHash: string;
   userAddress: string;
@@ -769,6 +774,11 @@ export interface OrderSentForSettlementUpdateResponse {
   message: string;
   quantitySentForSettlement: string;
   orderQuantity: string;
+  isMaker: boolean;
+  isBuy: boolean;
+  avgFillPrice: string;
+  timestamp: number;
+  matchedOrders: MatchedOrderData[];
 }
 
 export interface OrderRequeueUpdateResponse {
@@ -776,7 +786,9 @@ export interface OrderRequeueUpdateResponse {
   userAddress: string;
   symbol: string;
   message: string;
+  isBuy: boolean;
   quantitySentForRequeue: string;
+  timestamp: number;
 }
 
 export interface Callbacks {

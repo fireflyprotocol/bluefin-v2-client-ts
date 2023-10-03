@@ -457,6 +457,7 @@ export class BluefinClient {
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
+      cancelOnRevert: orderToSign.cancelOnRevert,
       leverage: toBaseNumber(orderToSign.leverage),
       reduceOnly: orderToSign.reduceOnly,
       salt: Number(orderToSign.salt),
@@ -497,6 +498,7 @@ export class BluefinClient {
         timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
         orderbookOnly: true,
         postOnly: params.postOnly || false,
+        cancelOnRevert: params.cancelOnRevert || false,
         clientId: params.clientId
           ? `bluefin-client: ${params.clientId}`
           : "bluefin-client",
@@ -519,6 +521,7 @@ export class BluefinClient {
       ...signedOrder,
       timeInForce: params.timeInForce,
       postOnly: params.postOnly,
+      cancelOnRevert: params.cancelOnRevert,
       clientId: params.clientId,
       orderbookOnly: true,
     });
@@ -1464,6 +1467,7 @@ export class BluefinClient {
         params.expiration || Math.floor(expiration.getTime())
       ), // /1000 to convert time in seconds
       postOnly: params.postOnly || false,
+      cancelOnRevert: params.cancelOnRevert || false,
       salt,
       orderbookOnly: params.orderbookOnly || true,
       ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,

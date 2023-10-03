@@ -53,7 +53,7 @@ export interface RequiredOrderFields {
   orderType: ORDER_TYPE; // MARKET/LIMIT
   triggerPrice?: number; // optional, send triggerPrice for stop orders
   postOnly?: boolean; // true/false, default is false
-  cancelOnRevert: boolean; // true/false, default is false
+  cancelOnRevert?: boolean; // true/false, default is false
   orderbookOnly?: boolean; // true/false, default is true
   timeInForce?: TIME_IN_FORCE; // IOC/GTT by default all orders are GTT
 }

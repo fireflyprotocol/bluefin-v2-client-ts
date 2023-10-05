@@ -11,7 +11,6 @@ import {
 } from "@bluefin-exchange/bluefin-v2-client";
 
 async function main() {
-
   const dummyAccountKey =
     "royal reopen journey royal enlist vote core cluster shield slush hill sample";
 
@@ -60,7 +59,6 @@ async function main() {
     "9737fb68940ae27f95d5a603792d4988a9fdcf3efeea7185b43f2bd045ee87f9"
   ); // initialze client via readOnlyToken
 
-
   //Initialise using private key
   const pvt_key_client = new BluefinClient(
     false,
@@ -68,7 +66,7 @@ async function main() {
     "0xf443768edf901263a0756cc442b9ed0d246ab31deb7f6d05c4d603b1f3fc6206",
     "ED25519" //valid values are ED25519 or Secp256k1
   ); // passing isTermAccepted = true for compliance and authorizarion
-  await pvt_key_client.init(); 
+  await pvt_key_client.init();
 }
 
 main().then().catch(console.warn);

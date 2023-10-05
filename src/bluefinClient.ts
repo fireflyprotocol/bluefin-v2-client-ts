@@ -171,12 +171,11 @@ export class BluefinClient {
     }
     // if input is string
     else if (_account && _scheme && typeof _account === "string") {
-      if (_account.split(" ")[1]) // can split with a space then its seed phrase
-      {
+      if (_account.split(" ")[1]) {
+        // can split with a space then its seed phrase
         this.initializeWithSeed(_account, _scheme);
-      }
-      else if (!_account.split(" ")[1]) // splitting with a space gives undefined then its a private key
-      {
+      } else if (!_account.split(" ")[1]) {
+        // splitting with a space gives undefined then its a private key
         const keyPair = getKeyPairFromPvtKey(_account, _scheme);
         this.initializeWithKeyPair(keyPair);
       }
@@ -447,7 +446,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.LIMIT
+        order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -777,8 +776,7 @@ export class BluefinClient {
     coinID?: string
   ): Promise<ResponseSchema> => {
     let coin = coinID;
-    if (!amount)
-      throw Error(`No amount specified for deposit`);
+    if (!amount) throw Error(`No amount specified for deposit`);
     if (!coinID) {
       coin = (
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
@@ -791,9 +789,11 @@ export class BluefinClient {
     }
     if (coin) {
       return this.contractCalls.depositToMarginBankContractCall(amount, coin);
-    }
-    else {
-      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(this.contractCalls.onChainCalls.getCoinType(), this.signer)
+    } else {
+      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+        this.contractCalls.onChainCalls.getCoinType(),
+        this.signer
+      );
       coin = (
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
           {
@@ -804,11 +804,9 @@ export class BluefinClient {
       )?.coinObjectId;
       if (coin) {
         return this.contractCalls.depositToMarginBankContractCall(amount, coin);
-
       }
       throw Error(`User has no coin with amount ${amount} to deposit`);
     }
-
   };
 
   /**

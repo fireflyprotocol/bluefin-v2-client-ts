@@ -457,6 +457,7 @@ export class BluefinClient {
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
+      cancelOnRevert: orderToSign.cancelOnRevert,
       leverage: toBaseNumber(orderToSign.leverage),
       reduceOnly: orderToSign.reduceOnly,
       salt: Number(orderToSign.salt),
@@ -496,7 +497,8 @@ export class BluefinClient {
         orderSignature: params.orderSignature,
         timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
         orderbookOnly: true,
-        postOnly: params.postOnly || false,
+        postOnly: params.postOnly == true,
+        cancelOnRevert: params.cancelOnRevert == true,
         clientId: params.clientId
           ? `bluefin-client: ${params.clientId}`
           : "bluefin-client",
@@ -518,7 +520,8 @@ export class BluefinClient {
     const response = await this.placeSignedOrder({
       ...signedOrder,
       timeInForce: params.timeInForce,
-      postOnly: params.postOnly,
+      postOnly: params.postOnly == true,
+      cancelOnRevert: params.cancelOnRevert == true,
       clientId: params.clientId,
       orderbookOnly: true,
     });
@@ -1459,11 +1462,12 @@ export class BluefinClient {
       quantity: toBigNumber(params.quantity),
       leverage: toBigNumber(params.leverage || 1),
       maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
-      reduceOnly: params.reduceOnly || false,
+      reduceOnly: params.reduceOnly == true,
       expiration: bigNumber(
         params.expiration || Math.floor(expiration.getTime())
       ), // /1000 to convert time in seconds
-      postOnly: params.postOnly || false,
+      postOnly: params.postOnly == true,
+      cancelOnRevert: params.cancelOnRevert == true,
       salt,
       orderbookOnly: params.orderbookOnly || true,
       ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,

@@ -521,7 +521,7 @@ export class BluefinClient {
       ...signedOrder,
       timeInForce: params.timeInForce,
       postOnly: params.postOnly,
-      cancelOnRevert: params.cancelOnRevert,
+      cancelOnRevert: params.cancelOnRevert || false,
       clientId: params.clientId,
       orderbookOnly: true,
     });

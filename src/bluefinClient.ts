@@ -15,9 +15,6 @@ import {
   ORDER_STATUS,
   ORDER_TYPE,
   TIME_IN_FORCE,
-  hexToBuffer,
-  bnToHex,
-  encodeOrderFlags,
   SigPK,
   getKeyPairFromPvtKey,
 } from "@firefly-exchange/library-sui";
@@ -28,7 +25,6 @@ import {
   Keypair,
   RawSigner,
   Secp256k1Keypair,
-  SignatureScheme,
   SignerWithProvider,
 } from "@mysten/sui.js";
 import { WalletContextState } from "@suiet/wallet-kit";
@@ -109,8 +105,6 @@ import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
-
-// import { Contract } from "ethers";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -453,7 +447,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -780,7 +774,9 @@ export class BluefinClient {
     coinID?: string
   ): Promise<ResponseSchema> => {
     let coin = coinID;
-    if (amount && !coinID) {
+    if (!amount)
+      throw Error(`No amount specified for deposit`);
+    if (!coinID) {
       coin = (
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
           {
@@ -793,7 +789,23 @@ export class BluefinClient {
     if (coin) {
       return this.contractCalls.depositToMarginBankContractCall(amount, coin);
     }
-    throw Error(`User has no coin with amount ${amount} to deposit`);
+    else {
+      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(this.contractCalls.onChainCalls.getCoinType(), this.signer)
+      coin = (
+        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+          {
+            amount,
+          },
+          this.signer
+        )
+      )?.coinObjectId;
+      if (coin) {
+        return this.contractCalls.depositToMarginBankContractCall(amount, coin);
+
+      }
+      throw Error(`User has no coin with amount ${amount} to deposit`);
+    }
+
   };
 
   /**

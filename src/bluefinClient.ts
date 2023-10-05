@@ -497,8 +497,8 @@ export class BluefinClient {
         orderSignature: params.orderSignature,
         timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
         orderbookOnly: true,
-        postOnly: params.postOnly || false,
-        cancelOnRevert: params.cancelOnRevert || false,
+        postOnly: params.postOnly == true || false,
+        cancelOnRevert: params.cancelOnRevert == true || false,
         clientId: params.clientId
           ? `bluefin-client: ${params.clientId}`
           : "bluefin-client",
@@ -520,8 +520,8 @@ export class BluefinClient {
     const response = await this.placeSignedOrder({
       ...signedOrder,
       timeInForce: params.timeInForce,
-      postOnly: params.postOnly,
-      cancelOnRevert: params.cancelOnRevert || false,
+      postOnly: params.postOnly == true || false,
+      cancelOnRevert: params.cancelOnRevert == true || false,
       clientId: params.clientId,
       orderbookOnly: true,
     });
@@ -1462,12 +1462,12 @@ export class BluefinClient {
       quantity: toBigNumber(params.quantity),
       leverage: toBigNumber(params.leverage || 1),
       maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
-      reduceOnly: params.reduceOnly || false,
+      reduceOnly: params.reduceOnly == true  || false,
       expiration: bigNumber(
         params.expiration || Math.floor(expiration.getTime())
       ), // /1000 to convert time in seconds
-      postOnly: params.postOnly || false,
-      cancelOnRevert: params.cancelOnRevert || false,
+      postOnly: params.postOnly == true || false,
+      cancelOnRevert: params.cancelOnRevert == true || false,
       salt,
       orderbookOnly: params.orderbookOnly || true,
       ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,

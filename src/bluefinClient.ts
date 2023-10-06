@@ -446,7 +446,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -807,18 +807,28 @@ export class BluefinClient {
         this.contractCalls.onChainCalls.getCoinType(),
         this.signer
       );
-      const coinHavingBalance = (
-        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-          {
-            amount,
-          },
-          this.signer
-        )
-      )?.coinObjectId;
-      if (coinHavingBalance) {
+
+      // Try Getting Merged CoinID 
+      let coinHavingbalanceAfterMerge, retries = 5;
+
+      while (!coinHavingbalanceAfterMerge && retries--) {
+        coinHavingbalanceAfterMerge = (
+          await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+            {
+              amount,
+            },
+            this.signer
+          )
+        )?.coinObjectId;
+
+        //sleep for 1 second to wait for merging on block chain
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      if (coinHavingbalanceAfterMerge) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingBalance
+          coinHavingbalanceAfterMerge
         );
       }
     }

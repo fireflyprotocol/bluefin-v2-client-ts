@@ -791,11 +791,17 @@ export class BluefinClient {
       )
     )?.coinObjectId;
     if (coinHavingBalance) {
-      return this.contractCalls.depositToMarginBankContractCall(amount, coinHavingBalance);
+      return this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinHavingBalance
+      );
     }
 
     // Try merging users' coins if they have more than one coins
-    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins({}, this.signer);
+    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
+      {},
+      this.signer
+    );
     if (usdcCoins.data.length > 1) {
       await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
         this.contractCalls.onChainCalls.getCoinType(),
@@ -810,7 +816,10 @@ export class BluefinClient {
         )
       )?.coinObjectId;
       if (coinHavingBalance) {
-        return this.contractCalls.depositToMarginBankContractCall(amount, coinHavingBalance);
+        return this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinHavingBalance
+        );
       }
     }
 

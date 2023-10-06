@@ -15,9 +15,6 @@ import {
   ORDER_STATUS,
   ORDER_TYPE,
   TIME_IN_FORCE,
-  hexToBuffer,
-  bnToHex,
-  encodeOrderFlags,
   SigPK,
   getKeyPairFromPvtKey,
 } from "@firefly-exchange/library-sui";
@@ -28,7 +25,6 @@ import {
   Keypair,
   RawSigner,
   Secp256k1Keypair,
-  SignatureScheme,
   SignerWithProvider,
 } from "@mysten/sui.js";
 import { WalletContextState } from "@suiet/wallet-kit";
@@ -110,8 +106,6 @@ import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
 
-// import { Contract } from "ethers";
-
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -177,12 +171,11 @@ export class BluefinClient {
     }
     // if input is string
     else if (_account && _scheme && typeof _account === "string") {
-      if (_account.split(" ")[1]) // can split with a space then its seed phrase
-      {
+      if (_account.split(" ")[1]) {
+        // can split with a space then its seed phrase
         this.initializeWithSeed(_account, _scheme);
-      }
-      else if (!_account.split(" ")[1]) // splitting with a space gives undefined then its a private key
-      {
+      } else if (!_account.split(" ")[1]) {
+        // splitting with a space gives undefined then its a private key
         const keyPair = getKeyPairFromPvtKey(_account, _scheme);
         this.initializeWithKeyPair(keyPair);
       }
@@ -782,9 +775,39 @@ export class BluefinClient {
     amount: number,
     coinID?: string
   ): Promise<ResponseSchema> => {
-    let coin = coinID;
-    if (amount && !coinID) {
-      coin = (
+    if (!amount) throw Error(`No amount specified for deposit`);
+
+    //if CoinID provided
+    if (coinID)
+      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+
+    // Check for a single coin containing enough balance
+    const coinHavingBalance = (
+      await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+        {
+          amount,
+        },
+        this.signer
+      )
+    )?.coinObjectId;
+    if (coinHavingBalance) {
+      return this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinHavingBalance
+      );
+    }
+
+    // Try merging users' coins if they have more than one coins
+    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
+      {},
+      this.signer
+    );
+    if (usdcCoins.data.length > 1) {
+      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+        this.contractCalls.onChainCalls.getCoinType(),
+        this.signer
+      );
+      const coinHavingBalance = (
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
           {
             amount,
@@ -792,10 +815,14 @@ export class BluefinClient {
           this.signer
         )
       )?.coinObjectId;
+      if (coinHavingBalance) {
+        return this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinHavingBalance
+        );
+      }
     }
-    if (coin) {
-      return this.contractCalls.depositToMarginBankContractCall(amount, coin);
-    }
+
     throw Error(`User has no coin with amount ${amount} to deposit`);
   };
 

@@ -775,26 +775,33 @@ export class BluefinClient {
     amount: number,
     coinID?: string
   ): Promise<ResponseSchema> => {
-    let coin = coinID;
     if (!amount) throw Error(`No amount specified for deposit`);
-    if (!coinID) {
-      coin = (
-        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-          {
-            amount,
-          },
-          this.signer
-        )
-      )?.coinObjectId;
+
+    //if CoinID provided
+    if (coinID)
+      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+
+    // Check for a single coin containing enough balance
+    const coinHavingBalance = (
+      await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+        {
+          amount,
+        },
+        this.signer
+      )
+    )?.coinObjectId;
+    if (coinHavingBalance) {
+      return this.contractCalls.depositToMarginBankContractCall(amount, coinHavingBalance);
     }
-    if (coin) {
-      return this.contractCalls.depositToMarginBankContractCall(amount, coin);
-    } else {
+
+    // Try merging users' coins if they have more than one coins
+    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins({}, this.signer);
+    if (usdcCoins.data.length > 1) {
       await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
         this.contractCalls.onChainCalls.getCoinType(),
         this.signer
       );
-      coin = (
+      const coinHavingBalance = (
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
           {
             amount,
@@ -802,11 +809,12 @@ export class BluefinClient {
           this.signer
         )
       )?.coinObjectId;
-      if (coin) {
-        return this.contractCalls.depositToMarginBankContractCall(amount, coin);
+      if (coinHavingBalance) {
+        return this.contractCalls.depositToMarginBankContractCall(amount, coinHavingBalance);
       }
-      throw Error(`User has no coin with amount ${amount} to deposit`);
     }
+
+    throw Error(`User has no coin with amount ${amount} to deposit`);
   };
 
   /**

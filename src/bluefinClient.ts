@@ -807,28 +807,18 @@ export class BluefinClient {
         this.contractCalls.onChainCalls.getCoinType(),
         this.signer
       );
-
-      // Try Getting Merged CoinID 
-      let coinHavingbalanceAfterMerge, retries = 5;
-
-      while (!coinHavingbalanceAfterMerge && retries--) {
-        coinHavingbalanceAfterMerge = (
-          await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-            {
-              amount,
-            },
-            this.signer
-          )
-        )?.coinObjectId;
-
-        //sleep for 1 second to wait for merging on block chain
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-
-      if (coinHavingbalanceAfterMerge) {
+      const coinHavingBalance = (
+        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+          {
+            amount,
+          },
+          this.signer
+        )
+      )?.coinObjectId;
+      if (coinHavingBalance) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingbalanceAfterMerge
+          coinHavingBalance
         );
       }
     }

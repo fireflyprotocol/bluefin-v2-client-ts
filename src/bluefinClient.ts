@@ -446,7 +446,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.LIMIT
+          order.orderType === ORDER_TYPE.LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -812,6 +812,8 @@ export class BluefinClient {
         retries = 5;
 
       while (!coinHavingbalanceAfterMerge && retries--) {
+        //sleep for 1 second to merge the coins
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         coinHavingbalanceAfterMerge = (
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
@@ -820,9 +822,6 @@ export class BluefinClient {
             this.signer
           )
         )?.coinObjectId;
-
-        //sleep for 1 second to merge the coins
-        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
       if (coinHavingbalanceAfterMerge) {

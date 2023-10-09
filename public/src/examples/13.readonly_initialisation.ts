@@ -12,7 +12,6 @@ async function main() {
   const client = new BluefinClient(
     true,
     Networks.TESTNET_SUI // i.e. TESTNET_SUI or PRODUCTION_SUI
-   
   ); //passing isTermAccepted = true for compliance and authorizarion
 
   // load/init contract addresses using read-only token

@@ -15,10 +15,8 @@ import {
   ORDER_STATUS,
   ORDER_TYPE,
   TIME_IN_FORCE,
-  hexToBuffer,
-  bnToHex,
-  encodeOrderFlags,
   SigPK,
+  getKeyPairFromPvtKey,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -108,8 +106,6 @@ import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
 
-// import { Contract } from "ethers";
-
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -173,9 +169,16 @@ export class BluefinClient {
     if (_isUI) {
       this.initializeWithHook(_uiSignerObject);
     }
-    // if input is string then its seed phrase otherwise KeyPair
+    // if input is string
     else if (_account && _scheme && typeof _account === "string") {
-      this.initializeWithSeed(_account, _scheme);
+      if (_account.split(" ")[1]) {
+        // can split with a space then its seed phrase
+        this.initializeWithSeed(_account, _scheme);
+      } else if (!_account.split(" ")[1]) {
+        // splitting with a space gives undefined then its a private key
+        const keyPair = getKeyPairFromPvtKey(_account, _scheme);
+        this.initializeWithKeyPair(keyPair);
+      }
     } else if (
       _account &&
       (_account instanceof Secp256k1Keypair ||
@@ -447,6 +450,7 @@ export class BluefinClient {
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
+      cancelOnRevert: orderToSign.cancelOnRevert,
       leverage: toBaseNumber(orderToSign.leverage),
       reduceOnly: orderToSign.reduceOnly,
       salt: Number(orderToSign.salt),
@@ -486,7 +490,8 @@ export class BluefinClient {
         orderSignature: params.orderSignature,
         timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
         orderbookOnly: true,
-        postOnly: params.postOnly || false,
+        postOnly: params.postOnly == true,
+        cancelOnRevert: params.cancelOnRevert == true,
         clientId: params.clientId
           ? `bluefin-client: ${params.clientId}`
           : "bluefin-client",
@@ -508,7 +513,8 @@ export class BluefinClient {
     const response = await this.placeSignedOrder({
       ...signedOrder,
       timeInForce: params.timeInForce,
-      postOnly: params.postOnly,
+      postOnly: params.postOnly == true,
+      cancelOnRevert: params.cancelOnRevert == true,
       clientId: params.clientId,
       orderbookOnly: true,
     });
@@ -769,20 +775,63 @@ export class BluefinClient {
     amount: number,
     coinID?: string
   ): Promise<ResponseSchema> => {
-    let coin = coinID;
-    if (amount && !coinID) {
-      coin = (
-        await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-          {
-            amount,
-          },
-          this.signer
-        )
-      )?.coinObjectId;
+    if (!amount) throw Error(`No amount specified for deposit`);
+
+    //if CoinID provided
+    if (coinID)
+      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+
+    // Check for a single coin containing enough balance
+    const coinHavingBalance = (
+      await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+        {
+          amount,
+        },
+        this.signer
+      )
+    )?.coinObjectId;
+    if (coinHavingBalance) {
+      return this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinHavingBalance
+      );
     }
-    if (coin) {
-      return this.contractCalls.depositToMarginBankContractCall(amount, coin);
+
+    // Try merging users' coins if they have more than one coins
+    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
+      {},
+      this.signer
+    );
+    if (usdcCoins.data.length > 1) {
+      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+        this.contractCalls.onChainCalls.getCoinType(),
+        this.signer
+      );
+
+      let coinHavingbalanceAfterMerge,
+        retries = 5;
+
+      while (!coinHavingbalanceAfterMerge && retries--) {
+        //sleep for 1 second to merge the coins
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        coinHavingbalanceAfterMerge = (
+          await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
+            {
+              amount,
+            },
+            this.signer
+          )
+        )?.coinObjectId;
+      }
+
+      if (coinHavingbalanceAfterMerge) {
+        return this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinHavingbalanceAfterMerge
+        );
+      }
     }
+
     throw Error(`User has no coin with amount ${amount} to deposit`);
   };
 
@@ -1449,11 +1498,12 @@ export class BluefinClient {
       quantity: toBigNumber(params.quantity),
       leverage: toBigNumber(params.leverage || 1),
       maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
-      reduceOnly: params.reduceOnly || false,
+      reduceOnly: params.reduceOnly == true,
       expiration: bigNumber(
         params.expiration || Math.floor(expiration.getTime())
       ), // /1000 to convert time in seconds
-      postOnly: params.postOnly || false,
+      postOnly: params.postOnly == true,
+      cancelOnRevert: params.cancelOnRevert == true,
       salt,
       orderbookOnly: params.orderbookOnly || true,
       ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,

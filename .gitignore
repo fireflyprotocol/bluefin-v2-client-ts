@@ -1,3 +1,6 @@
+# Config giles
+public/src/examples/config.ts
+
 # Logs
 logs
 *.log

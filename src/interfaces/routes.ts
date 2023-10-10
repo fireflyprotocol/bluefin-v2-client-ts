@@ -802,7 +802,7 @@ export interface OrderRequeueUpdateResponse {
   timestamp: number;
 }
 
-export interface OrderCancellationUpdateResponse {
+export interface OrderCancellationOnReversionUpdateResponse {
   orderHash: string;
   userAddress: string;
   symbol: string;

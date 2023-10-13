@@ -120,6 +120,14 @@ export interface GetOrderResponse extends OrderResponse {
   triggerPrice: string;
   margin: string;
 }
+
+export interface GetOrderResponse extends OrderResponse {
+  fee: string;
+  postOnly: boolean;
+  cancelOnRevert: boolean;
+  triggerPrice: string;
+  margin: string;
+}
 export interface PlaceOrderResponse extends OrderResponse {
   postOnly?: boolean;
   cancelOnRevert?: boolean;
@@ -791,6 +799,16 @@ export interface OrderRequeueUpdateResponse {
   message: string;
   isBuy: boolean;
   quantitySentForRequeue: string;
+  timestamp: number;
+}
+
+export interface OrderCancellationOnReversionUpdateResponse {
+  orderHash: string;
+  userAddress: string;
+  symbol: string;
+  message: string;
+  isBuy: boolean;
+  quantitySentForCancellation: string;
   timestamp: number;
 }
 

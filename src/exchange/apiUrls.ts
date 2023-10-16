@@ -52,6 +52,6 @@ export const SERVICE_URLS = {
   ORDERS: {
     ORDERS: "/orders",
     ORDERS_HASH: "/orders/hash",
-    ORDERS_HASH_V2: "/v2/user/orders/hash"
+    ORDERS_HASH_V2: "/v2/user/orders/hash",
   },
 };

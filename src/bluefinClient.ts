@@ -542,7 +542,7 @@ export class BluefinClient {
       const hashOfHash = Buffer.from(
         sha256(JSON.stringify(params.hashes))
       ).toString("hex");
-      let payloadValue: string[]=[];
+      let payloadValue: string[] = [];
       payloadValue.push(hashOfHash);
       if (this.uiWallet) {
         signature = await OrderSigner.signPayloadUsingWallet(
@@ -574,7 +574,7 @@ export class BluefinClient {
         orderHashes: params.hashes,
         cancelSignature: params.signature,
         parentAddress: params.parentAddress,
-        fromUI: true
+        fromUI: true,
       },
       { isAuthenticationRequired: true }
     );

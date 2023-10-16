@@ -511,8 +511,8 @@ describe("BluefinClient", () => {
     beforeEach(async () => {
       //   client.addMarket(symbol);
     });
-    it("should create more than 15 orders then cancel them all", async() =>{
-      for(let i=0; i<16; i++){
+    it("should create more than 15 orders then cancel them all", async () => {
+      for (let i = 0; i < 16; i++) {
         const signedOrder = await client.createSignedOrder({
           symbol,
           price: sellPrice,
@@ -521,16 +521,17 @@ describe("BluefinClient", () => {
           leverage: defaultLeverage,
           orderType: ORDER_TYPE.LIMIT,
         });
-        await client.adjustLeverage({symbol: symbol, leverage: defaultLeverage}); 
+        await client.adjustLeverage({
+          symbol: symbol,
+          leverage: defaultLeverage,
+        });
         const response = await client.placeSignedOrder({
           ...signedOrder,
           clientId: "test cancel order",
         });
-
       }
-      const cancellationResponse=await client.cancelAllOpenOrders(symbol);
+      const cancellationResponse = await client.cancelAllOpenOrders(symbol);
       expect(cancellationResponse.ok).to.be.equal(true);
-
     });
 
     it("should cancel the open order", async () => {
@@ -542,7 +543,10 @@ describe("BluefinClient", () => {
         leverage: defaultLeverage,
         orderType: ORDER_TYPE.LIMIT,
       });
-      await client.adjustLeverage({symbol: symbol, leverage: defaultLeverage});
+      await client.adjustLeverage({
+        symbol: symbol,
+        leverage: defaultLeverage,
+      });
       const response = await client.placeSignedOrder({
         ...signedOrder,
         clientId: "test cancel order",

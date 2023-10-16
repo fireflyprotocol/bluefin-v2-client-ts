@@ -105,6 +105,7 @@ import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
+import { sha256 } from "@noble/hashes/sha256";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -537,8 +538,13 @@ export class BluefinClient {
     try {
       let signature: SigPK;
       if (this.uiWallet) {
+        //taking the hash of list of hashes of cancel signature
+        const hashOfHash = Buffer.from(
+          sha256(JSON.stringify(params.hashes))
+        ).toString("hex");
+
         signature = await OrderSigner.signPayloadUsingWallet(
-          { orderHashes: params.hashes },
+          { orderHashes: hashOfHash },
           this.uiWallet
         );
       } else {

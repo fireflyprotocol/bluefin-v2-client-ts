@@ -788,6 +788,7 @@ export interface OrderSentForSettlementUpdateResponse {
   isMaker: boolean;
   isBuy: boolean;
   avgFillPrice: string;
+  fillId: string;
   timestamp: number;
   matchedOrders: MatchedOrderData[];
 }
@@ -798,6 +799,7 @@ export interface OrderRequeueUpdateResponse {
   symbol: string;
   message: string;
   isBuy: boolean;
+  fillId: string;
   quantitySentForRequeue: string;
   timestamp: number;
 }
@@ -808,6 +810,7 @@ export interface OrderCancellationOnReversionUpdateResponse {
   symbol: string;
   message: string;
   isBuy: boolean;
+  fillId: string;
   quantitySentForCancellation: string;
   timestamp: number;
 }

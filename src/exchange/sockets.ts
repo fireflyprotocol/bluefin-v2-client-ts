@@ -143,30 +143,35 @@ export class Sockets {
     return true;
   }
 
-  subscribeOrderBookDepthStreamBySymbol(symbol: MarketSymbol, depth = ""): boolean {
+  subscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
     if (!this.socketInstance) return false;
     this.socketInstance.emit("SUBSCRIBE", [
       {
         e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
         p: symbol,
-        d: depth
+        d: depth,
       },
     ]);
     return true;
   }
 
-  unsubscribeOrderBookDepthStreamBySymbol(symbol: MarketSymbol, depth = ""): boolean {
+  unsubscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
     if (!this.socketInstance) return false;
     this.socketInstance.emit("UNSUBSCRIBE", [
       {
         e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
         p: symbol,
-        d: depth
+        d: depth,
       },
     ]);
     return true;
   }
-
 
   // Emitted when any price bin on the oderbook is updated.
   onOrderBookUpdate = (cb: ({ orderbook }: any) => void) => {

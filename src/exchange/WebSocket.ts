@@ -183,10 +183,11 @@ export class WebSockets {
     callbackListeners[SOCKET_EVENTS.OrderRequeueUpdate] = cb;
   };
 
-  onUserOrderCancelOnRevertUpdate = (cb: (update: OrderCancellationOnReversionUpdateResponse) => void) => {
+  onUserOrderCancelOnRevertUpdate = (
+    cb: (update: OrderCancellationOnReversionUpdateResponse) => void
+  ) => {
     callbackListeners[SOCKET_EVENTS.OrderCancelledOnReversionUpdate] = cb;
   };
-
 
   onMarketHealthChange = (
     cb: ({ status, symbol }: { status: MARKET_STATUS; symbol: string }) => void

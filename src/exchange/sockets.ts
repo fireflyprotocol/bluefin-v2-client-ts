@@ -196,7 +196,9 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.OrderRequeueUpdate, cb);
   };
 
-  onUserOrderCancellationOnReversionUpdate = (cb: (update: OrderCancellationOnReversionUpdateResponse) => void) => {
+  onUserOrderCancellationOnReversionUpdate = (
+    cb: (update: OrderCancellationOnReversionUpdateResponse) => void
+  ) => {
     this.socketInstance.on(SOCKET_EVENTS.OrderCancelledOnReversionUpdate, cb);
   };
 

@@ -17,6 +17,7 @@ import {
   TIME_IN_FORCE,
   SigPK,
   getKeyPairFromPvtKey,
+  parseSigPK,
 } from "@firefly-exchange/library-sui";
 import {
   Connection,
@@ -105,7 +106,7 @@ import { generateRandomNumber, readFile } from "../utils/utils";
 import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
-
+import { sha256 } from "@noble/hashes/sha256";
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -536,14 +537,21 @@ export class BluefinClient {
     // return this.signer.signData(serialized);
     try {
       let signature: SigPK;
+
+      //taking the hash of list of hashes of cancel signature
+      const hashOfHash = Buffer.from(
+        sha256(JSON.stringify(params.hashes))
+      ).toString("hex");
+      let payloadValue: string[] = [];
+      payloadValue.push(hashOfHash);
       if (this.uiWallet) {
         signature = await OrderSigner.signPayloadUsingWallet(
-          { orderHashes: params.hashes },
+          { orderHashes: payloadValue },
           this.uiWallet
         );
       } else {
         signature = this.orderSigner.signPayload({
-          orderHashes: params.hashes,
+          orderHashes: payloadValue,
         });
       }
       return `${signature?.signature}${signature?.publicKey}`;
@@ -560,12 +568,13 @@ export class BluefinClient {
    */
   placeCancelOrder = async (params: OrderCancellationRequest) => {
     const response = await this.apiService.delete<CancelOrderResponse>(
-      SERVICE_URLS.ORDERS.ORDERS_HASH,
+      SERVICE_URLS.ORDERS.ORDERS_HASH_V2,
       {
         symbol: params.symbol,
         orderHashes: params.hashes,
         cancelSignature: params.signature,
         parentAddress: params.parentAddress,
+        fromUI: true,
       },
       { isAuthenticationRequired: true }
     );

@@ -178,7 +178,7 @@ export class Sockets {
   ) => {
     this.socketInstance.on(SOCKET_EVENTS.OrderbookDepthUpdateKey, cb);
   };
-  
+
   onMarketDataUpdate = (
     cb: ({ marketData }: { marketData: MarketData }) => void
   ) => {

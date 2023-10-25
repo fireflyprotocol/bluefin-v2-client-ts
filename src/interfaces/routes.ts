@@ -803,6 +803,13 @@ export interface OrderRequeueUpdateResponse {
   quantitySentForRequeue: string;
   timestamp: number;
 }
+export interface OrderBookPartialDepth {
+  symbol: string;
+  orderbookUpdateId: number;
+  depth: number;
+  asks: string[][];
+  bids: string[][];
+}
 
 export interface OrderCancellationOnReversionUpdateResponse {
   orderHash: string;

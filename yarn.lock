@@ -1079,10 +1079,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@firefly-exchange/library-sui@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.3.0.tgz#9470df5460765496c47859b75a5015a0109e31c7"
-  integrity sha512-3K20UUF3zFpS3QCqSSiw/bDghGrarordy0OwdSRLqXsmxpm7o6gI6PtcneaQGoHGpISS4EyNcl810dNNnCKq6Q==
+"@firefly-exchange/library-sui@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.3.5.tgz#e1e1b91dae94cb57b50ba15c0b0028a17372032c"
+  integrity sha512-o9gfQzgQQpRdsday5VfK9utwPkUGArk+YhFRSkzbM/opypCIXZD3vmy5xbN3KkkTqsvab46TmufOuKnNk4m6sQ==
   dependencies:
     "@mysten/sui.js" "^0.35.0"
     "@noble/hashes" "^1.2.0"

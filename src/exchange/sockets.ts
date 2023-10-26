@@ -264,7 +264,7 @@ export class Sockets {
   };
 
   onCustomEvent = (
-    cb: (payload: any) => void, customEventKey
+    cb: (payload: any) => void, customEventKey: string
   ) => {
     this.socketInstance.on(customEventKey, cb);
   };

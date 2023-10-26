@@ -263,9 +263,7 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.PositionUpdateKey, cb);
   };
 
-  onCustomEvent = (
-    cb: (payload: any) => void, customEventKey: string
-  ) => {
+  onCustomEvent = (cb: (payload: any) => void, customEventKey: string) => {
     this.socketInstance.on(customEventKey, cb);
   };
 

@@ -251,10 +251,20 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.OrderUpdateKey, cb);
   };
 
+  onUserOrderCancellationFailed = (
+    cb: ({ order }: { order: PlaceOrderResponse }) => void
+  ) => {
+    this.socketInstance.on(SOCKET_EVENTS.OrderCancellationFailedKey, cb);
+  };
+
   onUserPositionUpdate = (
     cb: ({ position }: { position: GetPositionResponse }) => void
   ) => {
     this.socketInstance.on(SOCKET_EVENTS.PositionUpdateKey, cb);
+  };
+
+  onCustomEvent = (cb: (payload: any) => void, customEventKey: string) => {
+    this.socketInstance.on(customEventKey, cb);
   };
 
   onUserUpdates = (

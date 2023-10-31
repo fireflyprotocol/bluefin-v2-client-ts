@@ -476,7 +476,7 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it.only("should post a BUY STOP LIMIT order on exchange", async () => {
+    it("should post a BUY STOP LIMIT order on exchange", async () => {
       defaultLeverage=await client.getUserDefaultLeverage(symbol);
       const response = await client.postOrder({
         symbol,
@@ -492,7 +492,7 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it.only("should post a SELL STOP LIMIT order on exchange", async () => {
+    it("should post a SELL STOP LIMIT order on exchange", async () => {
       defaultLeverage=await client.getUserDefaultLeverage(symbol);
       const response = await client.postOrder({
         symbol,

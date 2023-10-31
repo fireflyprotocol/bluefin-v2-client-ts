@@ -477,7 +477,7 @@ describe("BluefinClient", () => {
     });
 
     it("should post a BUY STOP LIMIT order on exchange", async () => {
-      defaultLeverage=await client.getUserDefaultLeverage(symbol);
+      defaultLeverage = await client.getUserDefaultLeverage(symbol);
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,
@@ -493,7 +493,7 @@ describe("BluefinClient", () => {
     });
 
     it("should post a SELL STOP LIMIT order on exchange", async () => {
-      defaultLeverage=await client.getUserDefaultLeverage(symbol);
+      defaultLeverage = await client.getUserDefaultLeverage(symbol);
       const response = await client.postOrder({
         symbol,
         quantity: 0.1,

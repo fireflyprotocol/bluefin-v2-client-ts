@@ -36,7 +36,7 @@ export const SERVICE_URLS = {
     CAMPAIGN_REWARDS: "/growth/campaignRewards",
     AFFILIATE_PAYOUTS: "/growth/affiliate/payouts",
     AFFILIATE_REFEREE_DETAILS: "/growth/affiliate/refereeDetails",
-    GROWTH_REFEREES_COUNT: "/growth/affiliate/refereesCount",
+    GROWTH_REFEREES_COUNT: "/growth/refereesCount",
     USER_REWARDS_HISTORY: "/growth/userRewards/history",
     USER_REWARDS_SUMMARY: "/growth/userRewards/summary",
     REWARDS_OVERVIEW: "/growth/tradeAndEarn/rewardsOverview",

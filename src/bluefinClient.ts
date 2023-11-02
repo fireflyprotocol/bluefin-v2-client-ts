@@ -97,6 +97,10 @@ import {
   GenerateReferralCodeRequest,
   GetUserTradesHistoryResponse,
   GetUserTradesHistoryRequest,
+  OpenReferralDetails,
+  OpenReferralOverview,
+  OpenReferralPayoutList,
+  OpenReferralRefereeDetails,
 } from "./interfaces/routes";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
@@ -1320,7 +1324,21 @@ export class BluefinClient {
   getAffiliateRefereeCount = async (campaignId: number) => {
     const response =
       await this.apiService.get<GetAffiliateRefereeCountResponse>(
-        SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
+        SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
+        { campaignId },
+        { isAuthenticationRequired: true }
+      );
+    return response;
+  };
+  /**
+   * Gets affiliate referree count
+   * @param campaignId
+   * @returns GetAffiliateRefereeCountResponse
+   */
+  getRefereeCount = async (campaignId: number) => {
+    const response =
+      await this.apiService.get<GetAffiliateRefereeCountResponse>(
+        SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
         { campaignId },
         { isAuthenticationRequired: true }
       );
@@ -1440,6 +1458,109 @@ export class BluefinClient {
       );
     return response;
   };
+  //Open referral Program
+  /**
+   * get open referral referee details
+   * @param payload
+   * @returns OpenReferralRefereeDetails
+   */
+  getOpenReferralRefereeDetails = async (payload: {
+    cursor: string;
+    pageSize: number;
+  }) => {
+    const response = await this.apiService.get<{
+      data: OpenReferralRefereeDetails;
+      nextCursor: string;
+      isMoreDataAvailable: boolean;
+    }>(SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREE_DETAILS, payload, {
+      isAuthenticationRequired: true,
+    });
+    return response;
+  };
+
+  /**
+   * get open referral payouts
+   * @param payload
+   * @returns OpenReferralDetails
+   */
+  getOpenReferralDetails = async (payload: { campaignId: number }) => {
+    const response = await this.apiService.get<OpenReferralDetails>(
+      SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREES_COUNT,
+      payload,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+  /**
+   * get open referral payouts
+   * @param payload
+   * @returns OpenReferralPayoutList
+   */
+  getOpenReferralPayouts = async (payload: {
+    cursor: string;
+    pageSize: number;
+  }) => {
+    const response = await this.apiService.get<{
+      data: OpenReferralPayoutList;
+      nextCursor: string;
+      isMoreDataAvailable: boolean;
+    }>(SERVICE_URLS.GROWTH.OPEN_REFERRAL_PAYOUTS, payload, {
+      isAuthenticationRequired: true,
+    });
+    return response;
+  };
+
+  /**
+   * generate open referral code
+   * @param campaignId
+   * @returns OpenReferralOverview
+   */
+  generateOpenReferralReferralCode = async (payload: {
+    campaignId: string;
+  }) => {
+    const response = await this.apiService.post<{
+      referralAddress: string;
+      referralCode: string;
+      message: string;
+    }>(SERVICE_URLS.GROWTH.OPEN_REFERRAL_GENERATE_CODE, payload, {
+      isAuthenticationRequired: true,
+    });
+    return response;
+  };
+
+  /**
+   * get open referral overview
+   * @returns OpenReferralOverview
+   */
+  getOpenReferralOverview = async () => {
+    const response = await this.apiService.get<OpenReferralOverview>(
+      SERVICE_URLS.GROWTH.OPEN_REFERRAL_OVERVIEW,
+      undefined,
+      {
+        isAuthenticationRequired: true,
+      }
+    );
+    return response;
+  };
+
+  /**
+   * Link open referral
+   * @param referralCode
+   * @returns boolean
+   */
+
+  openReferralLinkReferredUser = async (payload: { referralCode: string }) => {
+    const response = await this.apiService.post(
+      SERVICE_URLS.GROWTH.OPEN_REFERRAL_LINK_REFERRED_USER,
+      payload,
+      {
+        isAuthenticationRequired: true,
+      }
+    );
+    return response;
+  };
+
+  //Open referral Program
 
   //= ==============================================================//
   //                    PRIVATE HELPER FUNCTIONS

@@ -1,4 +1,4 @@
-*       @fireflyprotocol/eng-ecosystem
 environment-stack/*   @fireflyprotocol/eng-platform
 .github/*   @fireflyprotocol/eng-platform
 
+*       @fireflyprotocol/eng-ecosystem

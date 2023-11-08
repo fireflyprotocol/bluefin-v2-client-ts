@@ -5,8 +5,11 @@ import {
   OnChainCalls,
   toBigNumberStr,
   toBaseNumber,
+  SuiClient,
+  network,
 } from "@firefly-exchange/library-sui";
-import { RawSigner, JsonRpcProvider } from "@mysten/sui.js";
+import { Keypair } from "@mysten/sui.js/dist/cjs/cryptography";
+import { url } from "inspector";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
@@ -17,15 +20,14 @@ import {
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
-  signer: RawSigner;
-
+  signer: Keypair;
+  suiClient: SuiClient;
   marginBankId: string | undefined;
 
-  constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
+  constructor(signer: Keypair, deployment: any) {
     this.signer = signer;
-    const signerWithProvider = this.signer.signData;
     this.onChainCalls = new OnChainCalls(
-      signerWithProvider as unknown as RawSigner,
+      this.signer,
       deployment
     );
   }
@@ -81,7 +83,7 @@ export class ContractCalls {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: await this.signer.getAddress(),
+          accountAddress: await this.signer.getPublicKey().toSuiAddress(),
         },
         this.signer
       );
@@ -111,7 +113,7 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress || (await this.signer.getAddress()),
+          account: parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
           market: symbol,
         },
         this.signer

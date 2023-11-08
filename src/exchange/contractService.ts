@@ -6,7 +6,7 @@ import {
   toBigNumberStr,
   toBaseNumber,
 } from "@firefly-exchange/library-sui";
-import { RawSigner, JsonRpcProvider } from "@mysten/sui.js";
+// import { RawSigner, JsonRpcProvider } from "@mysten/sui.js";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
@@ -17,15 +17,15 @@ import {
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
-  signer: RawSigner;
+  signer: any;
 
   marginBankId: string | undefined;
 
-  constructor(signer: RawSigner, rpc: JsonRpcProvider, deployment: any) {
+  constructor(signer: any, rpc: any, deployment: any) {
     this.signer = signer;
     const signerWithProvider = this.signer.signData;
     this.onChainCalls = new OnChainCalls(
-      signerWithProvider as unknown as RawSigner,
+      signerWithProvider as unknown as any,
       deployment
     );
   }

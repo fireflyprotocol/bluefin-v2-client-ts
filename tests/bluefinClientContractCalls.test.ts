@@ -63,8 +63,8 @@ describe("BluefinClient", () => {
       "/home/radheem/github/bluefin-v2-client/deployment.json"
     );
     expect(deplymentJson).to.be.not.eq(undefined);
-    const signer = getSignerFromSeed(deployer.phrase, client.getProvider());
-    onChainCalls = new OnChainCalls(signer, deplymentJson);
+    // const signer = getSignerFromSeed(deployer.phrase, client.getProvider());
+    // onChainCalls = new OnChainCalls(signer, deplymentJson);
     await setupTestAccounts(onChainCalls, TEST_WALLETS, network.faucet);
   });
 

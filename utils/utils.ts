@@ -1,12 +1,5 @@
-import {
-  RawSigner,
-  Keypair,
-  JsonRpcProvider,
-  Secp256k1Keypair,
-  SignatureScheme,
-  Ed25519Keypair,
-  SuiTransactionBlockResponse,
-} from "@mysten/sui.js";
+import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
+import { Secp256k1Keypair } from "@mysten/sui.js/keypairs/secp256k1";
 import fs from "fs";
 import {
   OnChainCalls,
@@ -20,6 +13,7 @@ import {
 } from "@firefly-exchange/library-sui";
 import { OrderSignatureResponse } from "../src/interfaces/routes";
 import deploymentData from "../deployment.json";
+import { Keypair } from "@mysten/sui.js/dist/cjs/cryptography";
 
 /**
  * Generates random number
@@ -30,33 +24,33 @@ export const generateRandomNumber = (multiplier: number) => {
   return Math.floor((Date.now() + Math.random() + Math.random()) * multiplier);
 };
 
-export function getSignerFromKeyPair(
-  keypair: Keypair,
-  provider: JsonRpcProvider
-): RawSigner {
-  return new RawSigner(keypair, provider);
-}
+// export function getSignerFromKeyPair(
+//   keypair: Keypair,
+//   provider: JsonRpcProvider
+// ): RawSigner {
+//   return new RawSigner(keypair, provider);
+// }
 
-export function getKeyPairFromSeed(
-  seed: string,
-  scheme: SignatureScheme = "Secp256k1"
-): Keypair {
-  switch (scheme) {
-    case "ED25519":
-      return Ed25519Keypair.deriveKeypair(seed);
-    case "Secp256k1":
-      return Secp256k1Keypair.deriveKeypair(seed);
-    default:
-      throw new Error("Provided scheme is invalid");
-  }
-}
+// export function getKeyPairFromSeed(
+//   seed: string,
+//   scheme: SignatureScheme = "Secp256k1"
+// ): Keypair {
+//   switch (scheme) {
+//     case "ED25519":
+//       return Ed25519Keypair.deriveKeypair(seed);
+//     case "Secp256k1":
+//       return Secp256k1Keypair.deriveKeypair(seed);
+//     default:
+//       throw new Error("Provided scheme is invalid");
+//   }
+// }
 
-export function getSignerFromSeed(
-  seed: string,
-  provider: JsonRpcProvider
-): RawSigner {
-  return getSignerFromKeyPair(getKeyPairFromSeed(seed), provider);
-}
+// export function getSignerFromSeed(
+//   seed: string,
+//   provider: JsonRpcProvider
+// ): RawSigner {
+//   return getSignerFromKeyPair(getKeyPairFromSeed(seed), provider);
+// }
 
 function readFileServer(filePath: string): any {
   return fs.existsSync(filePath)

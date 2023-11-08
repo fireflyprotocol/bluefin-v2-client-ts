@@ -1,6 +1,6 @@
 import { getValue, Transaction } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
-import { SuiTransactionBlockResponse } from "@mysten/sui.js";
+// import { SuiTransactionBlockResponse } from "@mysten/sui.js";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;
@@ -47,7 +47,7 @@ export const handleResponse = (
 };
 
 export const TransformToResponseSchema = async (
-  contactCall: () => Promise<SuiTransactionBlockResponse>,
+  contactCall: () => Promise<any>,
   successMessage: string
 ): Promise<ResponseSchema> => {
   for (let retryNo = 0; retryNo < lockErrorMaxRetries; retryNo++) {

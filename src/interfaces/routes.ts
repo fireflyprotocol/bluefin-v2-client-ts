@@ -1,4 +1,3 @@
-import { WalletContextState, SuiProvider } from "@suiet/wallet-kit";
 
 import {
   ORDER_STATUS,
@@ -571,9 +570,9 @@ export interface ObjectDetails {
 }
 
 export interface ExtendedWalletContextState
-  extends Omit<WalletContextState, "signMessage"> {
-  wallet: WalletContextState;
-  provider: SuiProvider;
+  extends Omit<any, "signMessage"> {
+  wallet: any;
+  provider: any;
   signData: (data: Uint8Array) => Promise<string>;
   getAddress: () => string | undefined;
   signMessage: (

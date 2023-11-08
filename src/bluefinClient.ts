@@ -18,17 +18,12 @@ import {
   SigPK,
   getKeyPairFromPvtKey,
   parseSigPK,
+  SIGNER_TYPES,
 } from "@firefly-exchange/library-sui";
-import {
-  Connection,
-  Ed25519Keypair,
-  JsonRpcProvider,
-  Keypair,
-  RawSigner,
-  Secp256k1Keypair,
-  SignerWithProvider,
-} from "@mysten/sui.js";
-import { WalletContextState } from "@suiet/wallet-kit";
+
+import { SuiClient } from "@mysten/sui.js/client";
+import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
+import { Secp256k1Keypair } from "@mysten/sui.js/keypairs/secp256k1";
 import {
   AdjustLeverageResponse,
   AuthorizeHashResponse,
@@ -107,6 +102,9 @@ import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
 import { sha256 } from "@noble/hashes/sha256";
+import { Keypair, parseSerializedSignature } from "@mysten/sui.js/cryptography";
+import { toB64 } from "@mysten/bcs";
+import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -122,9 +120,9 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: RawSigner | any; // to save signer when connecting from UI
+  private signer: any; // to save signer when connecting from UI
 
-  private uiWallet: WalletContextState | any; // to save signer when connecting from UI
+  private uiWallet: any; // to save signer when connecting from UI
 
   private contractCalls: ContractCalls | undefined;
 
@@ -154,9 +152,7 @@ export class BluefinClient {
   ) {
     this.network = _network;
 
-    this.provider = new JsonRpcProvider(
-      new Connection({ fullnode: _network.url })
-    );
+    this.provider = new SuiClient({ url: _network.url });
 
     this.apiService = new APIService(this.network.apiGateway);
 
@@ -171,21 +167,22 @@ export class BluefinClient {
       this.initializeWithHook(_uiSignerObject);
     }
     // if input is string
-    else if (_account && _scheme && typeof _account === "string") {
-      if (_account.split(" ")[1]) {
-        // can split with a space then its seed phrase
-        this.initializeWithSeed(_account, _scheme);
-      } else if (!_account.split(" ")[1]) {
-        // splitting with a space gives undefined then its a private key
-        const keyPair = getKeyPairFromPvtKey(_account, _scheme);
-        this.initializeWithKeyPair(keyPair);
-      }
-    } else if (
+    // else if (_account && _scheme && typeof _account === "string") {
+    //   if (_account.split(" ")[1]) {
+    //     // can split with a space then its seed phrase
+    //     this.initializeWithSeed(_account, _scheme);
+    //   } else if (!_account.split(" ")[1]) {
+    //     // splitting with a space gives undefined then its a private key
+    //     const keyPair = getKeyPairFromPvtKey(_account, _scheme);
+    //     this.initializeWithKeyPair(keyPair);
+    //   }
+    // }
+    else if (
       _account &&
       (_account instanceof Secp256k1Keypair ||
         _account instanceof Ed25519Keypair)
     ) {
-      this.initializeWithKeyPair(_account);
+      // this.initializeWithKeyPair(_account);
     }
   }
 
@@ -209,7 +206,7 @@ export class BluefinClient {
       if (!this.signer) {
         throw Error("Signer not initialized");
       }
-      await this.initContractCalls(deployment);
+      // await this.initContractCalls(deployment);
       this.walletAddress = await this.signer.getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
@@ -246,11 +243,11 @@ export class BluefinClient {
    * initializes web3 and wallet with the given account private key
    * @param keypair key pair for the account to be used for placing orders
    */
-  initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
-    this.signer = new RawSigner(keypair, this.provider);
-    this.walletAddress = await this.signer.getAddress();
-    this.initOrderSigner(keypair);
-  };
+  // initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
+  //   this.signer = new RawSigner(keypair, this.provider);
+  //   this.walletAddress = await this.signer.getAddress();
+  //   this.initOrderSigner(keypair);
+  // };
 
   /**
    * @description
@@ -259,65 +256,65 @@ export class BluefinClient {
    * @param scheme signature scheme to be used
    * @returns void
    */
-  initializeWithSeed = (seed: string, scheme: any): void => {
-    switch (scheme) {
-      case "ED25519":
-        this.signer = new RawSigner(
-          Ed25519Keypair.deriveKeypair(seed),
-          this.provider
-        );
-        this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
-        break;
-      case "Secp256k1":
-        this.signer = new RawSigner(
-          Secp256k1Keypair.deriveKeypair(seed),
-          this.provider
-        );
-        this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
-        break;
-      default:
-        throw new Error("Provided scheme is invalid");
-    }
-  };
+  // initializeWithSeed = (seed: string, scheme: any): void => {
+  //   switch (scheme) {
+  //     case "ED25519":
+  //       this.signer = new RawSigner(
+  //         Ed25519Keypair.deriveKeypair(seed),
+  //         this.provider
+  //       );
+  //       this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
+  //       break;
+  //     case "Secp256k1":
+  //       this.signer = new RawSigner(
+  //         Secp256k1Keypair.deriveKeypair(seed),
+  //         this.provider
+  //       );
+  //       this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
+  //       break;
+  //     default:
+  //       throw new Error("Provided scheme is invalid");
+  //   }
+  // };
 
   /**
    * @description
    * initializes contract calls
    * @param deployment (optional) The deployment json provided by deployer
    */
-  initContractCalls = async (deployment?: any) => {
-    if (!this.signer) {
-      throw Error("Signer not Initialized");
-    }
-    const _deployment = deployment || (await this.getDeploymentJson());
+  // initContractCalls = async (deployment?: any) => {
+  //   if (!this.signer) {
+  //     throw Error("Signer not Initialized");
+  //   }
+  //   const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(
-      this.getSigner(),
-      this.getProvider(),
-      _deployment
-    );
-  };
+  //   this.contractCalls = new ContractCalls(
+  //     this.getSigner(),
+  //     this.getProvider(),
+  //     _deployment
+  //   );
+  // };
 
   /**
    * @description
    * Gets the RawSigner of the client
    * @returns RawSigner
    * */
-  getSigner = (): RawSigner => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    return this.signer;
-  };
+  // getSigner = (): RawSigner => {
+  //   if (!this.signer) {
+  //     throw Error("Signer not initialized");
+  //   }
+  //   return this.signer;
+  // };
 
   /**
    * @description
    * Gets the RPC Provider of the client
    * @returns JsonRPCProvider
    * */
-  getProvider = (): JsonRpcProvider => {
-    return this.provider;
-  };
+  // getProvider = (): JsonRpcProvider => {
+  //   return this.provider;
+  // };
 
   /**
    * Generate and receive readOnlyToken, this can only be accessed at the time of generation
@@ -338,11 +335,14 @@ export class BluefinClient {
    * @returns auth token
    */
   userOnBoarding = async (token?: string) => {
+    console.log("called userOnBoarding...");
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
+      console.log("siganure successfull generation", signature);
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(signature);
+      console.log("auth response successful", authTokenResponse);
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -361,14 +361,66 @@ export class BluefinClient {
     return userAuthToken;
   };
 
+  async signPayloadUsingWallet(payload: unknown, wallet: any): Promise<SigPK> {
+    {
+      try {
+        let data: SigPK;
+        const msgBytes = new TextEncoder().encode(JSON.stringify(payload));
+        console.log(msgBytes, "msgBytes");
+        console.log(toB64(msgBytes), "converted bytes");
+        const sigOutput = await wallet.signMessage({ message: msgBytes });
+        console.log(sigOutput, "sigOutput");
+        let parsedSignature = parseSerializedSignature(sigOutput.signature);
+
+        if (parsedSignature.signatureScheme === "ZkLogin") {
+          //zk login signature
+          const { userSignature } = parsedSignature.zkLogin;
+          console.log(userSignature, "userSignature");
+          //convert user sig to b64
+          const convertedUserSignature = toB64(userSignature as any);
+          console.log(convertedUserSignature, "convertedUserSignature");
+          //reparse b64 converted user sig
+          const parsedUserSignature = parseSerializedSignature(
+            convertedUserSignature
+          );
+          console.log(parsedUserSignature, "parsedUserSignature");
+          data = {
+            signature:
+              Buffer.from(parsedSignature.serializedSignature).toString("hex") +
+              "3",
+            publicKey: publicKeyFromRawBytes(
+              parsedUserSignature.signatureScheme,
+              parsedUserSignature.publicKey
+            ).toBase64(),
+          };
+        } else {
+          data = {
+            signature:
+              Buffer.from(parsedSignature.signature).toString("hex") +
+              SIGNER_TYPES.UI_ED25519,
+            publicKey: publicKeyFromRawBytes(
+              parsedSignature.signatureScheme,
+              parsedSignature.publicKey
+            ).toBase64(),
+          };
+        }
+        console.log(data, "data");
+        return data;
+      } catch (error) {
+        console.log(error, "error");
+      }
+    }
+  }
+
   createOnboardingSignature = async () => {
     let signature: SigPK;
 
     const onboardingSignature = {
       onboardingUrl: this.network.onboardingUrl,
     };
+    console.log(onboardingSignature, "pp load");
     if (this.uiWallet) {
-      signature = await OrderSigner.signPayloadUsingWallet(
+      signature = await this.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
       );
@@ -376,7 +428,11 @@ export class BluefinClient {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
 
-    return `${signature?.signature}${signature?.publicKey}`;
+    const payload = `${signature?.signature}${signature?.publicKey}`;
+
+    console.log(payload, "payload");
+
+    return payload;
   };
 
   /**
@@ -396,12 +452,12 @@ export class BluefinClient {
    * Gets the SignerWithProvider of the client
    * @returns SignerWithProvider
    * */
-  getSignerWithProvider = (): SignerWithProvider => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    return this.signer.connect(this.provider);
-  };
+  // getSignerWithProvider = (): SignerWithProvider => {
+  //   if (!this.signer) {
+  //     throw Error("Signer not initialized");
+  //   }
+  //   return this.signer.connect(this.provider);
+  // };
 
   signOrder = async (orderToSign: Order) => {
     if (this.uiWallet) {
@@ -1284,17 +1340,7 @@ export class BluefinClient {
   /**
    * Gets affiliate payout details
    * @param campaignId
-   * @returns Array of GetAffiliatePayoutsResponse
-   */
-  getAffiliatePayouts = async (campaignId: number) => {
-    const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
-      SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
-      { campaignId },
-      { isAuthenticationRequired: true }
-    );
-    return response;
-  };
-
+   * @returns Array of GetAffiliatePayoutsResponsepubKey.toString()
   /**
    * Gets affiliate referree details
    * @param GetAffiliateRefereeDetailsRequest
@@ -1452,7 +1498,7 @@ export class BluefinClient {
    * @returns void
    */
   private initOrderSigner = (keypair: Keypair) => {
-    this.orderSigner = new OrderSigner(keypair);
+    this.orderSigner = new OrderSigner(keypair as any);
   };
 
   /**

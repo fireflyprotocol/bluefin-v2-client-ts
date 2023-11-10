@@ -119,6 +119,31 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.adjustLeverage, { leverage }));
   };
 
+  adjustLeverageContractCallRawTransaction = async (
+    leverage: number,
+    symbol: string,
+    parentAddress?: string
+  ): Promise<string> => {
+    const perpId = this.onChainCalls.getPerpetualID(symbol);
+    const signedTx = await this.onChainCalls.signAdjustLeverage(
+      {
+        leverage,
+        perpID: perpId,
+        account: parentAddress || (await this.signer.getAddress()),
+        market: symbol,
+      },
+      this.signer
+    );
+    
+    //serialize
+    const separator = "||||";  // Choose a separator that won't appear in txBytes or signature
+    const combinedData = `${signedTx.transactionBlockBytes}${separator}${signedTx.signature}`;
+    // Encode to hex for transmission
+    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
+    
+    return encodedData
+  };
+
   /**
    * @param publicAddress the sub account's public address
    * @param status the status to set for sub account true = add, false = remove

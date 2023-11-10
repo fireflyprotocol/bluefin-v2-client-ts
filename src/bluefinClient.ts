@@ -404,7 +404,7 @@ export class BluefinClient {
   };
 
   signOrder = async (orderToSign: Order) => {
-    if (this.uiWallet) {
+    if (this.uiWallet) { //connected via UI
       const signature = await OrderSigner.signOrderUsingWallet(
         orderToSign,
         this.uiWallet
@@ -544,7 +544,7 @@ export class BluefinClient {
       ).toString("hex");
       let payloadValue: string[] = [];
       payloadValue.push(hashOfHash);
-      if (this.uiWallet) {
+      if (this.uiWallet) { //connected via UI
         signature = await OrderSigner.signPayloadUsingWallet(
           { orderHashes: payloadValue },
           this.uiWallet
@@ -733,7 +733,32 @@ export class BluefinClient {
     const position = userPosition.data as any as GetPositionResponse;
 
     if (Object.keys(position).length > 0) {
-      return this.contractCalls.adjustLeverageContractCall(
+
+      //When not connected via UI
+      if(!this.uiWallet){
+        const signedTx = await this.contractCalls.adjustLeverageContractCallRawTransaction(
+          params.leverage,
+          params.symbol,
+          params.parentAddress
+        )
+  
+        const {
+          ok,
+          data,
+          response: { errorCode, message },
+        } = await this.updateLeverage({
+          symbol: params.symbol,
+          leverage: params.leverage,
+          parentAddress: params.parentAddress,
+          signedTransaction: signedTx
+        });
+        const response: ResponseSchema = { ok, data, code: errorCode, message };
+        //If API is successful return response else make direct contract call to update the leverage
+        if(response.ok){
+          return response
+        }
+      }
+      return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
         params.parentAddress
@@ -1551,6 +1576,7 @@ export class BluefinClient {
           : this.getPublicAddress(),
         leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
+        signedTransaction: params.signedTransaction
       },
       { isAuthenticationRequired: true }
     );

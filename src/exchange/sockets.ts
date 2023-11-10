@@ -20,6 +20,7 @@ import {
   OrderSentForSettlementUpdateResponse,
   OrderRequeueUpdateResponse,
   OrderCancellationOnReversionUpdateResponse,
+  OrderBookPartialDepth,
 } from "../interfaces/routes";
 
 export class Sockets {
@@ -142,9 +143,45 @@ export class Sockets {
     return true;
   }
 
+  subscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
+    if (!this.socketInstance) return false;
+    this.socketInstance.emit("SUBSCRIBE", [
+      {
+        e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
+        p: symbol,
+        d: depth,
+      },
+    ]);
+    return true;
+  }
+
+  unsubscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
+    if (!this.socketInstance) return false;
+    this.socketInstance.emit("UNSUBSCRIBE", [
+      {
+        e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
+        p: symbol,
+        d: depth,
+      },
+    ]);
+    return true;
+  }
+
   // Emitted when any price bin on the oderbook is updated.
   onOrderBookUpdate = (cb: ({ orderbook }: any) => void) => {
     this.socketInstance.on(SOCKET_EVENTS.OrderbookUpdateKey, cb);
+  };
+
+  onOrderBookPartialDepthUpdate = (
+    cb: (payload: OrderBookPartialDepth) => void
+  ) => {
+    this.socketInstance.on(SOCKET_EVENTS.OrderbookDepthUpdateKey, cb);
   };
 
   onMarketDataUpdate = (
@@ -214,10 +251,20 @@ export class Sockets {
     this.socketInstance.on(SOCKET_EVENTS.OrderUpdateKey, cb);
   };
 
+  onUserOrderCancellationFailed = (
+    cb: ({ order }: { order: PlaceOrderResponse }) => void
+  ) => {
+    this.socketInstance.on(SOCKET_EVENTS.OrderCancellationFailedKey, cb);
+  };
+
   onUserPositionUpdate = (
     cb: ({ position }: { position: GetPositionResponse }) => void
   ) => {
     this.socketInstance.on(SOCKET_EVENTS.PositionUpdateKey, cb);
+  };
+
+  onCustomEvent = (cb: (payload: any) => void, customEventKey: string) => {
+    this.socketInstance.on(customEventKey, cb);
   };
 
   onUserUpdates = (

@@ -17,6 +17,7 @@ import {
   OrderSentForSettlementUpdateResponse,
   OrderRequeueUpdateResponse,
   OrderCancellationOnReversionUpdateResponse,
+  OrderBookPartialDepth,
 } from "../interfaces/routes";
 
 // @ts-ignore
@@ -152,6 +153,46 @@ export class WebSockets {
     return true;
   }
 
+  subscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
+    if (!this.socketInstance) return false;
+    this.socketInstance.send(
+      JSON.stringify([
+        "SUBSCRIBE",
+        [
+          {
+            e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
+            p: symbol,
+            d: depth,
+          },
+        ],
+      ])
+    );
+    return true;
+  }
+
+  unsubscribeOrderBookDepthStreamBySymbol(
+    symbol: MarketSymbol,
+    depth = ""
+  ): boolean {
+    if (!this.socketInstance) return false;
+    this.socketInstance.send(
+      JSON.stringify([
+        "UNSUBSCRIBE",
+        [
+          {
+            e: SOCKET_EVENTS.ORDERBOOK_DEPTH_STREAM_ROOM,
+            p: symbol,
+            d: depth,
+          },
+        ],
+      ])
+    );
+    return true;
+  }
+
   setAuthToken = (token: string) => {
     this.token = token;
   };
@@ -193,6 +234,11 @@ export class WebSockets {
     cb: ({ status, symbol }: { status: MARKET_STATUS; symbol: string }) => void
   ) => {
     callbackListeners[SOCKET_EVENTS.MarketHealthKey] = cb;
+  };
+  onOrderBookPartialDepthUpdate = (
+    cb: (payload: OrderBookPartialDepth) => void
+  ) => {
+    callbackListeners[SOCKET_EVENTS.OrderbookDepthUpdateKey] = cb;
   };
 
   onCandleStickUpdate = (

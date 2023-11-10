@@ -134,14 +134,14 @@ export class ContractCalls {
       },
       this.signer
     );
-    
+
     //serialize
-    const separator = "||||";  // Choose a separator that won't appear in txBytes or signature
+    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.transactionBlockBytes}${separator}${signedTx.signature}`;
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
-    
-    return encodedData
+
+    return encodedData;
   };
 
   /**

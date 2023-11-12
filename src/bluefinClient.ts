@@ -228,7 +228,7 @@ export class BluefinClient {
   ): Promise<void> => {
     try {
       this.signer = uiSignerObject;
-      this.walletAddress = this.signer.getAddress();
+      this.walletAddress = this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress());
       this.uiWallet = uiSignerObject.wallet;
     } catch (err) {
       console.log(err);
@@ -627,7 +627,7 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: await this.signer.getAddress(),
+          address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,
@@ -665,7 +665,7 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address: await this.signer.getAddress(),
+        address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer

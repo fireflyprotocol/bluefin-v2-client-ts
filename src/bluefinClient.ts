@@ -202,6 +202,7 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
+    console.log("init");
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -212,7 +213,9 @@ export class BluefinClient {
         throw Error("Signer not initialized");
       }
       await this.initContractCalls(deployment);
-      this.walletAddress = await this.signer.toSuiAddress();
+      this.walletAddress = this.uiWallet
+        ? await (this.signer as any as ExtendedWalletContextState).getAddress()
+        : this.signer.toSuiAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -228,12 +231,16 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
-      this.signer = uiSignerObject as any;
-      this.walletAddress =
-        this.signer instanceof Keypair
-          ? (this.signer as Keypair).toSuiAddress()
-          : await (this.signer as ExtendedWalletContextState).getAddress();
+      console.log("initializeWithHook");
+      console.log(uiSignerObject, "uiSignerObject");
       this.uiWallet = uiSignerObject.wallet;
+      this.signer = uiSignerObject as any;
+      this.walletAddress = await (
+        this.signer as any as ExtendedWalletContextState
+      ).getAddress();
+      this.isZkLogin = false;
+
+      console.log(this.walletAddress, "walltttt address");
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -241,6 +248,7 @@ export class BluefinClient {
   };
 
   initializeForZkLogin = (_account: string, walletAddress: string) => {
+    console.log("initializeForZkLogin");
     const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
     this.signer = keyPair;
     this.walletAddress = walletAddress;
@@ -345,6 +353,7 @@ export class BluefinClient {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(signature);
+      console.log(authTokenResponse, "authTokenResponse");
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -370,8 +379,7 @@ export class BluefinClient {
         const msgBytes = new TextEncoder().encode(JSON.stringify(payload));
         const sigOutput = await this.signer.signPersonalMessage(msgBytes);
         let parsedSignature = parseSerializedSignature(sigOutput.signature);
-
-
+        console.log(parsedSignature, "parsed sinature");
         if (parsedSignature.signatureScheme === "ZkLogin") {
           //zk login signature
           const { userSignature } = parsedSignature.zkLogin;
@@ -403,6 +411,7 @@ export class BluefinClient {
             ).toBase64(),
           };
         }
+        console.log(data, "sign pub data");
         return data;
       } catch (error) {
         console.log(error, "error");
@@ -422,7 +431,9 @@ export class BluefinClient {
         this.uiWallet
       );
     } else if (this.isZkLogin) {
+      console.log("signing payload for zk login");
       signature = await this.signPayloadUsingKeypair(onboardingSignature);
+      console.log(signature, "signature");
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
@@ -683,10 +694,11 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address:
-            this.signer instanceof Keypair
-              ? (this.signer as Keypair).toSuiAddress()
-              : await (this.signer as ExtendedWalletContextState).getAddress(),
+          address: this.uiWallet
+            ? await (
+                this.signer as any as ExtendedWalletContextState
+              ).getAddress()
+            : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,
@@ -724,10 +736,11 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address:
-          this.signer instanceof Keypair
-            ? (this.signer as Keypair).toSuiAddress()
-            : await (this.signer as ExtendedWalletContextState).getAddress(),
+        address: this.uiWallet
+          ? await (
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()
+          : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer

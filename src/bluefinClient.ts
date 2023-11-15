@@ -228,7 +228,9 @@ export class BluefinClient {
       await this.initContractCalls(deployment);
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
-        : this.signer.toSuiAddress();
+        : this.signer.toSuiAddress
+        ? this.signer.toSuiAddress()
+        : await (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();

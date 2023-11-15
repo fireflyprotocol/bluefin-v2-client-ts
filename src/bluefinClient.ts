@@ -24,6 +24,9 @@ import {
   SuiClient,
   Keypair,
   SIGNER_TYPES,
+  PartialZkLoginSignature,
+  DecodeJWT,
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
 
 import {
@@ -114,31 +117,6 @@ import { toB64 } from "@mysten/bcs";
 import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
 import { SerializedSignature } from "@mysten/sui.js/dist/cjs/cryptography";
-
-type DecodeJWT = {
-  iss: string;
-  azp: string;
-  aud: string;
-  sub: string;
-  nonce: string;
-  nbf: number;
-  iat: number;
-  exp: number;
-  jti: string;
-  email: string;
-};
-
-export type PartialZkLoginSignature = Omit<
-  Parameters<typeof getZkLoginSignature>["0"]["inputs"],
-  "addressSeed"
->;
-
-export interface ZkPayload {
-  decodedJWT: DecodeJWT;
-  salt: string;
-  proof: PartialZkLoginSignature;
-  maxEpoch: number;
-}
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;

@@ -250,7 +250,7 @@ export class BluefinClient {
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
     this.signer = keypair;
     this.walletAddress = await this.signer.toSuiAddress();
-    this.initOrderSigner(keypair as Keypair);
+    this.initOrderSigner(keypair);
   };
 
   /**

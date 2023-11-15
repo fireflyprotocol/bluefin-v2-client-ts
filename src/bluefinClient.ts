@@ -455,60 +455,20 @@ export class BluefinClient {
     return zkLoginSignature;
   }
 
-  async signPayloadUsingZKSignature(payload: unknown): Promise<SigPK> {
+  async signPayloadUsingZKSignature(
+    payload: unknown,
+    signer: Keypair
+  ): Promise<SigPK> {
     {
       try {
-        let data: SigPK;
         const msgBytes = new TextEncoder().encode(JSON.stringify(payload));
-        const { signature } = await this.signer.signPersonalMessage(msgBytes);
+        const { signature } = await signer.signPersonalMessage(msgBytes);
         console.log(signature, "signature");
         const zkSignature = this.createZkSignature({
           userSignature: signature,
         });
         console.log(zkSignature, "zkSignature");
-        //zk signature creation
-        let parsedSignature = parseSerializedSignature(zkSignature);
-        console.log(parsedSignature, "parsed sinature");
-        if (parsedSignature.signatureScheme === "ZkLogin") {
-          //zk login signature
-          const { userSignature } = parsedSignature.zkLogin;
-          console.log(userSignature, "userSignature");
-
-          //convert user sig to b64
-          const convertedUserSignature = toB64(userSignature as any);
-          console.log(convertedUserSignature, "convertedUserSignature");
-          //reparse b64 converted user sig
-          const parsedUserSignature = parseSerializedSignature(
-            convertedUserSignature
-          );
-          console.log(parsedUserSignature, "parsedUserSignature");
-
-          data = {
-            signature:
-              Buffer.from(parsedSignature.serializedSignature).toString("hex") +
-              "3",
-            publicKey: publicKeyFromRawBytes(
-              parsedUserSignature.signatureScheme,
-              parsedUserSignature.publicKey
-            ).toBase64(),
-          };
-        } else {
-          data = {
-            signature:
-              Buffer.from(parsedSignature.signature).toString("hex") +
-              SIGNER_TYPES.UI_ED25519,
-            publicKey: publicKeyFromRawBytes(
-              parsedSignature.signatureScheme,
-              parsedSignature.publicKey
-            ).toBase64(),
-          };
-        }
-        console.log(data, "sign pub data");
-        console.log(
-          this.getPublicAddress(),
-          "public address from signPayloadUsingZKSignature"
-        );
-        return data;
+        return this.parseAndShapeSignedData({ signature: zkSignature });
       } catch (error) {
         console.log(error, "error");
       }
@@ -530,7 +490,10 @@ export class BluefinClient {
       );
     } else if (this.isZkLogin) {
       console.log("signing payload for zk login");
-      signature = await this.signPayloadUsingZKSignature(onboardingSignature);
+      signature = await this.signPayloadUsingZKSignature(
+        onboardingSignature,
+        this.signer
+      );
       console.log(signature, "signature");
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
@@ -556,6 +519,81 @@ export class BluefinClient {
     return this.walletAddress;
   };
 
+  parseAndShapeSignedData = ({
+    signature,
+    isParsingRequired = true,
+  }: {
+    signature: string;
+    isParsingRequired?: boolean;
+  }): SigPK => {
+    let data: SigPK;
+    let parsedSignature = parseSerializedSignature(signature);
+    console.log(parsedSignature, "parsed sinature");
+    if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
+      console.log("parsing zk signature.....");
+      //zk login signature
+      const { userSignature } = parsedSignature.zkLogin;
+      console.log(userSignature, "userSignature");
+
+      //convert user sig to b64
+      const convertedUserSignature = toB64(userSignature as any);
+      console.log(convertedUserSignature, "convertedUserSignature");
+      //reparse b64 converted user sig
+      const parsedUserSignature = parseSerializedSignature(
+        convertedUserSignature
+      );
+      console.log(parsedUserSignature, "parsedUserSignature");
+
+      data = {
+        signature:
+          Buffer.from(parsedSignature.serializedSignature).toString("hex") +
+          "3",
+        publicKey: publicKeyFromRawBytes(
+          parsedUserSignature.signatureScheme,
+          parsedUserSignature.publicKey
+        ).toBase64(),
+      };
+    } else {
+      data = {
+        signature:
+          Buffer.from(parsedSignature.signature).toString("hex") +
+          SIGNER_TYPES.UI_ED25519,
+        publicKey: publicKeyFromRawBytes(
+          parsedSignature.signatureScheme,
+          parsedSignature.publicKey
+        ).toBase64(),
+      };
+    }
+    return data;
+  };
+
+  /**
+   * Signs the order using the provided wallet context
+   * @param order order to be signed
+   * @param wallet wallet context
+   * @returns signature and public key
+   */
+  async signOrderUsingZkSignature(
+    order: Order,
+    signer: Keypair
+  ): Promise<SigPK> {
+    // serialize order
+    const msgData = new TextEncoder().encode(
+      OrderSigner.getSerializedOrder(order)
+    );
+
+    // take sha256 hash of order
+    const msgHash = sha256(msgData);
+
+    // sign data
+    const { signature } = await signer.signPersonalMessage(msgHash);
+
+    const zkSignature = this.createZkSignature({
+      userSignature: signature,
+    });
+    return this.parseAndShapeSignedData({ signature: zkSignature });
+  }
+
   signOrder = async (orderToSign: Order) => {
     if (this.uiWallet) {
       const signature = await OrderSigner.signOrderUsingWallet(
@@ -563,8 +601,8 @@ export class BluefinClient {
         this.uiWallet
       );
       return signature;
-    }
-    if (this.orderSigner) {
+    } else if (this.isZkLogin) {
+    } else {
       return this.orderSigner.signOrder(orderToSign);
     }
     throw Error(
@@ -701,6 +739,11 @@ export class BluefinClient {
         signature = await OrderSigner.signPayloadUsingWallet(
           { orderHashes: payloadValue },
           this.uiWallet
+        );
+      } else if (this.isZkLogin) {
+        signature = await this.signPayloadUsingZKSignature(
+          { orderHashes: payloadValue },
+          this.signer
         );
       } else {
         signature = this.orderSigner.signPayload({

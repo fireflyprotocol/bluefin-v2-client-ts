@@ -469,32 +469,6 @@ export class BluefinClient {
     return zkLoginSignature;
   }
 
-  async signPayloadUsingZKSignature({
-    payload,
-    signer,
-    zkPayload,
-  }: {
-    payload: unknown;
-    signer: Keypair;
-    zkPayload: ZkPayload;
-  }): Promise<SigPK> {
-    {
-      try {
-        const msgBytes = new TextEncoder().encode(JSON.stringify(payload));
-        const { signature } = await signer.signPersonalMessage(msgBytes);
-        console.log(signature, "signature");
-        const zkSignature = this.createZkSignature({
-          userSignature: signature,
-          zkPayload,
-        });
-        console.log(zkSignature, "zkSignature");
-        return this.parseAndShapeSignedData({ signature: zkSignature });
-      } catch (error) {
-        console.log(error, "error");
-      }
-    }
-  }
-
   getZkPayload = (): ZkPayload => {
     return {
       decodedJWT: this.decodedJWT,
@@ -519,7 +493,7 @@ export class BluefinClient {
       );
     } else if (this.isZkLogin) {
       console.log("signing payload for zk login");
-      signature = await this.signPayloadUsingZKSignature({
+      signature = await OrderSigner.signPayloadUsingZKSignature({
         payload: onboardingSignature,
         signer: this.signer,
         zkPayload: this.getZkPayload(),
@@ -597,38 +571,6 @@ export class BluefinClient {
     return data;
   };
 
-  /**
-   * Signs the order using the provided wallet context
-   * @param order order to be signed
-   * @param wallet wallet context
-   * @returns signature and public key
-   */
-  async signOrderUsingZkSignature({
-    order,
-    signer,
-    zkPayload,
-  }: {
-    order: Order;
-    signer: Keypair;
-    zkPayload: ZkPayload;
-  }): Promise<SigPK> {
-    // serialize order
-    const msgData = new TextEncoder().encode(
-      OrderSigner.getSerializedOrder(order)
-    );
-
-    // take sha256 hash of order
-    const msgHash = sha256(msgData);
-
-    // sign data
-    const { signature } = await signer.signPersonalMessage(msgHash);
-
-    const zkSignature = this.createZkSignature({
-      userSignature: signature,
-      zkPayload,
-    });
-    return this.parseAndShapeSignedData({ signature: zkSignature });
-  }
 
   signOrder = async (orderToSign: Order): Promise<SigPK> => {
     let signature: SigPK;
@@ -638,7 +580,7 @@ export class BluefinClient {
         this.uiWallet
       );
     } else if (this.isZkLogin) {
-      signature = await this.signOrderUsingZkSignature({
+      signature = await OrderSigner.signOrderUsingZkSignature({
         order: orderToSign,
         signer: this.signer,
         zkPayload: this.getZkPayload(),
@@ -785,7 +727,7 @@ export class BluefinClient {
           this.uiWallet
         );
       } else if (this.isZkLogin) {
-        signature = await this.signPayloadUsingZKSignature({
+        signature = await OrderSigner.signPayloadUsingZKSignature({
           payload: { orderHashes: payloadValue },
           signer: this.signer,
           zkPayload: {

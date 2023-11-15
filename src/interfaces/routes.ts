@@ -1,4 +1,4 @@
-import { WalletContextState, SuiProvider } from "@suiet/wallet-kit";
+
 
 import {
   ORDER_STATUS,
@@ -10,6 +10,8 @@ import {
   MarketSymbol,
   address,
   Interval,
+  WalletContextState,
+  SuiProvider,
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {

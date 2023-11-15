@@ -1,6 +1,6 @@
-import { getValue, Transaction } from "@firefly-exchange/library-sui/";
+import { getValue, SuiTransactionBlockResponse, Transaction } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
-import { SuiTransactionBlockResponse } from "@mysten/sui.js";
+
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;

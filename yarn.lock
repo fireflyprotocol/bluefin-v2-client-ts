@@ -1189,12 +1189,13 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@firefly-exchange/library-sui@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.1.0.tgz#b8a19cbad5e166f2bbf40213dc9ec55ab3940e79"
-  integrity sha512-xk0sc1rYRa5SvPQk1BIu9mLeO+89NZUac3p7Y5p5ilqKJfLfFL4xrNVllQwr7/q2IYWvcfQyRWkfKfz85AD33w==
+"@firefly-exchange/library-sui@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.0.tgz#597dd101876b6af76b226b56478ccfab24b422b8"
+  integrity sha512-Rq+5sIeu/u96P/H25JiyYjEF+jNiy8LSHDvA3ho3zuWOBlMuZgs28K1DQFlQTKt41fkVV0kdjIelU7SAla00bQ==
   dependencies:
     "@mysten/sui.js" "^0.45.0"
+    "@mysten/zklogin" "^0.3.5"
     "@noble/hashes" "^1.2.0"
     "@noble/secp256k1" "^1.7.1"
     "@suiet/wallet-kit" "^0.2.18"
@@ -1363,6 +1364,22 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
+"@mysten/sui.js@0.46.1":
+  version "0.46.1"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.46.1.tgz#6bf504163b1fe0dc1eb6911035c8cf269aa356ae"
+  integrity sha512-YSqay1RJbstJt1AILoAcucWhm72ywB//qQrECl1b3CNiuAHG5iYUxlQk7i0a+2+cBnhlVvkOU4PePBMkABqn3w==
+  dependencies:
+    "@mysten/bcs" "0.8.1"
+    "@noble/curves" "^1.1.0"
+    "@noble/hashes" "^1.3.1"
+    "@open-rpc/client-js" "^1.8.1"
+    "@scure/bip32" "^1.3.1"
+    "@scure/bip39" "^1.2.1"
+    "@suchipi/femver" "^1.0.0"
+    events "^3.3.0"
+    superstruct "^1.0.3"
+    tweetnacl "^1.0.3"
+
 "@mysten/wallet-standard@0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@mysten/wallet-standard/-/wallet-standard-0.6.0.tgz#80e28b6500d2be1cdb7deafdfd81f8b0f969fce9"
@@ -1378,6 +1395,18 @@
   dependencies:
     "@mysten/bcs" "0.8.1"
     "@mysten/sui.js" "0.45.1"
+    "@noble/hashes" "^1.3.1"
+    jose "^4.14.4"
+    poseidon-lite "^0.2.0"
+    tsx "^3.12.7"
+
+"@mysten/zklogin@^0.3.5":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@mysten/zklogin/-/zklogin-0.3.6.tgz#20985fe4e255bb500df7666477756a060c240cd6"
+  integrity sha512-DV+piDGEjNOL8mxipQ9De4NncXJoQmW+KH8tTvaneCpaMeRCsfFbXYp3TKvyG+JLbU1bNBkhBgHGytXnIxg4yg==
+  dependencies:
+    "@mysten/bcs" "0.8.1"
+    "@mysten/sui.js" "0.46.1"
     "@noble/hashes" "^1.3.1"
     jose "^4.14.4"
     poseidon-lite "^0.2.0"

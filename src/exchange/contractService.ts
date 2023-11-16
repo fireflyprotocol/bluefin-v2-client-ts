@@ -9,6 +9,7 @@ import {
   Keypair,
 } from "@firefly-exchange/library-sui";
 import interpolate from "interpolate";
+import { ExtendedWalletContextState } from "../interfaces/routes";
 import {
   ResponseSchema,
   SuccessMessages,
@@ -22,12 +23,16 @@ export class ContractCalls {
   suiClient: SuiClient;
   marginBankId: string | undefined;
 
-  constructor(signer: Keypair, deployment: any) {
+  constructor(signer: Keypair, deployment: any, provider: SuiClient) {
     this.signer = signer;
+    this.suiClient = provider;
     this.onChainCalls = new OnChainCalls(
       this.signer,
-      deployment
+      deployment,
+      "",
+      this.suiClient
     );
+
   }
 
   /**
@@ -76,12 +81,15 @@ export class ContractCalls {
     coinID: string
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
+      console.log(typeof (this.signer) == typeof (Keypair))
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: await this.signer.getPublicKey().toSuiAddress(),
+          accountAddress: await (
+            this.signer as any as ExtendedWalletContextState
+          ).getAddress(),
         },
         this.signer
       );
@@ -111,7 +119,9 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
+          account: parentAddress ||  await (
+            this.signer as any as ExtendedWalletContextState
+          ).getAddress(),
           market: symbol,
         },
         this.signer

@@ -215,7 +215,6 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    console.log("init");
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -246,16 +245,12 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
-      console.log("initializeWithHook");
-      console.log(uiSignerObject, "uiSignerObject");
       this.uiWallet = uiSignerObject.wallet;
       this.signer = uiSignerObject as any;
       this.walletAddress = await (
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
-
-      console.log(this.walletAddress, "walltttt address");
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -277,7 +272,6 @@ export class BluefinClient {
     proof: PartialZkLoginSignature;
     decodedJWT: DecodeJWT;
   }) => {
-    console.log("initializeForZkLogin");
     const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
     this.signer = keyPair;
     this.walletAddress = walletAddress;
@@ -286,18 +280,6 @@ export class BluefinClient {
     this.decodedJWT = decodedJWT;
     this.proof = proof;
     this.salt = salt;
-
-    console.log(
-      {
-        signer: this.signer,
-        walletAddress: this.walletAddress,
-        maxEpoch: this.maxEpoch,
-        decodedJWT: this.decodedJWT,
-        proof: this.proof,
-        salt: this.salt,
-      },
-      "valueesss"
-    );
   };
 
   /***
@@ -397,14 +379,8 @@ export class BluefinClient {
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
-      console.log(
-        this.getPublicAddress(),
-        "public address from before authorizeSignedHash"
-      );
 
-      console.log("-----------signedHash", signature);
       const authTokenResponse = await this.authorizeSignedHash(signature);
-      console.log(authTokenResponse, "authTokenResponse");
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -466,28 +442,20 @@ export class BluefinClient {
       onboardingUrl: this.network.onboardingUrl,
     };
 
-    console.log(onboardingSignature, "payload");
     if (this.uiWallet) {
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
       );
     } else if (this.isZkLogin) {
-      console.log("signing payload for zk login");
       signature = await OrderSigner.signPayloadUsingZKSignature({
         payload: onboardingSignature,
         signer: this.signer,
         zkPayload: this.getZkPayload(),
       });
-      console.log(signature, "signature");
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
-
-    console.log(
-      this.getPublicAddress(),
-      "public address from createOnboardingSignature"
-    );
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
@@ -513,7 +481,6 @@ export class BluefinClient {
   }): SigPK => {
     let data: SigPK;
     let parsedSignature = parseSerializedSignature(signature);
-    console.log(parsedSignature);
     if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
       //zk login signature
       const { userSignature } = parsedSignature.zkLogin;
@@ -526,23 +493,6 @@ export class BluefinClient {
         convertedUserSignature
       );
 
-      console.log(
-        "------------add length",
-        parsedSignature.zkLogin.address.length
-      );
-
-      console.log(
-        "generating public ket",
-        publicKeyFromRawBytes(
-          parsedUserSignature.signatureScheme,
-          parsedUserSignature.publicKey
-        ).toBase64()
-      );
-      console.log(
-        "generating buffer",
-        Buffer.from(parsedSignature.signature).toString("hex")
-      );
-
       data = {
         signature: Buffer.from(parsedSignature.signature).toString("hex") + "3",
         publicKey: publicKeyFromRawBytes(
@@ -550,7 +500,6 @@ export class BluefinClient {
           parsedUserSignature.publicKey
         ).toBase64(),
       };
-      console.log("------------serialized signature", data);
     } else {
       data = {
         signature:
@@ -1840,10 +1789,6 @@ export class BluefinClient {
    * @returns GetAuthHashResponse which contains auth hash to be signed
    */
   private authorizeSignedHash = async (signedHash: string) => {
-    console.log(
-      this.getPublicAddress(),
-      "public address inside authorizeSignedHash"
-    );
     const response = await this.apiService.post<AuthorizeHashResponse>(
       SERVICE_URLS.USER.AUTHORIZE,
       {

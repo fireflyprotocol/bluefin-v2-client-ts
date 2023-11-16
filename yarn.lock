@@ -1189,12 +1189,13 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@firefly-exchange/library-sui@^0.3.6":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.3.6.tgz#9aa3bcde5a5075355f4a6a13e6bc68b79b37fae7"
-  integrity sha512-HQdgbvNjyMODYikZOLkJqxFp79isJPC20tY0ZMSTOvuYhNajdt8W08Xy4X2uw0E1Lp1mPb7cVqUhtpWISZQ4DA==
+"@firefly-exchange/library-sui@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.0.tgz#597dd101876b6af76b226b56478ccfab24b422b8"
+  integrity sha512-Rq+5sIeu/u96P/H25JiyYjEF+jNiy8LSHDvA3ho3zuWOBlMuZgs28K1DQFlQTKt41fkVV0kdjIelU7SAla00bQ==
   dependencies:
-    "@mysten/sui.js" "^0.35.0"
+    "@mysten/sui.js" "^0.45.0"
+    "@mysten/zklogin" "^0.3.5"
     "@noble/hashes" "^1.2.0"
     "@noble/secp256k1" "^1.7.1"
     "@suiet/wallet-kit" "^0.2.18"
@@ -1301,13 +1302,6 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@mysten/bcs@0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.7.1.tgz#e8db25718143e2a15688ea858470970b743f7248"
-  integrity sha512-wFPb8bkhwrbiStfZMV5rFM7J+umpke59/dNjDp+UYJKykNlW23LCk2ePyEUvGdb62HGJM1jyOJ8g4egE3OmdKA==
-  dependencies:
-    bs58 "^5.0.0"
-
 "@mysten/bcs@0.7.3":
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.7.3.tgz#b2e4558a8feb9fd3a0dc2ff4e94c37e1f8a7c7e5"
@@ -1370,18 +1364,19 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@^0.35.0":
-  version "0.35.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.35.1.tgz#549cb937af21240938a0d19867f03d8995610e77"
-  integrity sha512-1UQ65oJhO+G5Bt+EWYqMs5y3eqY1ZZxEdB2y4K+XJVeRZBOy32GjSLiYmZufUAR9o53gAlwAvvNRIzMzuiNQzw==
+"@mysten/sui.js@0.46.1":
+  version "0.46.1"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.46.1.tgz#6bf504163b1fe0dc1eb6911035c8cf269aa356ae"
+  integrity sha512-YSqay1RJbstJt1AILoAcucWhm72ywB//qQrECl1b3CNiuAHG5iYUxlQk7i0a+2+cBnhlVvkOU4PePBMkABqn3w==
   dependencies:
-    "@mysten/bcs" "0.7.1"
-    "@noble/curves" "^1.0.0"
-    "@noble/hashes" "^1.3.0"
+    "@mysten/bcs" "0.8.1"
+    "@noble/curves" "^1.1.0"
+    "@noble/hashes" "^1.3.1"
     "@open-rpc/client-js" "^1.8.1"
-    "@scure/bip32" "^1.3.0"
-    "@scure/bip39" "^1.2.0"
+    "@scure/bip32" "^1.3.1"
+    "@scure/bip39" "^1.2.1"
     "@suchipi/femver" "^1.0.0"
+    events "^3.3.0"
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
@@ -1405,7 +1400,19 @@
     poseidon-lite "^0.2.0"
     tsx "^3.12.7"
 
-"@noble/curves@^1.0.0", "@noble/curves@^1.1.0", "@noble/curves@~1.1.0":
+"@mysten/zklogin@^0.3.5":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@mysten/zklogin/-/zklogin-0.3.6.tgz#20985fe4e255bb500df7666477756a060c240cd6"
+  integrity sha512-DV+piDGEjNOL8mxipQ9De4NncXJoQmW+KH8tTvaneCpaMeRCsfFbXYp3TKvyG+JLbU1bNBkhBgHGytXnIxg4yg==
+  dependencies:
+    "@mysten/bcs" "0.8.1"
+    "@mysten/sui.js" "0.46.1"
+    "@noble/hashes" "^1.3.1"
+    jose "^4.14.4"
+    poseidon-lite "^0.2.0"
+    tsx "^3.12.7"
+
+"@noble/curves@^1.1.0", "@noble/curves@~1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.1.0.tgz#f13fc667c89184bc04cccb9b11e8e7bae27d8c3d"
   integrity sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==
@@ -1608,7 +1615,7 @@
   resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.1.1.tgz#ebb651ee52ff84f420097055f4bf46cfba403938"
   integrity sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==
 
-"@scure/bip32@^1.3.0", "@scure/bip32@^1.3.1":
+"@scure/bip32@^1.3.1":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@scure/bip32/-/bip32-1.3.1.tgz#7248aea723667f98160f593d621c47e208ccbb10"
   integrity sha512-osvveYtyzdEVbt3OfwwXFr4P2iVBL5u1Q3q4ONBfDY/UpOuXmOlbgwc1xECEboY8wIays8Yt6onaWMUdUbfl0A==
@@ -1617,7 +1624,7 @@
     "@noble/hashes" "~1.3.1"
     "@scure/base" "~1.1.0"
 
-"@scure/bip39@^1.2.0", "@scure/bip39@^1.2.1":
+"@scure/bip39@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@scure/bip39/-/bip39-1.2.1.tgz#5cee8978656b272a917b7871c981e0541ad6ac2a"
   integrity sha512-Z3/Fsz1yr904dduJD0NpiyRHhRYHdcnyh73FZWiV+/qhWi83wNJ3NWolYqCEN+ZWsUz2TWwajJggcRE9r1zUYg==

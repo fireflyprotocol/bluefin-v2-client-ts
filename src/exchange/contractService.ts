@@ -129,7 +129,7 @@ export class ContractCalls {
       {
         leverage,
         perpID: perpId,
-        account: parentAddress || (await this.signer.getAddress()),
+        account: parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
         market: symbol,
       },
       this.signer
@@ -137,7 +137,7 @@ export class ContractCalls {
 
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
-    const combinedData = `${signedTx.transactionBlockBytes}${separator}${signedTx.signature}`;
+    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
 

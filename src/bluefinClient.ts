@@ -332,7 +332,7 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(this.getSigner(), _deployment);
+    this.contractCalls = new ContractCalls(this.getSigner(), _deployment, this.provider);
   };
 
   /**

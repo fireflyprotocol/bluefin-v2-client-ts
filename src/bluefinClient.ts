@@ -379,6 +379,7 @@ export class BluefinClient {
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
+
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
@@ -440,6 +441,7 @@ export class BluefinClient {
     const onboardingSignature = {
       onboardingUrl: this.network.onboardingUrl,
     };
+
     if (this.uiWallet) {
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,

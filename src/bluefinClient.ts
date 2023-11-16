@@ -314,7 +314,7 @@ export class BluefinClient {
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
     this.signer = keypair;
     this.walletAddress = await this.signer.toSuiAddress();
-    this.initOrderSigner(keypair as Keypair);
+    this.initOrderSigner(keypair);
   };
 
   /**
@@ -350,7 +350,10 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(this.getSigner(), _deployment);
+    this.contractCalls = new ContractCalls(
+      this.getSigner(),
+      _deployment
+    );
   };
 
   /**

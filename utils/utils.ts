@@ -1,12 +1,4 @@
-import {
-  RawSigner,
-  Keypair,
-  JsonRpcProvider,
-  Secp256k1Keypair,
-  SignatureScheme,
-  Ed25519Keypair,
-  SuiTransactionBlockResponse,
-} from "@mysten/sui.js";
+
 import fs from "fs";
 import {
   OnChainCalls,
@@ -17,8 +9,11 @@ import {
   ORDER_SIDE,
   TIME_IN_FORCE,
   toBigNumber,
+  SignatureScheme,
+  Keypair,
+  Ed25519Keypair,
+  Secp256k1Keypair,
 } from "@firefly-exchange/library-sui";
-import { OrderSignatureResponse } from "../src/interfaces/routes";
 import deploymentData from "../deployment.json";
 
 /**
@@ -30,12 +25,6 @@ export const generateRandomNumber = (multiplier: number) => {
   return Math.floor((Date.now() + Math.random() + Math.random()) * multiplier);
 };
 
-export function getSignerFromKeyPair(
-  keypair: Keypair,
-  provider: JsonRpcProvider
-): RawSigner {
-  return new RawSigner(keypair, provider);
-}
 
 export function getKeyPairFromSeed(
   seed: string,
@@ -53,9 +42,8 @@ export function getKeyPairFromSeed(
 
 export function getSignerFromSeed(
   seed: string,
-  provider: JsonRpcProvider
-): RawSigner {
-  return getSignerFromKeyPair(getKeyPairFromSeed(seed), provider);
+): Keypair {
+  return getKeyPairFromSeed(seed);
 }
 
 function readFileServer(filePath: string): any {

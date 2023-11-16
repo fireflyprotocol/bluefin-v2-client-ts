@@ -18,17 +18,14 @@ import {
   SigPK,
   getKeyPairFromPvtKey,
   parseSigPK,
-} from "@firefly-exchange/library-sui";
-import {
-  Connection,
-  Ed25519Keypair,
-  JsonRpcProvider,
-  Keypair,
-  RawSigner,
   Secp256k1Keypair,
-  SignerWithProvider,
-} from "@mysten/sui.js";
-import { WalletContextState } from "@suiet/wallet-kit";
+  Ed25519Keypair,
+  WalletContextState,
+  SuiClient,
+  Keypair,
+} from "@firefly-exchange/library-sui";
+
+
 import {
   AdjustLeverageResponse,
   AuthorizeHashResponse,
@@ -111,6 +108,7 @@ import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
 import { sha256 } from "@noble/hashes/sha256";
+
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -126,13 +124,13 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: RawSigner | any; // to save signer when connecting from UI
+  private signer: Keypair | any; // to save signer when connecting from UI
 
   private uiWallet: WalletContextState | any; // to save signer when connecting from UI
 
   private contractCalls: ContractCalls | undefined;
 
-  private provider: any | undefined; // to save raw web3 provider when connecting from UI
+  private provider: SuiClient | undefined; // to save raw web3 provider when connecting from UI
 
   private isTermAccepted = false;
 
@@ -158,9 +156,8 @@ export class BluefinClient {
   ) {
     this.network = _network;
 
-    this.provider = new JsonRpcProvider(
-      new Connection({ fullnode: _network.url })
-    );
+    this.provider = new SuiClient({url: _network.url});
+
 
     this.apiService = new APIService(this.network.apiGateway);
 
@@ -214,7 +211,7 @@ export class BluefinClient {
         throw Error("Signer not initialized");
       }
       await this.initContractCalls(deployment);
-      this.walletAddress = await this.signer.getAddress();
+      this.walletAddress = await this.signer.toSuiAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -231,7 +228,7 @@ export class BluefinClient {
   ): Promise<void> => {
     try {
       this.signer = uiSignerObject;
-      this.walletAddress = this.signer.getAddress();
+      this.walletAddress = this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress());
       this.uiWallet = uiSignerObject.wallet;
     } catch (err) {
       console.log(err);
@@ -251,8 +248,8 @@ export class BluefinClient {
    * @param keypair key pair for the account to be used for placing orders
    */
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
-    this.signer = new RawSigner(keypair, this.provider);
-    this.walletAddress = await this.signer.getAddress();
+    this.signer = keypair;
+    this.walletAddress = await this.signer.toSuiAddress();
     this.initOrderSigner(keypair);
   };
 
@@ -266,17 +263,11 @@ export class BluefinClient {
   initializeWithSeed = (seed: string, scheme: any): void => {
     switch (scheme) {
       case "ED25519":
-        this.signer = new RawSigner(
-          Ed25519Keypair.deriveKeypair(seed),
-          this.provider
-        );
+          Ed25519Keypair.deriveKeypair(seed)
         this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
         break;
       case "Secp256k1":
-        this.signer = new RawSigner(
-          Secp256k1Keypair.deriveKeypair(seed),
-          this.provider
-        );
+          Secp256k1Keypair.deriveKeypair(seed)
         this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
         break;
       default:
@@ -297,7 +288,6 @@ export class BluefinClient {
 
     this.contractCalls = new ContractCalls(
       this.getSigner(),
-      this.getProvider(),
       _deployment
     );
   };
@@ -307,7 +297,7 @@ export class BluefinClient {
    * Gets the RawSigner of the client
    * @returns RawSigner
    * */
-  getSigner = (): RawSigner => {
+  getSigner = (): Keypair => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
@@ -319,7 +309,7 @@ export class BluefinClient {
    * Gets the RPC Provider of the client
    * @returns JsonRPCProvider
    * */
-  getProvider = (): JsonRpcProvider => {
+  getProvider = (): SuiClient => {
     return this.provider;
   };
 
@@ -395,17 +385,6 @@ export class BluefinClient {
     return this.walletAddress;
   };
 
-  /**
-   * @description
-   * Gets the SignerWithProvider of the client
-   * @returns SignerWithProvider
-   * */
-  getSignerWithProvider = (): SignerWithProvider => {
-    if (!this.signer) {
-      throw Error("Signer not initialized");
-    }
-    return this.signer.connect(this.provider);
-  };
 
   signOrder = async (orderToSign: Order) => {
     if (this.uiWallet) {
@@ -650,7 +629,7 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: await this.signer.getAddress(),
+          address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,
@@ -661,7 +640,7 @@ export class BluefinClient {
       return coin;
     }
     const coins = await this.contractCalls.onChainCalls.getUSDCCoins({
-      address: await this.signer.getAddress(),
+      address: await this.signer.toSuiAddress(),
     });
     coins.data.forEach((coin) => {
       coin.balance = usdcToBaseNumber(coin.balance);
@@ -688,7 +667,7 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address: await this.signer.getAddress(),
+        address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer
@@ -709,7 +688,7 @@ export class BluefinClient {
     const mintAmount = amount || 10000;
     const txResponse = await this.contractCalls.onChainCalls.mintUSDC({
       amount: toBigNumberStr(mintAmount, this.MarginTokenPrecision),
-      to: await this.signer.getAddress(),
+      to: await this.signer.toSuiAddress(),
       gasBudget: 1000000000,
     });
     if (Transaction.getStatus(txResponse) === "success") {

@@ -229,8 +229,8 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : await (this.signer as any as ExtendedWalletContextState).getAddress();
+        ? this.signer.toSuiAddress()
+        : await (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -350,10 +350,7 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(
-      this.getSigner(),
-      _deployment
-    );
+    this.contractCalls = new ContractCalls(this.getSigner(), _deployment);
   };
 
   /**
@@ -471,7 +468,7 @@ export class BluefinClient {
 
     console.log(onboardingSignature, "payload");
     if (this.uiWallet) {
-      signature = await this.signPayloadUsingWallet(
+      signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
       );
@@ -496,25 +493,6 @@ export class BluefinClient {
     }`;
   };
 
-  async signPayloadUsingWallet(
-    payload: unknown,
-    wallet: WalletContextState
-  ): Promise<SigPK> {
-    {
-      console.log("entered sign payload");
-      try {
-        const msgBytes = new TextEncoder().encode(JSON.stringify(payload));
-        const { signature } = await wallet.signMessage({ message: msgBytes });
-        console.log("-------------", signature);
-
-        return this.parseAndShapeSignedData({ signature, isParsingRequired: true });
-      } catch (error) {
-        throw error
-      }
-    }
-  }
-
-
   /**
    * @description
    * Gets the wallets Public address
@@ -528,7 +506,7 @@ export class BluefinClient {
   };
   parseAndShapeSignedData = ({
     signature,
-    isParsingRequired = true
+    isParsingRequired = true,
   }: {
     signature: string;
     isParsingRequired?: boolean;
@@ -544,25 +522,35 @@ export class BluefinClient {
       const convertedUserSignature = toB64(userSignature as any);
 
       //reparse b64 converted user sig
-      const parsedUserSignature = parseSerializedSignature(convertedUserSignature);
+      const parsedUserSignature = parseSerializedSignature(
+        convertedUserSignature
+      );
 
-      console.log("------------add length", (parsedSignature.zkLogin.address).length)
+      console.log(
+        "------------add length",
+        parsedSignature.zkLogin.address.length
+      );
 
-      console.log("generating public ket", publicKeyFromRawBytes(
-        parsedUserSignature.signatureScheme,
-        parsedUserSignature.publicKey
-      ).toBase64());
-      console.log("generating buffer", Buffer.from(parsedSignature.signature).toString("hex"));
-
-      data = {
-        signature:
-          Buffer.from(parsedSignature.signature).toString("hex") + "3",
-        publicKey: publicKeyFromRawBytes(
+      console.log(
+        "generating public ket",
+        publicKeyFromRawBytes(
           parsedUserSignature.signatureScheme,
           parsedUserSignature.publicKey
         ).toBase64()
+      );
+      console.log(
+        "generating buffer",
+        Buffer.from(parsedSignature.signature).toString("hex")
+      );
+
+      data = {
+        signature: Buffer.from(parsedSignature.signature).toString("hex") + "3",
+        publicKey: publicKeyFromRawBytes(
+          parsedUserSignature.signatureScheme,
+          parsedUserSignature.publicKey
+        ).toBase64(),
       };
-      console.log("------------serialized signature", data)
+      console.log("------------serialized signature", data);
     } else {
       data = {
         signature:
@@ -571,12 +559,11 @@ export class BluefinClient {
         publicKey: publicKeyFromRawBytes(
           parsedSignature.signatureScheme,
           parsedSignature.publicKey
-        ).toBase64()
+        ).toBase64(),
       };
     }
     return data;
   };
-
 
   signOrder = async (orderToSign: Order): Promise<SigPK> => {
     let signature: SigPK;
@@ -630,7 +617,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.STOP_LIMIT
+        order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -732,7 +719,7 @@ export class BluefinClient {
       let payloadValue: string[] = [];
       payloadValue.push(hashOfHash);
       if (this.uiWallet) {
-        signature = await this.signPayloadUsingWallet(
+        signature = await OrderSigner.signPayloadUsingWallet(
           { orderHashes: payloadValue },
           this.uiWallet
         );
@@ -849,8 +836,8 @@ export class BluefinClient {
           amount,
           address: this.uiWallet
             ? await (
-              this.signer as any as ExtendedWalletContextState
-            ).getAddress()
+                this.signer as any as ExtendedWalletContextState
+              ).getAddress()
             : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
@@ -891,8 +878,8 @@ export class BluefinClient {
       {
         address: this.uiWallet
           ? await (
-            this.signer as any as ExtendedWalletContextState
-          ).getAddress()
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()
           : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },

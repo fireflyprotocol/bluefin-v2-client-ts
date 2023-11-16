@@ -1189,10 +1189,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@firefly-exchange/library-sui@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.1.tgz#bf1159ab8145e56f56dab13740cf13a97cf640b7"
-  integrity sha512-G53hJDSWhgzG0O7tglnOpCELmzybG6fY5kIWChsbS4ZPQcjzjni8y9Obie88RtdgGN/dG69X4aoEWnVxyJ243Q==
+"@firefly-exchange/library-sui@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.2.tgz#18ed396106e65d47d69554c903cd33b01a354f8c"
+  integrity sha512-Zu6Pt4PPbBbS2NdfTSQuOygSrvSX+x6vtP1KUdKHfbbIpHZFrKmYorw0UvfDlHwUx3g37a4EcyVkdZsn3wVC4Q==
   dependencies:
     "@mysten/sui.js" "^0.45.0"
     "@mysten/zklogin" "^0.3.5"
@@ -1348,10 +1348,10 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@0.46.1":
-  version "0.46.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.46.1.tgz#6bf504163b1fe0dc1eb6911035c8cf269aa356ae"
-  integrity sha512-YSqay1RJbstJt1AILoAcucWhm72ywB//qQrECl1b3CNiuAHG5iYUxlQk7i0a+2+cBnhlVvkOU4PePBMkABqn3w==
+"@mysten/sui.js@0.45.1", "@mysten/sui.js@^0.45.0":
+  version "0.45.1"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.45.1.tgz#df609856e067060f8fc71d6c8fd8858f8055b329"
+  integrity sha512-B6RKfBAR1yr3EvHyQzXgkyOGOXE7jUbgblyitK/25CGp4Uba4VHEZ/N5DCbiuTJdt2k1H42sSXqIGfYqHN+6Cw==
   dependencies:
     "@mysten/bcs" "0.8.1"
     "@noble/curves" "^1.1.0"
@@ -1364,10 +1364,10 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@^0.45.0":
-  version "0.45.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.45.1.tgz#df609856e067060f8fc71d6c8fd8858f8055b329"
-  integrity sha512-B6RKfBAR1yr3EvHyQzXgkyOGOXE7jUbgblyitK/25CGp4Uba4VHEZ/N5DCbiuTJdt2k1H42sSXqIGfYqHN+6Cw==
+"@mysten/sui.js@0.46.1":
+  version "0.46.1"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.46.1.tgz#6bf504163b1fe0dc1eb6911035c8cf269aa356ae"
+  integrity sha512-YSqay1RJbstJt1AILoAcucWhm72ywB//qQrECl1b3CNiuAHG5iYUxlQk7i0a+2+cBnhlVvkOU4PePBMkABqn3w==
   dependencies:
     "@mysten/bcs" "0.8.1"
     "@noble/curves" "^1.1.0"
@@ -1387,6 +1387,18 @@
   dependencies:
     "@mysten/sui.js" "0.40.0"
     "@wallet-standard/core" "1.0.3"
+
+"@mysten/zklogin@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@mysten/zklogin/-/zklogin-0.3.4.tgz#0693905ffc7ad9bc95bb2fce28c4bba9422ce544"
+  integrity sha512-dFEwcpguZOVMC1uvQ1VUk9OaygUpaFdJ5p8rMbAMETWwdmBO7aRxixyg4Mj7SWYso+EQQaMAZ5fl3Qgq9WmvSg==
+  dependencies:
+    "@mysten/bcs" "0.8.1"
+    "@mysten/sui.js" "0.45.1"
+    "@noble/hashes" "^1.3.1"
+    jose "^4.14.4"
+    poseidon-lite "^0.2.0"
+    tsx "^3.12.7"
 
 "@mysten/zklogin@^0.3.5":
   version "0.3.6"

@@ -488,7 +488,7 @@ export class BluefinClient {
       "public address from createOnboardingSignature"
     );
     return `${signature?.signature}${
-      this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
   };
 
@@ -615,7 +615,9 @@ export class BluefinClient {
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
       orderSignature: `${signature?.signature}${
-        this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
       }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
@@ -726,7 +728,9 @@ export class BluefinClient {
       }
 
       return `${signature?.signature}${
-        this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
       }`;
     } catch {
       throw Error("Siging cancelled by user");

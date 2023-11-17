@@ -6,10 +6,9 @@ import {
   toBigNumberStr,
   toBaseNumber,
   SuiClient,
-  network,
+  Keypair,
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
-import { Keypair } from "@mysten/sui.js/dist/cjs/cryptography";
-import { url } from "inspector";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
@@ -24,11 +23,29 @@ export class ContractCalls {
   suiClient: SuiClient;
   marginBankId: string | undefined;
 
-  constructor(signer: Keypair, deployment: any) {
+  constructor(
+    signer: Keypair,
+    deployment: any,
+    provider: SuiClient,
+    is_zkLogin: boolean,
+    zkPayload?: ZkPayload,
+    walletAddress?: string
+  ) {
+    console.log(
+      "---------------BLUEFIN_CLIENT: ContractCalls Constructor----------------"
+    );
+    console.log(signer);
+    console.log(is_zkLogin, "is_zkLogin");
+    console.log(zkPayload, "zkPayload");
+    console.log(walletAddress, "walletAddress");
     this.signer = signer;
     this.onChainCalls = new OnChainCalls(
       this.signer,
-      deployment
+      deployment,
+      provider,
+      is_zkLogin,
+      zkPayload,
+      walletAddress
     );
   }
 
@@ -113,7 +130,8 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
+          account:
+            parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
           market: symbol,
         },
         this.signer

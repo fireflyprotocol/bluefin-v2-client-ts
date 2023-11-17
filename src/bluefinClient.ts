@@ -246,16 +246,12 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
-      console.log("initializeWithHook");
-      console.log(uiSignerObject, "uiSignerObject");
       this.uiWallet = uiSignerObject.wallet;
       this.signer = uiSignerObject as any;
       this.walletAddress = await (
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
-
-      console.log(this.walletAddress, "walltttt address");
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -277,7 +273,6 @@ export class BluefinClient {
     proof: PartialZkLoginSignature;
     decodedJWT: DecodeJWT;
   }) => {
-    console.log("initializeForZkLogin");
     const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
     this.signer = keyPair;
     this.walletAddress = walletAddress;
@@ -286,18 +281,6 @@ export class BluefinClient {
     this.decodedJWT = decodedJWT;
     this.proof = proof;
     this.salt = salt;
-
-    console.log(
-      {
-        signer: this.signer,
-        walletAddress: this.walletAddress,
-        maxEpoch: this.maxEpoch,
-        decodedJWT: this.decodedJWT,
-        proof: this.proof,
-        salt: this.salt,
-      },
-      "valueesss"
-    );
   };
 
   /***
@@ -314,7 +297,7 @@ export class BluefinClient {
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
     this.signer = keypair;
     this.walletAddress = await this.signer.toSuiAddress();
-    this.initOrderSigner(keypair as Keypair);
+    this.initOrderSigner(keypair);
   };
 
   /**
@@ -350,7 +333,14 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(this.getSigner(), _deployment);
+    this.contractCalls = new ContractCalls(
+      this.getSigner(),
+      _deployment,
+      this.provider,
+      this.isZkLogin,
+      this.getZkPayload(),
+      this.walletAddress
+    );
   };
 
   /**
@@ -397,10 +387,6 @@ export class BluefinClient {
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
-      console.log(
-        this.getPublicAddress(),
-        "public address from before authorizeSignedHash"
-      );
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
       console.log(authTokenResponse, "authTokenResponse");
@@ -465,30 +451,22 @@ export class BluefinClient {
       onboardingUrl: this.network.onboardingUrl,
     };
 
-    console.log(onboardingSignature, "payload");
     if (this.uiWallet) {
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
       );
     } else if (this.isZkLogin) {
-      console.log("signing payload for zk login");
       signature = await OrderSigner.signPayloadUsingZKSignature({
         payload: onboardingSignature,
         signer: this.signer,
         zkPayload: this.getZkPayload(),
       });
-      console.log(signature, "signature");
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
-
-    console.log(
-      this.getPublicAddress(),
-      "public address from createOnboardingSignature"
-    );
     return `${signature?.signature}${
-      this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
   };
 
@@ -503,7 +481,6 @@ export class BluefinClient {
     }
     return this.walletAddress;
   };
-
   parseAndShapeSignedData = ({
     signature,
     isParsingRequired = true,
@@ -513,26 +490,20 @@ export class BluefinClient {
   }): SigPK => {
     let data: SigPK;
     let parsedSignature = parseSerializedSignature(signature);
-    console.log(parsedSignature, "parsed sinature");
     if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
-      console.log("parsing zk signature.....");
       //zk login signature
       const { userSignature } = parsedSignature.zkLogin;
-      console.log(userSignature, "userSignature");
 
       //convert user sig to b64
       const convertedUserSignature = toB64(userSignature as any);
-      console.log(convertedUserSignature, "convertedUserSignature");
+
       //reparse b64 converted user sig
       const parsedUserSignature = parseSerializedSignature(
         convertedUserSignature
       );
-      console.log(parsedUserSignature, "parsedUserSignature");
 
       data = {
-        signature:
-          Buffer.from(parsedSignature.serializedSignature).toString("hex") +
-          "3",
+        signature: Buffer.from(parsedSignature.signature).toString("hex") + "3",
         publicKey: publicKeyFromRawBytes(
           parsedUserSignature.signatureScheme,
           parsedUserSignature.publicKey
@@ -615,7 +586,9 @@ export class BluefinClient {
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
       orderSignature: `${signature?.signature}${
-        this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
       }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
@@ -726,7 +699,9 @@ export class BluefinClient {
       }
 
       return `${signature?.signature}${
-        this.isZkLogin ? signature?.publicAddress : signature?.publicKey
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
       }`;
     } catch {
       throw Error("Siging cancelled by user");

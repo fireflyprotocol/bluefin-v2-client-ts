@@ -32,7 +32,6 @@ export class ContractCalls {
       "",
       this.suiClient
     );
-
   }
 
   /**
@@ -82,7 +81,7 @@ export class ContractCalls {
     getPublicAddress: () => address
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      console.log(typeof (this.signer) == typeof (Keypair))
+      console.log(typeof this.signer == typeof Keypair);
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),

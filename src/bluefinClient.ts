@@ -17,7 +17,6 @@ import {
   TIME_IN_FORCE,
   SigPK,
   getKeyPairFromPvtKey,
-  parseSigPK,
   Secp256k1Keypair,
   Ed25519Keypair,
   WalletContextState,
@@ -228,8 +227,8 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : await (this.signer as any as ExtendedWalletContextState).getAddress();
+          ? this.signer.toSuiAddress()
+          : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -247,7 +246,7 @@ export class BluefinClient {
     try {
       this.uiWallet = uiSignerObject.wallet;
       this.signer = uiSignerObject as any;
-      this.walletAddress = await (
+      this.walletAddress = (
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
@@ -295,7 +294,7 @@ export class BluefinClient {
    */
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
     this.signer = keypair;
-    this.walletAddress = await this.signer.toSuiAddress();
+    this.walletAddress = this.signer.toSuiAddress();
     this.initOrderSigner(keypair);
   };
 
@@ -309,11 +308,11 @@ export class BluefinClient {
   initializeWithSeed = (seed: string, scheme: any): void => {
     switch (scheme) {
       case "ED25519":
-        Ed25519Keypair.deriveKeypair(seed);
+        this.signer = Ed25519Keypair.deriveKeypair(seed);
         this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
         break;
       case "Secp256k1":
-        Secp256k1Keypair.deriveKeypair(seed);
+        this.signer = Secp256k1Keypair.deriveKeypair(seed);
         this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
         break;
       default:
@@ -456,9 +455,8 @@ export class BluefinClient {
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${
-      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-    }`;
+    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+      }`;
   };
 
   /**
@@ -566,7 +564,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.STOP_LIMIT
+          order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -576,11 +574,10 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`,
+      orderSignature: `${signature?.signature}${signature?.publicAddress
+        ? signature?.publicAddress
+        : signature?.publicKey
+        }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -689,11 +686,10 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`;
+      return `${signature?.signature}${signature?.publicAddress
+        ? signature?.publicAddress
+        : signature?.publicKey
+        }`;
     } catch {
       throw Error("Siging cancelled by user");
     }
@@ -784,9 +780,9 @@ export class BluefinClient {
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
           address: this.uiWallet
-            ? await (
-                this.signer as any as ExtendedWalletContextState
-              ).getAddress()
+            ? (
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()
             : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
@@ -826,9 +822,9 @@ export class BluefinClient {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
         address: this.uiWallet
-          ? await (
-              this.signer as any as ExtendedWalletContextState
-            ).getAddress()
+          ? (
+            this.signer as any as ExtendedWalletContextState
+          ).getAddress()
           : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },

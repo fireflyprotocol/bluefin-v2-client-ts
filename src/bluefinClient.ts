@@ -23,8 +23,11 @@ import {
   WalletContextState,
   SuiClient,
   Keypair,
+  SIGNER_TYPES,
+  PartialZkLoginSignature,
+  DecodeJWT,
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
-
 
 import {
   AdjustLeverageResponse,
@@ -108,6 +111,12 @@ import { ContractCalls } from "./exchange/contractService";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { Networks, POST_ORDER_BASE } from "./constants";
 import { sha256 } from "@noble/hashes/sha256";
+import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
+import { parseSerializedSignature } from "@mysten/sui.js/cryptography";
+import { toB64 } from "@mysten/bcs";
+import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
+import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
+import { SerializedSignature } from "@mysten/sui.js/dist/cjs/cryptography";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -124,9 +133,11 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: Keypair | any; // to save signer when connecting from UI
+  private signer: Keypair; // to save signer when connecting from UI
 
   private uiWallet: WalletContextState | any; // to save signer when connecting from UI
+
+  private isZkLogin: boolean = false;
 
   private contractCalls: ContractCalls | undefined;
 
@@ -139,6 +150,14 @@ export class BluefinClient {
   // the number of decimals supported by USDC contract
   private MarginTokenPrecision = 6;
 
+  private maxEpoch: number;
+
+  private proof: PartialZkLoginSignature;
+
+  private decodedJWT: DecodeJWT;
+
+  private salt: string;
+
   /**
    * initializes the class instance
    * @param _isTermAccepted boolean indicating if exchange terms and conditions are accepted
@@ -150,14 +169,13 @@ export class BluefinClient {
     _isTermAccepted: boolean,
     _network: ExtendedNetwork,
     _account?: string | Keypair,
-    _scheme?: any,
+    _scheme?: SignatureScheme,
     _isUI?: boolean,
     _uiSignerObject?: any
   ) {
     this.network = _network;
 
-    this.provider = new SuiClient({url: _network.url});
-
+    this.provider = new SuiClient({ url: _network.url });
 
     this.apiService = new APIService(this.network.apiGateway);
 
@@ -168,11 +186,7 @@ export class BluefinClient {
 
     this.isTermAccepted = _isTermAccepted;
 
-    if (_isUI) {
-      this.initializeWithHook(_uiSignerObject);
-    }
-    // if input is string
-    else if (_account && _scheme && typeof _account === "string") {
+    if (_account && _scheme && typeof _account === "string") {
       if (_account.split(" ")[1]) {
         // can split with a space then its seed phrase
         this.initializeWithSeed(_account, _scheme);
@@ -211,7 +225,11 @@ export class BluefinClient {
         throw Error("Signer not initialized");
       }
       await this.initContractCalls(deployment);
-      this.walletAddress = await this.signer.toSuiAddress();
+      this.walletAddress = this.isZkLogin
+        ? this.walletAddress
+        : this.signer.toSuiAddress
+        ? this.signer.toSuiAddress()
+        : await (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -227,13 +245,41 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
-      this.signer = uiSignerObject;
-      this.walletAddress = this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress());
       this.uiWallet = uiSignerObject.wallet;
+      this.signer = uiSignerObject as any;
+      this.walletAddress = await (
+        this.signer as any as ExtendedWalletContextState
+      ).getAddress();
+      this.isZkLogin = false;
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
     }
+  };
+
+  initializeForZkLogin = ({
+    _account,
+    walletAddress,
+    maxEpoch,
+    proof,
+    decodedJWT,
+    salt,
+  }: {
+    _account: string;
+    walletAddress: string;
+    maxEpoch: number;
+    salt: string;
+    proof: PartialZkLoginSignature;
+    decodedJWT: DecodeJWT;
+  }) => {
+    const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
+    this.signer = keyPair;
+    this.walletAddress = walletAddress;
+    this.isZkLogin = true;
+    this.maxEpoch = maxEpoch;
+    this.decodedJWT = decodedJWT;
+    this.proof = proof;
+    this.salt = salt;
   };
 
   /***
@@ -263,11 +309,11 @@ export class BluefinClient {
   initializeWithSeed = (seed: string, scheme: any): void => {
     switch (scheme) {
       case "ED25519":
-          Ed25519Keypair.deriveKeypair(seed)
+        Ed25519Keypair.deriveKeypair(seed);
         this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
         break;
       case "Secp256k1":
-          Secp256k1Keypair.deriveKeypair(seed)
+        Secp256k1Keypair.deriveKeypair(seed);
         this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
         break;
       default:
@@ -286,10 +332,7 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(
-      this.getSigner(),
-      _deployment
-    );
+    this.contractCalls = new ContractCalls(this.getSigner(), _deployment, this.provider);
   };
 
   /**
@@ -336,6 +379,7 @@ export class BluefinClient {
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
+
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
@@ -355,22 +399,66 @@ export class BluefinClient {
     return userAuthToken;
   };
 
+  createZkSignature({
+    userSignature,
+    zkPayload,
+  }: {
+    userSignature: string;
+    zkPayload: ZkPayload;
+  }) {
+    const { salt, decodedJWT, proof, maxEpoch } = zkPayload;
+    const addressSeed: string = genAddressSeed(
+      BigInt(salt!),
+      "sub",
+      decodedJWT.sub,
+      decodedJWT.aud
+    ).toString();
+
+    const zkLoginSignature: SerializedSignature = getZkLoginSignature({
+      inputs: {
+        ...proof,
+        addressSeed,
+      },
+      maxEpoch: maxEpoch,
+      userSignature,
+    });
+
+    return zkLoginSignature;
+  }
+
+  getZkPayload = (): ZkPayload => {
+    return {
+      decodedJWT: this.decodedJWT,
+      proof: this.proof,
+      salt: this.salt,
+      maxEpoch: this.maxEpoch,
+    };
+  };
+
   createOnboardingSignature = async () => {
     let signature: SigPK;
 
     const onboardingSignature = {
       onboardingUrl: this.network.onboardingUrl,
     };
+
     if (this.uiWallet) {
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
       );
+    } else if (this.isZkLogin) {
+      signature = await OrderSigner.signPayloadUsingZKSignature({
+        payload: onboardingSignature,
+        signer: this.signer,
+        zkPayload: this.getZkPayload(),
+      });
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
-
-    return `${signature?.signature}${signature?.publicKey}`;
+    return `${signature?.signature}${
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+    }`;
   };
 
   /**
@@ -384,23 +472,70 @@ export class BluefinClient {
     }
     return this.walletAddress;
   };
+  parseAndShapeSignedData = ({
+    signature,
+    isParsingRequired = true,
+  }: {
+    signature: string;
+    isParsingRequired?: boolean;
+  }): SigPK => {
+    let data: SigPK;
+    let parsedSignature = parseSerializedSignature(signature);
+    if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
+      //zk login signature
+      const { userSignature } = parsedSignature.zkLogin;
 
+      //convert user sig to b64
+      const convertedUserSignature = toB64(userSignature as any);
 
-  signOrder = async (orderToSign: Order) => {
+      //reparse b64 converted user sig
+      const parsedUserSignature = parseSerializedSignature(
+        convertedUserSignature
+      );
+
+      data = {
+        signature: Buffer.from(parsedSignature.signature).toString("hex") + "3",
+        publicKey: publicKeyFromRawBytes(
+          parsedUserSignature.signatureScheme,
+          parsedUserSignature.publicKey
+        ).toBase64(),
+      };
+    } else {
+      data = {
+        signature:
+          Buffer.from(parsedSignature.signature).toString("hex") +
+          SIGNER_TYPES.UI_ED25519,
+        publicKey: publicKeyFromRawBytes(
+          parsedSignature.signatureScheme,
+          parsedSignature.publicKey
+        ).toBase64(),
+      };
+    }
+    return data;
+  };
+
+  signOrder = async (orderToSign: Order): Promise<SigPK> => {
+    let signature: SigPK;
     if (this.uiWallet) {
-      //connected via UI
-      const signature = await OrderSigner.signOrderUsingWallet(
+      signature = await OrderSigner.signOrderUsingWallet(
         orderToSign,
         this.uiWallet
       );
-      return signature;
+    } else if (this.isZkLogin) {
+      signature = await OrderSigner.signOrderUsingZkSignature({
+        order: orderToSign,
+        signer: this.signer,
+        zkPayload: this.getZkPayload(),
+      });
+    } else {
+      if (this.orderSigner.signOrder)
+        signature = this.orderSigner.signOrder(orderToSign);
+      else
+        throw Error(
+          "On of OrderSginer or uiWallet needs to be initilized before signing order "
+        );
     }
-    if (this.orderSigner) {
-      return this.orderSigner.signOrder(orderToSign);
-    }
-    throw Error(
-      "On of OrderSginer or uiWallet needs to be initilized before signing order "
-    );
+    return signature;
   };
 
   /**
@@ -441,7 +576,11 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${signature?.publicKey}`,
+      orderSignature: `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -534,12 +673,28 @@ export class BluefinClient {
           { orderHashes: payloadValue },
           this.uiWallet
         );
+      } else if (this.isZkLogin) {
+        signature = await OrderSigner.signPayloadUsingZKSignature({
+          payload: { orderHashes: payloadValue },
+          signer: this.signer,
+          zkPayload: {
+            decodedJWT: this.decodedJWT,
+            proof: this.proof,
+            salt: this.salt,
+            maxEpoch: this.maxEpoch,
+          },
+        });
       } else {
         signature = this.orderSigner.signPayload({
           orderHashes: payloadValue,
         });
       }
-      return `${signature?.signature}${signature?.publicKey}`;
+
+      return `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`;
     } catch {
       throw Error("Siging cancelled by user");
     }
@@ -629,7 +784,11 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
+          address: this.uiWallet
+            ? await (
+                this.signer as any as ExtendedWalletContextState
+              ).getAddress()
+            : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,
@@ -667,7 +826,11 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address: this.signer instanceof Keypair?  (this.signer as Keypair).toSuiAddress() : (await this.signer.getAddress()),
+        address: this.uiWallet
+          ? await (
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()
+          : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer

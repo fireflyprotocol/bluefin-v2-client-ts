@@ -18,6 +18,7 @@ export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
   pageSize?: number; // will get only provided number of orders must be <= 50
   pageNumber?: number; // will fetch particular page records. A single page contains 50 records.
+  parentAddress?: string;
 }
 
 export interface GetFundingHistoryRequest {
@@ -630,6 +631,7 @@ export interface GetAffiliateRefereeDetailsRequest {
   campaignId: number;
   pageNumber?: number;
   pageSize?: number;
+  parentAddress?: string;
 }
 export interface GetAffiliateRefereeDetailsResponse {
   data: AffiliateRefereeDetailsData[];
@@ -651,6 +653,7 @@ export interface GetAffiliateRefereeCountResponse {
 export interface GetUserRewardsHistoryRequest {
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 export interface GetUserRewardsHistoryResponse {
   data: UserRewardsHistoryData[];
@@ -695,6 +698,7 @@ export interface GetTradeAndEarnRewardsDetailRequest {
   campaignId: number;
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 
 export interface GetTradeAndEarnRewardsDetailResponse {
@@ -729,6 +733,7 @@ export interface GetMakerRewardDetailsRequest {
   symbol?: string;
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 
 export interface GetMakerRewardDetailsResponse {

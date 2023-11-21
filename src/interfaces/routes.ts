@@ -16,7 +16,6 @@ export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
   pageSize?: number; // will get only provided number of orders must be <= 50
   pageNumber?: number; // will fetch particular page records. A single page contains 50 records.
-  parentAddress?: string;
 }
 
 export interface GetFundingHistoryRequest {

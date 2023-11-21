@@ -32,7 +32,6 @@ export class ContractCalls {
       "",
       this.suiClient
     );
-
   }
 
   /**
@@ -81,7 +80,7 @@ export class ContractCalls {
     coinID: string
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      console.log(typeof (this.signer) == typeof (Keypair))
+      console.log(typeof this.signer == typeof Keypair);
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
@@ -119,9 +118,11 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress ||  await (
-            this.signer as any as ExtendedWalletContextState
-          ).getAddress(),
+          account:
+            parentAddress ||
+            (await (
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()),
           market: symbol,
         },
         this.signer

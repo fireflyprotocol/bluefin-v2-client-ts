@@ -228,8 +228,8 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : await (this.signer as any as ExtendedWalletContextState).getAddress();
+        ? this.signer.toSuiAddress()
+        : await (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -332,7 +332,11 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(this.getSigner(), _deployment, this.provider);
+    this.contractCalls = new ContractCalls(
+      this.getSigner(),
+      _deployment,
+      this.provider
+    );
   };
 
   /**
@@ -456,8 +460,9 @@ export class BluefinClient {
     } else {
       signature = this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-      }`;
+    return `${signature?.signature}${
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+    }`;
   };
 
   /**
@@ -565,7 +570,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.STOP_LIMIT
+        order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -575,10 +580,11 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${signature?.publicAddress
-        ? signature?.publicAddress
-        : signature?.publicKey
-        }`,
+      orderSignature: `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -687,10 +693,11 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${signature?.publicAddress
-        ? signature?.publicAddress
-        : signature?.publicKey
-        }`;
+      return `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`;
     } catch {
       throw Error("Siging cancelled by user");
     }
@@ -782,8 +789,8 @@ export class BluefinClient {
           amount,
           address: this.uiWallet
             ? await (
-              this.signer as any as ExtendedWalletContextState
-            ).getAddress()
+                this.signer as any as ExtendedWalletContextState
+              ).getAddress()
             : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
@@ -824,8 +831,8 @@ export class BluefinClient {
       {
         address: this.uiWallet
           ? await (
-            this.signer as any as ExtendedWalletContextState
-          ).getAddress()
+              this.signer as any as ExtendedWalletContextState
+            ).getAddress()
           : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
@@ -1461,7 +1468,10 @@ export class BluefinClient {
    * @param campaignId
    * @returns GetAffiliateRefereeCountResponse
    */
-  getAffiliateRefereeCount = async (campaignId: number, parentAddress?: string) => {
+  getAffiliateRefereeCount = async (
+    campaignId: number,
+    parentAddress?: string
+  ) => {
     const response =
       await this.apiService.get<GetAffiliateRefereeCountResponse>(
         SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
@@ -1517,7 +1527,10 @@ export class BluefinClient {
    * @param campaignId
    * @returns GetTradeAndEarnRewardsOverviewResponse
    */
-  getTradeAndEarnRewardsOverview = async (campaignId: number, parentAddress?: string) => {
+  getTradeAndEarnRewardsOverview = async (
+    campaignId: number,
+    parentAddress?: string
+  ) => {
     const response =
       await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
         SERVICE_URLS.GROWTH.REWARDS_OVERVIEW,
@@ -1607,7 +1620,7 @@ export class BluefinClient {
   getOpenReferralRefereeDetails = async (payload: {
     cursor: string;
     pageSize: number;
-    parentAddress?: string
+    parentAddress?: string;
   }) => {
     const response = await this.apiService.get<{
       data: OpenReferralRefereeDetails;
@@ -1625,7 +1638,10 @@ export class BluefinClient {
    * @param payload
    * @returns OpenReferralDetails
    */
-  getOpenReferralDetails = async (payload: { campaignId: number, parentAddress?: string }) => {
+  getOpenReferralDetails = async (payload: {
+    campaignId: number;
+    parentAddress?: string;
+  }) => {
     const response = await this.apiService.get<OpenReferralDetails>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREES_COUNT,
       payload,

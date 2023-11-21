@@ -883,6 +883,7 @@ export class BluefinClient {
       return this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
+        this.getPublicAddress,
         params.parentAddress
       );
     }
@@ -935,7 +936,7 @@ export class BluefinClient {
 
     //if CoinID provided
     if (coinID)
-      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+      return this.contractCalls.depositToMarginBankContractCall(amount, coinID, this.getPublicAddress);
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -949,7 +950,8 @@ export class BluefinClient {
     if (coinHavingBalance) {
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
-        coinHavingBalance
+        coinHavingBalance,
+        this.getPublicAddress
       );
     }
 
@@ -983,7 +985,8 @@ export class BluefinClient {
       if (coinHavingbalanceAfterMerge) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingbalanceAfterMerge
+          coinHavingbalanceAfterMerge,
+          this.getPublicAddress
         );
       }
     }

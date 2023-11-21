@@ -1398,10 +1398,10 @@ export class BluefinClient {
    * @param campaignId
    * @returns GetReferrerInfoResponse
    */
-  getReferrerInfo = async (campaignId: number) => {
+  getReferrerInfo = async (campaignId: number, parentAddress?:string) => {
     const response = await this.apiService.get<GetReferrerInfoResponse>(
       SERVICE_URLS.GROWTH.REFERRER_INFO,
-      { campaignId },
+      { campaignId, parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;

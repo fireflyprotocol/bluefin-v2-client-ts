@@ -17,7 +17,6 @@ import {
   TIME_IN_FORCE,
   SigPK,
   getKeyPairFromPvtKey,
-  parseSigPK,
   Secp256k1Keypair,
   Ed25519Keypair,
   WalletContextState,
@@ -229,7 +228,7 @@ export class BluefinClient {
         ? this.walletAddress
         : this.signer.toSuiAddress
         ? this.signer.toSuiAddress()
-        : await (this.signer as any as ExtendedWalletContextState).getAddress();
+        : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -247,7 +246,7 @@ export class BluefinClient {
     try {
       this.uiWallet = uiSignerObject.wallet;
       this.signer = uiSignerObject as any;
-      this.walletAddress = await (
+      this.walletAddress = (
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
@@ -295,7 +294,7 @@ export class BluefinClient {
    */
   initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
     this.signer = keypair;
-    this.walletAddress = await this.signer.toSuiAddress();
+    this.walletAddress = this.signer.toSuiAddress();
     this.initOrderSigner(keypair);
   };
 
@@ -309,11 +308,11 @@ export class BluefinClient {
   initializeWithSeed = (seed: string, scheme: any): void => {
     switch (scheme) {
       case "ED25519":
-        Ed25519Keypair.deriveKeypair(seed);
+        this.signer = Ed25519Keypair.deriveKeypair(seed);
         this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
         break;
       case "Secp256k1":
-        Secp256k1Keypair.deriveKeypair(seed);
+        this.signer = Secp256k1Keypair.deriveKeypair(seed);
         this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
         break;
       default:
@@ -332,7 +331,11 @@ export class BluefinClient {
     }
     const _deployment = deployment || (await this.getDeploymentJson());
 
-    this.contractCalls = new ContractCalls(this.getSigner(), _deployment, this.provider);
+    this.contractCalls = new ContractCalls(
+      this.getSigner(),
+      _deployment,
+      this.provider
+    );
   };
 
   /**
@@ -784,9 +787,7 @@ export class BluefinClient {
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
           address: this.uiWallet
-            ? await (
-                this.signer as any as ExtendedWalletContextState
-              ).getAddress()
+            ? (this.signer as any as ExtendedWalletContextState).getAddress()
             : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
@@ -826,9 +827,7 @@ export class BluefinClient {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
         address: this.uiWallet
-          ? await (
-              this.signer as any as ExtendedWalletContextState
-            ).getAddress()
+          ? (this.signer as any as ExtendedWalletContextState).getAddress()
           : this.signer.toSuiAddress(),
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
@@ -883,6 +882,7 @@ export class BluefinClient {
       return this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
+        this.getPublicAddress,
         params.parentAddress
       );
     }
@@ -935,7 +935,11 @@ export class BluefinClient {
 
     //if CoinID provided
     if (coinID)
-      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+      return this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinID,
+        this.getPublicAddress
+      );
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -949,7 +953,8 @@ export class BluefinClient {
     if (coinHavingBalance) {
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
-        coinHavingBalance
+        coinHavingBalance,
+        this.getPublicAddress
       );
     }
 
@@ -983,7 +988,8 @@ export class BluefinClient {
       if (coinHavingbalanceAfterMerge) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingbalanceAfterMerge
+          coinHavingbalanceAfterMerge,
+          this.getPublicAddress
         );
       }
     }

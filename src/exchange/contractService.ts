@@ -81,7 +81,6 @@ export class ContractCalls {
     getPublicAddress: () => address
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      console.log(typeof this.signer == typeof Keypair);
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
@@ -129,6 +128,7 @@ export class ContractCalls {
   adjustLeverageContractCallRawTransaction = async (
     leverage: number,
     symbol: string,
+    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<string> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -136,7 +136,7 @@ export class ContractCalls {
       {
         leverage,
         perpID: perpId,
-        account: parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
+        account: parentAddress || getPublicAddress(),
         market: symbol,
       },
       this.signer

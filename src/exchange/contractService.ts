@@ -32,7 +32,6 @@ export class ContractCalls {
       "",
       this.suiClient
     );
-
   }
 
   /**
@@ -78,18 +77,17 @@ export class ContractCalls {
    * */
   depositToMarginBankContractCall = async (
     amount: number,
-    coinID: string
+    coinID: string,
+    getPublicAddress: () => address
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      console.log(typeof (this.signer) == typeof (Keypair))
+      console.log(typeof this.signer == typeof Keypair);
       const tx = await this.onChainCalls.depositToBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: await (
-            this.signer as any as ExtendedWalletContextState
-          ).getAddress(),
+          accountAddress: getPublicAddress(),
         },
         this.signer
       );
@@ -111,6 +109,7 @@ export class ContractCalls {
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
+    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -119,9 +118,7 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress ||  await (
-            this.signer as any as ExtendedWalletContextState
-          ).getAddress(),
+          account: parentAddress || getPublicAddress(),
           market: symbol,
         },
         this.signer

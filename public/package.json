@@ -6,7 +6,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@bluefin-exchange/bluefin-v2-client": "^3.3.4"
+    "@bluefin-exchange/bluefin-v2-client": "^5.2.2"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

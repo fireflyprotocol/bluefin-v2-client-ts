@@ -1189,10 +1189,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.44.0.tgz#961a5903c74139390478bdc808bcde3fc45ab7af"
   integrity sha512-Ag+9YM4ocKQx9AarydN0KY2j0ErMHNIocPDrVo8zAE44xLTjEtz81OdR68/cydGtk6m6jDb5Za3r2useMzYmSw==
 
-"@firefly-exchange/library-sui@^1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.5.tgz#e2cb1af041de07212453eb75f96c707d2490ef9f"
-  integrity sha512-Wc9IsDdyqmCvkIS+dUGO4ne1upa9S/KayweDTWyvFqNfWKKscdsoUXuxHA9rG8/Lv+yWuQI03tZgm+tBKwcUkg==
+"@firefly-exchange/library-sui@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.2.6.tgz#28b76c1b5132cfbb42a87b4092ccc13bfccec9f7"
+  integrity sha512-Kz8w98/rKKSiSKsfM9NXHEBeNgGXZy/wE+/ys7jpxYdDa7TfwKBMzMhB2qp/Aav9/ZCHH57bIc3Fmh6orSndQw==
   dependencies:
     "@mysten/sui.js" "^0.45.0"
     "@mysten/zklogin" "^0.3.5"

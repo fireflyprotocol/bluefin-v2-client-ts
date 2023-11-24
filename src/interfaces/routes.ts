@@ -465,8 +465,8 @@ export interface adjustLeverageRequest {
   symbol: MarketSymbol;
   leverage: number;
   parentAddress?: string;
+  signedTransaction?: string;
 }
-
 export interface AdjustLeverageResponse {
   symbol: string;
   address: string;

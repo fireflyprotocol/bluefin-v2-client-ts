@@ -1,15 +1,5 @@
 import {
-  ORDER_STATUS,
-  ORDER_SIDE,
-  TIME_IN_FORCE,
-  MARGIN_TYPE,
-  ORDER_TYPE,
-  CANCEL_REASON,
-  MarketSymbol,
-  address,
-  Interval,
-  WalletContextState,
-  SuiProvider,
+  address, CANCEL_REASON, Interval, MARGIN_TYPE, MarketSymbol, ORDER_SIDE, ORDER_STATUS, ORDER_TYPE, SuiProvider, TIME_IN_FORCE, WalletContextState
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -764,7 +754,6 @@ export interface GenerateReferralCodeResponse {
 
 export interface LinkReferredUserRequest {
   referralCode: string;
-  campaignId: number;
 }
 export interface LinkReferredUserResponse {
   referralCode: string;

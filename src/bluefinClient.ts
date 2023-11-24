@@ -1,64 +1,53 @@
 import {
-  toBigNumberStr,
-  toBigNumber,
-  toBaseNumber,
-  usdcToBaseNumber,
-  DAPIKlineResponse,
-  MarketSymbol,
+  ADJUST_MARGIN, bigNumber, DAPIKlineResponse, DecodeJWT, Ed25519Keypair, getKeyPairFromPvtKey, Keypair, MARGIN_TYPE, MarketSymbol,
   Order,
-  OrderSigner,
-  Transaction,
-  bigNumber,
-  ADJUST_MARGIN,
-  MARGIN_TYPE,
-  ORDER_SIDE,
+  OrderSigner, ORDER_SIDE,
   ORDER_STATUS,
-  ORDER_TYPE,
-  TIME_IN_FORCE,
-  SigPK,
-  getKeyPairFromPvtKey,
-  Secp256k1Keypair,
-  Ed25519Keypair,
-  WalletContextState,
-  SuiClient,
-  Keypair,
-  SIGNER_TYPES,
-  PartialZkLoginSignature,
-  DecodeJWT,
-  ZkPayload,
+  ORDER_TYPE, PartialZkLoginSignature, Secp256k1Keypair, SIGNER_TYPES, SigPK, SuiClient, TIME_IN_FORCE, toBaseNumber, toBigNumber, toBigNumberStr, Transaction, usdcToBaseNumber, WalletContextState, ZkPayload
 } from "@firefly-exchange/library-sui";
 
+import { toB64 } from "@mysten/bcs";
+import { parseSerializedSignature } from "@mysten/sui.js/cryptography";
+import { SerializedSignature } from "@mysten/sui.js/dist/cjs/cryptography";
+import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
+import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
+import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
+import { sha256 } from "@noble/hashes/sha256";
+import { generateRandomNumber } from "../utils/utils";
+import { Networks, POST_ORDER_BASE } from "./constants";
+import { APIService } from "./exchange/apiService";
+import { SERVICE_URLS } from "./exchange/apiUrls";
+import { ResponseSchema } from "./exchange/contractErrorHandling.service";
+import { ContractCalls } from "./exchange/contractService";
+import { Sockets } from "./exchange/sockets";
+import { WebSockets } from "./exchange/WebSocket";
 import {
-  AdjustLeverageResponse,
+  adjustLeverageRequest, AdjustLeverageResponse,
   AuthorizeHashResponse,
-  CancelOrderResponse,
-  ExchangeInfo,
-  GetAccountDataResponse,
-  GetCandleStickRequest,
+  CancelOrderResponse, ConfigResponse, ExchangeInfo, ExtendedNetwork,
+  ExtendedWalletContextState, GenerateReferralCodeRequest, GenerateReferralCodeResponse, GetAccountDataResponse, GetAffiliatePayoutsResponse, GetAffiliateRefereeCountResponse, GetAffiliateRefereeDetailsRequest,
+  GetAffiliateRefereeDetailsResponse, GetCampaignDetailsResponse, GetCampaignRewardsResponse, GetCandleStickRequest,
   GetCountDownsResponse,
   GetFundingHistoryRequest,
-  GetFundingRateResponse,
-  GetMarketRecentTradesRequest,
-  GetMarketRecentTradesResponse,
-  GetOrderBookResponse,
+  GetFundingRateResponse, GetMakerRewardDetailsRequest,
+  GetMakerRewardDetailsResponse, GetMakerRewardsSummaryResponse, GetMarketRecentTradesRequest,
+  GetMarketRecentTradesResponse, GetOrderbookRequest, GetOrderBookResponse,
   GetOrderRequest,
-  GetOrderResponse,
-  GetOrderbookRequest,
-  GetPositionRequest,
-  GetPositionResponse,
-  GetTransactionHistoryRequest,
+  GetOrderResponse, GetPositionRequest,
+  GetPositionResponse, GetReferrerInfoResponse, GetTotalHistoricalTradingRewardsResponse,
+  GetTradeAndEarnRewardsDetailRequest,
+  GetTradeAndEarnRewardsDetailResponse, GetTradeAndEarnRewardsOverviewResponse, GetTransactionHistoryRequest,
   GetTransferHistoryRequest,
-  GetUserFundingHistoryResponse,
-  GetUserTradesRequest,
+  GetUserFundingHistoryResponse, GetUserRewardsHistoryRequest, GetUserRewardsHistoryResponse, GetUserRewardsSummaryResponse, GetUserTradesHistoryRequest, GetUserTradesHistoryResponse, GetUserTradesRequest,
   GetUserTradesResponse,
   GetUserTransactionHistoryResponse,
-  GetUserTransferHistoryResponse,
-  MarketData,
+  GetUserTransferHistoryResponse, GetUserWhiteListStatusForMarkeMakerResponse, LinkReferredUserRequest,
+  LinkReferredUserResponse, MarketData,
   MarketMeta,
-  MasterInfo,
-  OrderCancelSignatureRequest,
-  OrderCancellationRequest,
-  OrderSignatureRequest,
+  MasterInfo, OpenReferralDetails,
+  OpenReferralOverview,
+  OpenReferralPayoutList,
+  OpenReferralRefereeDetails, OrderCancellationRequest, OrderCancelSignatureRequest, OrderSignatureRequest,
   OrderSignatureResponse,
   PlaceOrderRequest,
   PlaceOrderResponse,
@@ -66,56 +55,8 @@ import {
   PostTimerAttributes,
   PostTimerResponse,
   StatusResponse,
-  TickerData,
-  adjustLeverageRequest,
-  verifyDepositResponse,
-  ExtendedNetwork,
-  ExtendedWalletContextState,
-  ConfigResponse,
-  GetTotalHistoricalTradingRewardsResponse,
-  GetTradeAndEarnRewardsDetailRequest,
-  GetTradeAndEarnRewardsDetailResponse,
-  GetUserRewardsSummaryResponse,
-  GetUserRewardsHistoryResponse,
-  GetUserRewardsHistoryRequest,
-  GetAffiliateRefereeDetailsRequest,
-  GetAffiliateRefereeDetailsResponse,
-  GetAffiliateRefereeCountResponse,
-  GetTradeAndEarnRewardsOverviewResponse,
-  GetMakerRewardsSummaryResponse,
-  GetMakerRewardDetailsRequest,
-  GetMakerRewardDetailsResponse,
-  GetUserWhiteListStatusForMarkeMakerResponse,
-  GetAffiliatePayoutsResponse,
-  GetCampaignRewardsResponse,
-  GetCampaignDetailsResponse,
-  GetReferrerInfoResponse,
-  LinkReferredUserRequest,
-  LinkReferredUserResponse,
-  GenerateReferralCodeResponse,
-  GenerateReferralCodeRequest,
-  GetUserTradesHistoryResponse,
-  GetUserTradesHistoryRequest,
-  OpenReferralDetails,
-  OpenReferralOverview,
-  OpenReferralPayoutList,
-  OpenReferralRefereeDetails,
+  TickerData, verifyDepositResponse
 } from "./interfaces/routes";
-import { APIService } from "./exchange/apiService";
-import { SERVICE_URLS } from "./exchange/apiUrls";
-import { Sockets } from "./exchange/sockets";
-import { WebSockets } from "./exchange/WebSocket";
-import { generateRandomNumber, readFile } from "../utils/utils";
-import { ContractCalls } from "./exchange/contractService";
-import { ResponseSchema } from "./exchange/contractErrorHandling.service";
-import { Networks, POST_ORDER_BASE } from "./constants";
-import { sha256 } from "@noble/hashes/sha256";
-import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
-import { parseSerializedSignature } from "@mysten/sui.js/cryptography";
-import { toB64 } from "@mysten/bcs";
-import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
-import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
-import { SerializedSignature } from "@mysten/sui.js/dist/cjs/cryptography";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -1386,9 +1327,9 @@ export class BluefinClient {
    * @param params LinkReferredUserRequest
    * @returns LinkReferredUserResponse
    */
-  linkReferredUser = async (params: LinkReferredUserRequest) => {
+  affiliateLinkReferredUser = async (params: LinkReferredUserRequest) => {
     const response = await this.apiService.post<LinkReferredUserResponse>(
-      SERVICE_URLS.GROWTH.LINK_REFERRED_USER,
+      SERVICE_URLS.GROWTH.AFFILIATE_LINK_REFERRED_USER,
       params,
       { isAuthenticationRequired: true }
     );
@@ -1400,10 +1341,10 @@ export class BluefinClient {
    * @param campaignId
    * @returns GetReferrerInfoResponse
    */
-  getReferrerInfo = async (campaignId: number) => {
+  getReferrerInfo = async () => {
     const response = await this.apiService.get<GetReferrerInfoResponse>(
       SERVICE_URLS.GROWTH.REFERRER_INFO,
-      { campaignId },
+      undefined,
       { isAuthenticationRequired: true }
     );
     return response;

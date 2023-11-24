@@ -1396,6 +1396,7 @@ export class BluefinClient {
   /**
    * Gets referrer Info
    * @param campaignId
+   * @param parentAddress
    * @returns GetReferrerInfoResponse
    */
   getReferrerInfo = async (campaignId: number, parentAddress?:string) => {
@@ -1421,6 +1422,7 @@ export class BluefinClient {
   /**
    * Gets campaign reward details
    * @param campaignId
+   * @param parentAddress
    * @returns GetCampaignRewardsResponse
    */
   getCampaignRewards = async (campaignId: number, parentAddress?: string) => {
@@ -1435,6 +1437,7 @@ export class BluefinClient {
   /**
    * Gets affiliate payout details
    * @param campaignId
+   * @param parentAddress
    * @returns Array of GetAffiliatePayoutsResponse
    */
   getAffiliatePayouts = async (campaignId: number, parentAddress?: string) => {
@@ -1466,6 +1469,7 @@ export class BluefinClient {
   /**
    * Gets affiliate referree count
    * @param campaignId
+   * @param parentAddress
    * @returns GetAffiliateRefereeCountResponse
    */
   getAffiliateRefereeCount = async (
@@ -1483,6 +1487,7 @@ export class BluefinClient {
   /**
    * Gets affiliate referree count
    * @param campaignId
+   * @param parentAddress
    * @returns GetAffiliateRefereeCountResponse
    */
   getRefereeCount = async (campaignId: number, parentAddress?: string) => {
@@ -1525,6 +1530,7 @@ export class BluefinClient {
   /**
    * Gets rewards overview
    * @param campaignId
+   * @param parentAddress
    * @returns GetTradeAndEarnRewardsOverviewResponse
    */
   getTradeAndEarnRewardsOverview = async (
@@ -1672,6 +1678,7 @@ export class BluefinClient {
   /**
    * generate open referral code
    * @param campaignId
+   * @param parentAddress
    * @returns OpenReferralOverview
    */
   generateOpenReferralReferralCode = async (payload: {

@@ -1054,7 +1054,7 @@ describe("BluefinClient", () => {
       expect((response?.data as any).error?.code).to.be.equal(3078);
     });
     it("should not get affiliate count when user is not an affiliate", async () => {
-      const response = await client.getRefereeCount(2);
+      const response = await client.getAffiliateRefereeCount(2);
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(9000);
     });
@@ -1833,7 +1833,7 @@ describe("BluefinClient via ReadOnlyToken", () => {
       expect((response?.data as any).error?.code).to.be.equal(3078);
     });
     it("should not get affiliate count when user is not an affiliate", async () => {
-      const response = await readOnlyClient.getRefereeCount(2);
+      const response = await readOnlyClient.getAffiliateRefereeCount(2);
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(9000);
     });

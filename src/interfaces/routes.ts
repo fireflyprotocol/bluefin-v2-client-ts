@@ -631,7 +631,7 @@ interface AffiliateRefereeDetailsData {
   feesPaid: string;
 }
 
-export interface GetRefereeCountResponse {
+export interface GetAffiliateRefereeCountResponse {
   referralCode: string;
   referralCount: number;
 }

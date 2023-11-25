@@ -1409,11 +1409,11 @@ export class BluefinClient {
   /**
    * Gets referree count
    * @param campaignId
-   * @returns GetRefereeCountResponse
+   * @returns GetAffiliateRefereeCountResponse
    */
-  getRefereeCount = async (campaignId: number) => {
-    const response = await this.apiService.get<GetRefereeCountResponse>(
-        SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
+  getAffiliateRefereeCount = async (campaignId: number) => {
+    const response = await this.apiService.get<GetAffiliateRefereeCountResponse>(
+        SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
         { campaignId },
         { isAuthenticationRequired: true }
       );

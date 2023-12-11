@@ -1,5 +1,5 @@
 import {
-  address, CANCEL_REASON, Interval, MARGIN_TYPE, MarketSymbol, ORDER_SIDE, ORDER_STATUS, ORDER_TYPE, SuiProvider, TIME_IN_FORCE, WalletContextState
+  address, CANCEL_REASON, Interval, MARGIN_TYPE, MarketSymbol, ORDER_SIDE, ORDER_STATUS, ORDER_TYPE, SuiClient, TIME_IN_FORCE, BaseWallet
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -561,9 +561,9 @@ export interface ObjectDetails {
 }
 
 export interface ExtendedWalletContextState
-  extends Omit<WalletContextState, "signMessage"> {
-  wallet: WalletContextState;
-  provider: SuiProvider;
+  extends Omit<BaseWallet, "signMessage"> {
+  wallet: BaseWallet;
+  provider: SuiClient;
   signData: (data: Uint8Array) => Promise<string>;
   getAddress: () => string | undefined;
   signMessage: (

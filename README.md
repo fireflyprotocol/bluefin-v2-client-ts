@@ -18,6 +18,7 @@ Examples on how to use the library are available [here](https://github.com/firef
 
 ## How To?
 
+- Typescript version should be >= 5.
 - Build library using `yarn build`
 - To run tests, do `yarn test`
 - To run linter, use `yarn lint`

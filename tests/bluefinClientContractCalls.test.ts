@@ -14,6 +14,7 @@ import {
   toBigNumberStr,
   getSignerFromSeed,
   readFile,
+  SuiClient,
 } from "@firefly-exchange/library-sui";
 import { BluefinClient, Networks, OrderSignatureResponse } from "../index";
 import { setupTestAccounts } from "../utils/utils";
@@ -64,7 +65,8 @@ describe("BluefinClient", () => {
     );
     expect(deplymentJson).to.be.not.eq(undefined);
     const signer = getSignerFromSeed(deployer.phrase);
-    onChainCalls = new OnChainCalls(signer, deplymentJson);
+    const suiClient = new SuiClient({ url: network.url });
+    onChainCalls = new OnChainCalls(signer, deplymentJson,suiClient);
     await setupTestAccounts(onChainCalls, TEST_WALLETS, network.faucet);
   });
 

@@ -3,7 +3,7 @@ import {
   Order,
   OrderSigner, ORDER_SIDE,
   ORDER_STATUS,
-  ORDER_TYPE, PartialZkLoginSignature, Secp256k1Keypair, SIGNER_TYPES, SigPK, SuiClient, TIME_IN_FORCE, toBaseNumber, toBigNumber, toBigNumberStr, Transaction, usdcToBaseNumber, WalletContextState, ZkPayload
+  ORDER_TYPE, PartialZkLoginSignature, Secp256k1Keypair, SIGNER_TYPES, SigPK, SuiClient, TIME_IN_FORCE, toBaseNumber, toBigNumber, toBigNumberStr, Transaction, usdcToBaseNumber, BaseWallet, ZkPayload
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -84,7 +84,7 @@ export class BluefinClient {
 
   private signer: Keypair; // to save signer when connecting from UI
 
-  private uiWallet: WalletContextState | any; // to save signer when connecting from UI
+  private uiWallet: BaseWallet | any; // to save signer when connecting from UI
 
   private isZkLogin: boolean = false;
 
@@ -407,7 +407,7 @@ export class BluefinClient {
         zkPayload: this.getZkPayload(),
       });
     } else {
-      signature = this.orderSigner.signPayload(onboardingSignature);
+      signature = await this.orderSigner.signPayload(onboardingSignature);
     }
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
@@ -482,7 +482,7 @@ export class BluefinClient {
       });
     } else {
       if (this.orderSigner.signOrder)
-        signature = this.orderSigner.signOrder(orderToSign);
+        signature = await this.orderSigner.signOrder(orderToSign);
       else
         throw Error(
           "On of OrderSginer or uiWallet needs to be initilized before signing order "
@@ -638,7 +638,7 @@ export class BluefinClient {
           },
         });
       } else {
-        signature = this.orderSigner.signPayload({
+        signature = await this.orderSigner.signPayload({
           orderHashes: payloadValue,
         });
       }

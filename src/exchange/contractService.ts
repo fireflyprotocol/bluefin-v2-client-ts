@@ -29,7 +29,6 @@ export class ContractCalls {
     this.onChainCalls = new OnChainCalls(
       this.signer,
       deployment,
-      "",
       this.suiClient
     );
   }

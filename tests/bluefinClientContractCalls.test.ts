@@ -66,7 +66,7 @@ describe("BluefinClient", () => {
     expect(deplymentJson).to.be.not.eq(undefined);
     const signer = getSignerFromSeed(deployer.phrase);
     const suiClient = new SuiClient({ url: network.url });
-    onChainCalls = new OnChainCalls(signer, deplymentJson,suiClient);
+    onChainCalls = new OnChainCalls(signer, deplymentJson, suiClient);
     await setupTestAccounts(onChainCalls, TEST_WALLETS, network.faucet);
   });
 

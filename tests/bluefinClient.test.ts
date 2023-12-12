@@ -1002,7 +1002,7 @@ describe("BluefinClient", () => {
     });
     it("should not link referred user when given incorrect refer code", async () => {
       const response = await client.affiliateLinkReferredUser({
-        referralCode: "testReferCode"
+        referralCode: "testReferCode",
       });
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(9000);
@@ -1781,7 +1781,7 @@ describe("BluefinClient via ReadOnlyToken", () => {
     });
     it("should not allow link referred user on readOnlyToken", async () => {
       const response = await readOnlyClient.affiliateLinkReferredUser({
-        referralCode: "testReferCode"
+        referralCode: "testReferCode",
       });
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(2004);

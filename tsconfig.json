@@ -22,8 +22,5 @@
       "dom"
     ] /* Specify library files to be included in the compilation. */
   },
-  "exclude": [
-    "public",
-    "dist"
-  ]
+  "exclude": ["public", "dist"]
 }

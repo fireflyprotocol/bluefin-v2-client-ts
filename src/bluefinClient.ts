@@ -96,7 +96,7 @@ import {
   GetUserTradesResponse,
   GetUserTransactionHistoryResponse,
   GetUserTransferHistoryResponse,
-  GetUserWhiteListStatusForMarkeMakerResponse,
+  GetUserWhiteListStatusForMarketMakerResponse,
   LinkReferredUserRequest,
   LinkReferredUserResponse,
   MarketData,
@@ -135,7 +135,7 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: Keypair; // to save signer when connecting from UI
+  private signer: Signer; // to save signer when connecting from UI
 
   private uiWallet: BaseWallet | any; // to save signer when connecting from UI
 
@@ -295,7 +295,7 @@ export class BluefinClient {
    * initializes web3 and wallet with the given account private key
    * @param keypair key pair for the account to be used for placing orders
    */
-  initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
+  initializeWithKeyPair = async (keypair: Signer): Promise<void> => {
     this.signer = keypair;
     this.walletAddress = this.signer.toSuiAddress();
     this.initOrderSigner(keypair);
@@ -346,7 +346,7 @@ export class BluefinClient {
    * Gets the RawSigner of the client
    * @returns RawSigner
    * */
-  getSigner = (): Keypair => {
+  getSigner = (): Signer => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
@@ -538,7 +538,7 @@ export class BluefinClient {
         signature = await this.orderSigner.signOrder(orderToSign);
       else
         throw Error(
-          "On of OrderSginer or uiWallet needs to be initilized before signing order "
+          "On of OrderSigner or uiWallet needs to be initialized before signing order "
         );
     }
     return signature;
@@ -702,7 +702,7 @@ export class BluefinClient {
           : signature?.publicKey
       }`;
     } catch {
-      throw Error("Siging cancelled by user");
+      throw Error("Signing cancelled by user");
     }
   };
 
@@ -954,7 +954,7 @@ export class BluefinClient {
    * @description
    * Deposits USDC to Margin Bank contract
    * @param amount amount of USDC to deposit
-   * @param coinID coinID of USDC coint to use
+   * @param coinID coinID of USDC coin to use
    * @returns ResponseSchema
    */
   depositToMarginBank = async (
@@ -999,13 +999,13 @@ export class BluefinClient {
         this.signer
       );
 
-      let coinHavingbalanceAfterMerge,
+      let coinHavingBalanceAfterMerge,
         retries = 5;
 
-      while (!coinHavingbalanceAfterMerge && retries--) {
+      while (!coinHavingBalanceAfterMerge && retries--) {
         //sleep for 1 second to merge the coins
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        coinHavingbalanceAfterMerge = (
+        coinHavingBalanceAfterMerge = (
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
               amount,
@@ -1015,10 +1015,10 @@ export class BluefinClient {
         )?.coinObjectId;
       }
 
-      if (coinHavingbalanceAfterMerge) {
+      if (coinHavingBalanceAfterMerge) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingbalanceAfterMerge,
+          coinHavingBalanceAfterMerge,
           this.getPublicAddress
         );
       }
@@ -1119,7 +1119,7 @@ export class BluefinClient {
   /**
    * @description
    * Gets state of orderbook for provided market. At max top 50 bids/asks are retrievable
-   * @param params GetOrdebookRequest
+   * @param params GetOrderbookRequest
    * @returns GetOrderbookResponse
    */
   getOrderbook = async (params: GetOrderbookRequest) => {
@@ -1291,7 +1291,7 @@ export class BluefinClient {
 
   /**
    * @description
-   * Gets publically available market info about market(s)
+   * Gets publicly available market info about market(s)
    * @param symbol (optional) market symbol get information about, by default fetches info on all available markets
    * @returns ExchangeInfo or ExchangeInfo[] in case no market was provided as input
    */
@@ -1623,11 +1623,11 @@ export class BluefinClient {
 
   /**
    * Gets market maker whitelist status
-   * @returns GetUserWhiteListStatusForMarkeMaker
+   * @returns GetUserWhiteListStatusForMarketMaker
    */
   getUserWhiteListStatusForMarketMaker = async () => {
     const response =
-      await this.apiService.get<GetUserWhiteListStatusForMarkeMakerResponse>(
+      await this.apiService.get<GetUserWhiteListStatusForMarketMakerResponse>(
         SERVICE_URLS.GROWTH.MAKER_WHITELIST_STATUS,
         {},
         { isAuthenticationRequired: true }
@@ -1755,7 +1755,7 @@ export class BluefinClient {
    * @param keypair keypair of the account to be used for placing orders
    * @returns void
    */
-  private initOrderSigner = (keypair: Keypair) => {
+  private initOrderSigner = (keypair: Signer) => {
     this.orderSigner = new OrderSigner(keypair);
   };
 
@@ -1847,7 +1847,7 @@ export class BluefinClient {
    */
   private updateLeverage = async (params: adjustLeverageRequest) => {
     const response = await this.apiService.post<AdjustLeverageResponse>(
-      SERVICE_URLS.USER.ADJUST_LEVERGAE,
+      SERVICE_URLS.USER.ADJUST_LEVERAGE,
       {
         symbol: params.symbol,
         address: params.parentAddress

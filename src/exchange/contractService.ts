@@ -15,15 +15,16 @@ import {
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
+import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
-  signer: Keypair;
+  signer: Signer;
   suiClient: SuiClient;
   marginBankId: string | undefined;
 
-  constructor(signer: Keypair, deployment: any, provider: SuiClient) {
+  constructor(signer: Signer, deployment: any, provider: SuiClient) {
     this.signer = signer;
     this.suiClient = provider;
     this.onChainCalls = new OnChainCalls(

@@ -1,5 +1,15 @@
 import {
-  address, CANCEL_REASON, Interval, MARGIN_TYPE, MarketSymbol, ORDER_SIDE, ORDER_STATUS, ORDER_TYPE, SuiClient, TIME_IN_FORCE, BaseWallet
+  address,
+  CANCEL_REASON,
+  Interval,
+  MARGIN_TYPE,
+  MarketSymbol,
+  ORDER_SIDE,
+  ORDER_STATUS,
+  ORDER_TYPE,
+  SuiClient,
+  TIME_IN_FORCE,
+  BaseWallet,
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -742,7 +752,7 @@ interface MakerRewardDetailsData {
   uptimePercentage?: string; //come if symbol provided in request
 }
 
-export interface GetUserWhiteListStatusForMarkeMakerResponse {
+export interface GetUserWhiteListStatusForMarketMakerResponse {
   isWhitelist: boolean;
 }
 

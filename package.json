@@ -1,6 +1,6 @@
 {
   "name": "@bluefin-exchange/bluefin-v2-client",
-  "version": "5.2.6",
+  "version": "5.2.7",
   "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
   "main": "dist/index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "git-format-staged": "^3.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.3",
     "mocha": "^10.0.0",

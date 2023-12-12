@@ -22,7 +22,7 @@ export const SERVICE_URLS = {
     VERIFY_DEPOSIT: "/account/verifyDeposit",
     USER_TRANSACTION_HISTORY: "/userTransactionHistory",
     AUTHORIZE: "/authorize",
-    ADJUST_LEVERGAE: "/account/adjustLeverage",
+    ADJUST_LEVERAGE: "/account/adjustLeverage",
     FUND_GAS: "/account/fundGas",
     TRANSFER_HISTORY: "/userTransferHistory",
     FUNDING_HISTORY: "/userFundingHistory",

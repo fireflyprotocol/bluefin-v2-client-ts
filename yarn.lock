@@ -981,13 +981,13 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.3.4.tgz#0a332995b3c6c4a86a79e19644dad48bd08a772d"
-  integrity sha512-Unhue6yVVQWQQtNucbVGfa605+eGglpHnH309SUshtTovZ5MohXSD2TLmiUAqGVtaoMdOCqxah/V/7xn9ZBk2w==
+"@firefly-exchange/library-sui@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.3.5.tgz#4534cf0ebc5ad3fbf15c3097e6a684ba8e40d142"
+  integrity sha512-tYv3GxlDBGJs38grplmv9eHKu6X0gcCYAWt/RJHpn1ftBsbwCvWyqbedwVtcNut/CCfPBXpe2tVhYA3OySMM5Q==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
-    "@mysten/sui.js" "^0.47.0"
+    "@mysten/sui.js" "^0.48.0"
     "@mysten/wallet-standard" "^0.8.10"
     "@mysten/zklogin" "^0.3.5"
     "@noble/hashes" "^1.2.0"
@@ -1143,26 +1143,12 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@0.48.0":
+"@mysten/sui.js@0.48.0", "@mysten/sui.js@^0.48.0":
   version "0.48.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.48.0.tgz#a119a0b4019082f03168f2bd7bf30b967a97f4ca"
   integrity sha512-kGeV5F3IYThiliVbIou3YOOGAr8TdNyub4hGY2gevnphFQF8SukwQk8cyzuEEsAVSDUt0rsA9xxpncSgX+RjMA==
   dependencies:
     "@mysten/bcs" "0.9.0"
-    "@noble/curves" "^1.1.0"
-    "@noble/hashes" "^1.3.1"
-    "@scure/bip32" "^1.3.1"
-    "@scure/bip39" "^1.2.1"
-    "@suchipi/femver" "^1.0.0"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
-"@mysten/sui.js@^0.47.0":
-  version "0.47.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.47.0.tgz#12b5f333c76143b2fe6e8b7fa5b69e3d07c77d57"
-  integrity sha512-WBHNX5eMirpwd7v6im25r+I8a/GfYUX03jS9bIr7hei3NnUMcfOENOn9+Tv3+MURQ1MzdS0PzeZkuYrvQlVBCw==
-  dependencies:
-    "@mysten/bcs" "0.8.1"
     "@noble/curves" "^1.1.0"
     "@noble/hashes" "^1.3.1"
     "@scure/bip32" "^1.3.1"
@@ -3827,6 +3813,11 @@ get-tsconfig@^4.7.2:
   integrity sha512-wuMsz4leaj5hbGgg4IvDU0bqJagpftG5l5cXIAvo8uZrqn0NJqwtfupTN00VnkQJPcIRrxYrm1Ue24btpCha2A==
   dependencies:
     resolve-pkg-maps "^1.0.0"
+
+git-format-staged@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/git-format-staged/-/git-format-staged-3.0.0.tgz#66fe89fcb537f78e8129412dc0b2511b34d49e32"
+  integrity sha512-cdDJxV06qY8ucBsW/uIFR4PYN/kDHl43nG8yg+VPPaDeLAf8hEPhEIJTeJ+yRClxcDSpoTmDPiFZUoxFx1wPCg==
 
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"

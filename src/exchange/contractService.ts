@@ -32,13 +32,6 @@ export class ContractCalls {
     zkPayload?: ZkPayload,
     walletAddress?: string
   ) {
-    console.log(
-      "---------------BLUEFIN_CLIENT: ContractCalls Constructor----------------"
-    );
-    console.log(signer);
-    console.log(is_zkLogin, "is_zkLogin");
-    console.log(zkPayload, "zkPayload");
-    console.log(walletAddress, "walletAddress");
     this.signer = signer;
     this.walletAddress = walletAddress;
     this.onChainCalls = new OnChainCalls(

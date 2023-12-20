@@ -215,7 +215,6 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    console.log("init");
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -389,7 +388,6 @@ export class BluefinClient {
       // authorize signature created by dAPI
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
-      console.log(authTokenResponse, "authTokenResponse");
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -1796,10 +1794,6 @@ export class BluefinClient {
    * @returns GetAuthHashResponse which contains auth hash to be signed
    */
   private authorizeSignedHash = async (signedHash: string) => {
-    console.log(
-      this.getPublicAddress(),
-      "public address inside authorizeSignedHash"
-    );
     const response = await this.apiService.post<AuthorizeHashResponse>(
       SERVICE_URLS.USER.AUTHORIZE,
       {

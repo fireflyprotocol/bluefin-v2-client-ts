@@ -834,11 +834,7 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address: this.uiWallet
-          ? await (
-              this.signer as any as ExtendedWalletContextState
-            ).getAddress()
-          : this.signer.toSuiAddress(),
+        address: this.walletAddress,
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer
@@ -951,6 +947,7 @@ export class BluefinClient {
       await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
         {
           amount,
+          address: this.walletAddress
         },
         this.signer
       )
@@ -983,6 +980,7 @@ export class BluefinClient {
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
               amount,
+              address: this.walletAddress
             },
             this.signer
           )

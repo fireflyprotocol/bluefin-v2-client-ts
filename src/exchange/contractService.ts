@@ -22,6 +22,7 @@ export class ContractCalls {
   signer: Keypair;
   suiClient: SuiClient;
   marginBankId: string | undefined;
+  walletAddress: string;
 
   constructor(
     signer: Keypair,
@@ -39,6 +40,7 @@ export class ContractCalls {
     console.log(zkPayload, "zkPayload");
     console.log(walletAddress, "walletAddress");
     this.signer = signer;
+    this.walletAddress = walletAddress;
     this.onChainCalls = new OnChainCalls(
       this.signer,
       deployment,
@@ -62,6 +64,7 @@ export class ContractCalls {
       const tx = await this.onChainCalls.withdrawFromBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
+          accountAddress: this.walletAddress,
         },
         this.signer
       );
@@ -79,7 +82,10 @@ export class ContractCalls {
    * */
   withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.withdrawAllMarginFromBank(this.signer);
+      return await this.onChainCalls.withdrawAllMarginFromBank(
+        this.signer,
+        this.walletAddress
+      );
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
 
@@ -100,7 +106,7 @@ export class ContractCalls {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: await this.signer.getPublicKey().toSuiAddress(),
+          accountAddress: this.walletAddress,
         },
         this.signer
       );
@@ -187,6 +193,7 @@ export class ContractCalls {
             amount,
             perpID: perpId,
             market: symbol,
+            account: this.walletAddress,
           },
           this.signer
         );
@@ -196,6 +203,7 @@ export class ContractCalls {
           amount,
           perpID: perpId,
           market: symbol,
+          account: this.walletAddress,
         },
         this.signer
       );

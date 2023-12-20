@@ -556,7 +556,7 @@ export class BluefinClient {
   createSignedOrder = async (
     order: OrderSignatureRequest
   ): Promise<OrderSignatureResponse> => {
-    if (!this.orderSigner && !this.uiWallet) {
+    if (!this.orderSigner && !this.uiWallet && !this.isZkLogin) {
       throw Error("Order Signer not initialized");
     }
     const orderToSign: Order = this.createOrderToSign(order);

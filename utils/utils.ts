@@ -1,14 +1,8 @@
-
 import fs from "fs";
 import {
   OnChainCalls,
   Faucet,
   toBigNumberStr,
-  Transaction,
-  Order,
-  ORDER_SIDE,
-  TIME_IN_FORCE,
-  toBigNumber,
   SignatureScheme,
   Keypair,
   Ed25519Keypair,
@@ -25,7 +19,6 @@ export const generateRandomNumber = (multiplier: number) => {
   return Math.floor((Date.now() + Math.random() + Math.random()) * multiplier);
 };
 
-
 export function getKeyPairFromSeed(
   seed: string,
   scheme: SignatureScheme = "Secp256k1"
@@ -40,9 +33,7 @@ export function getKeyPairFromSeed(
   }
 }
 
-export function getSignerFromSeed(
-  seed: string,
-): Keypair {
+export function getSignerFromSeed(seed: string): Keypair {
   return getKeyPairFromSeed(seed);
 }
 

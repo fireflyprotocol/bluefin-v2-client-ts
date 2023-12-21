@@ -1,64 +1,113 @@
 import {
-  toBigNumberStr,
-  toBigNumber,
-  toBaseNumber,
-  usdcToBaseNumber,
+  ADJUST_MARGIN,
+  bigNumber,
   DAPIKlineResponse,
+  DecodeJWT,
+  Ed25519Keypair,
+  getKeyPairFromPvtKey,
+  Keypair,
+  MARGIN_TYPE,
   MarketSymbol,
   Order,
   OrderSigner,
-  Transaction,
-  bigNumber,
-  ADJUST_MARGIN,
-  MARGIN_TYPE,
   ORDER_SIDE,
   ORDER_STATUS,
   ORDER_TYPE,
-  TIME_IN_FORCE,
-  SigPK,
-  getKeyPairFromPvtKey,
-  parseSigPK,
-  Secp256k1Keypair,
-  Ed25519Keypair,
-  WalletContextState,
-  SuiClient,
-  Keypair,
-  SIGNER_TYPES,
   PartialZkLoginSignature,
-  DecodeJWT,
+  Secp256k1Keypair,
+  SIGNER_TYPES,
+  SigPK,
+  SuiClient,
+  TIME_IN_FORCE,
+  toBaseNumber,
+  toBigNumber,
+  toBigNumberStr,
+  Transaction,
+  usdcToBaseNumber,
+  BaseWallet,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
 
+import { toB64 } from "@mysten/bcs";
 import {
+  parseSerializedSignature,
+  SerializedSignature,
+  Signer,
+} from "@mysten/sui.js/cryptography";
+import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
+import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
+import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
+import { sha256 } from "@noble/hashes/sha256";
+import { generateRandomNumber } from "../utils/utils";
+import { Networks, POST_ORDER_BASE } from "./constants";
+import { APIService } from "./exchange/apiService";
+import { SERVICE_URLS } from "./exchange/apiUrls";
+import { ResponseSchema } from "./exchange/contractErrorHandling.service";
+import { ContractCalls } from "./exchange/contractService";
+import { Sockets } from "./exchange/sockets";
+import { WebSockets } from "./exchange/WebSocket";
+import {
+  adjustLeverageRequest,
   AdjustLeverageResponse,
   AuthorizeHashResponse,
   CancelOrderResponse,
+  ConfigResponse,
   ExchangeInfo,
+  ExtendedNetwork,
+  ExtendedWalletContextState,
+  GenerateReferralCodeRequest,
+  GenerateReferralCodeResponse,
   GetAccountDataResponse,
+  GetAffiliatePayoutsResponse,
+  GetAffiliateRefereeCountResponse,
+  GetAffiliateRefereeDetailsRequest,
+  GetAffiliateRefereeDetailsResponse,
+  GetCampaignDetailsResponse,
+  GetCampaignRewardsResponse,
   GetCandleStickRequest,
   GetCountDownsResponse,
   GetFundingHistoryRequest,
   GetFundingRateResponse,
+  GetMakerRewardDetailsRequest,
+  GetMakerRewardDetailsResponse,
+  GetMakerRewardsSummaryResponse,
   GetMarketRecentTradesRequest,
   GetMarketRecentTradesResponse,
+  GetOrderbookRequest,
   GetOrderBookResponse,
   GetOrderRequest,
   GetOrderResponse,
-  GetOrderbookRequest,
   GetPositionRequest,
   GetPositionResponse,
+  GetReferrerInfoResponse,
+  GetTotalHistoricalTradingRewardsResponse,
+  GetTradeAndEarnRewardsDetailRequest,
+  GetTradeAndEarnRewardsDetailResponse,
+  GetTradeAndEarnRewardsOverviewResponse,
   GetTransactionHistoryRequest,
   GetTransferHistoryRequest,
   GetUserFundingHistoryResponse,
+  GetUserRewardsHistoryRequest,
+  GetUserRewardsHistoryResponse,
+  GetUserRewardsSummaryResponse,
+  GetUserTradesHistoryRequest,
+  GetUserTradesHistoryResponse,
   GetUserTradesRequest,
   GetUserTradesResponse,
   GetUserTransactionHistoryResponse,
   GetUserTransferHistoryResponse,
+  GetUserWhiteListStatusForMarketMakerResponse,
+  LinkReferredUserRequest,
+  LinkReferredUserResponse,
   MarketData,
   MarketMeta,
   MasterInfo,
-  OrderCancelSignatureRequest,
+  OpenReferralDetails,
+  OpenReferralOverview,
+  OpenReferralPayoutList,
+  OpenReferralRefereeDetails,
   OrderCancellationRequest,
+  OrderCancelSignatureRequest,
   OrderSignatureRequest,
   OrderSignatureResponse,
   PlaceOrderRequest,
@@ -68,55 +117,8 @@ import {
   PostTimerResponse,
   StatusResponse,
   TickerData,
-  adjustLeverageRequest,
   verifyDepositResponse,
-  ExtendedNetwork,
-  ExtendedWalletContextState,
-  ConfigResponse,
-  GetTotalHistoricalTradingRewardsResponse,
-  GetTradeAndEarnRewardsDetailRequest,
-  GetTradeAndEarnRewardsDetailResponse,
-  GetUserRewardsSummaryResponse,
-  GetUserRewardsHistoryResponse,
-  GetUserRewardsHistoryRequest,
-  GetAffiliateRefereeDetailsRequest,
-  GetAffiliateRefereeDetailsResponse,
-  GetAffiliateRefereeCountResponse,
-  GetTradeAndEarnRewardsOverviewResponse,
-  GetMakerRewardsSummaryResponse,
-  GetMakerRewardDetailsRequest,
-  GetMakerRewardDetailsResponse,
-  GetUserWhiteListStatusForMarkeMakerResponse,
-  GetAffiliatePayoutsResponse,
-  GetCampaignRewardsResponse,
-  GetCampaignDetailsResponse,
-  GetReferrerInfoResponse,
-  LinkReferredUserRequest,
-  LinkReferredUserResponse,
-  GenerateReferralCodeResponse,
-  GenerateReferralCodeRequest,
-  GetUserTradesHistoryResponse,
-  GetUserTradesHistoryRequest,
-  OpenReferralDetails,
-  OpenReferralOverview,
-  OpenReferralPayoutList,
-  OpenReferralRefereeDetails,
 } from "./interfaces/routes";
-import { APIService } from "./exchange/apiService";
-import { SERVICE_URLS } from "./exchange/apiUrls";
-import { Sockets } from "./exchange/sockets";
-import { WebSockets } from "./exchange/WebSocket";
-import { generateRandomNumber, readFile } from "../utils/utils";
-import { ContractCalls } from "./exchange/contractService";
-import { ResponseSchema } from "./exchange/contractErrorHandling.service";
-import { Networks, POST_ORDER_BASE } from "./constants";
-import { sha256 } from "@noble/hashes/sha256";
-import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
-import { parseSerializedSignature } from "@mysten/sui.js/cryptography";
-import { toB64 } from "@mysten/bcs";
-import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
-import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
-import { SerializedSignature } from "@mysten/sui.js/dist/cjs/cryptography";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -133,9 +135,9 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: Keypair; // to save signer when connecting from UI
+  private signer: Signer; // to save signer when connecting from UI
 
-  private uiWallet: WalletContextState | any; // to save signer when connecting from UI
+  private uiWallet: BaseWallet | any; // to save signer when connecting from UI
 
   private isZkLogin: boolean = false;
 
@@ -168,7 +170,7 @@ export class BluefinClient {
   constructor(
     _isTermAccepted: boolean,
     _network: ExtendedNetwork,
-    _account?: string | Keypair,
+    _account?: string | Signer,
     _scheme?: SignatureScheme,
     _isUI?: boolean,
     _uiSignerObject?: any
@@ -229,7 +231,7 @@ export class BluefinClient {
         ? this.walletAddress
         : this.signer.toSuiAddress
         ? this.signer.toSuiAddress()
-        : await (this.signer as any as ExtendedWalletContextState).getAddress();
+        : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -247,7 +249,7 @@ export class BluefinClient {
     try {
       this.uiWallet = uiSignerObject.wallet;
       this.signer = uiSignerObject as any;
-      this.walletAddress = await (
+      this.walletAddress = (
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
@@ -293,9 +295,9 @@ export class BluefinClient {
    * initializes web3 and wallet with the given account private key
    * @param keypair key pair for the account to be used for placing orders
    */
-  initializeWithKeyPair = async (keypair: Keypair): Promise<void> => {
+  initializeWithKeyPair = async (keypair: Signer): Promise<void> => {
     this.signer = keypair;
-    this.walletAddress = await this.signer.toSuiAddress();
+    this.walletAddress = this.signer.toSuiAddress();
     this.initOrderSigner(keypair);
   };
 
@@ -309,11 +311,11 @@ export class BluefinClient {
   initializeWithSeed = (seed: string, scheme: any): void => {
     switch (scheme) {
       case "ED25519":
-        Ed25519Keypair.deriveKeypair(seed);
+        this.signer = Ed25519Keypair.deriveKeypair(seed);
         this.initOrderSigner(Ed25519Keypair.deriveKeypair(seed));
         break;
       case "Secp256k1":
-        Secp256k1Keypair.deriveKeypair(seed);
+        this.signer = Secp256k1Keypair.deriveKeypair(seed);
         this.initOrderSigner(Secp256k1Keypair.deriveKeypair(seed));
         break;
       default:
@@ -347,7 +349,7 @@ export class BluefinClient {
    * Gets the RawSigner of the client
    * @returns RawSigner
    * */
-  getSigner = (): Keypair => {
+  getSigner = (): Signer => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
@@ -461,7 +463,7 @@ export class BluefinClient {
         zkPayload: this.getZkPayload(),
       });
     } else {
-      signature = this.orderSigner.signPayload(onboardingSignature);
+      signature = await this.orderSigner.signPayload(onboardingSignature);
     }
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
@@ -536,10 +538,10 @@ export class BluefinClient {
       });
     } else {
       if (this.orderSigner.signOrder)
-        signature = this.orderSigner.signOrder(orderToSign);
+        signature = await this.orderSigner.signOrder(orderToSign);
       else
         throw Error(
-          "On of OrderSginer or uiWallet needs to be initilized before signing order "
+          "On of OrderSigner or uiWallet needs to be initialized before signing order "
         );
     }
     return signature;
@@ -675,6 +677,7 @@ export class BluefinClient {
       let payloadValue: string[] = [];
       payloadValue.push(hashOfHash);
       if (this.uiWallet) {
+        //connected via UI
         signature = await OrderSigner.signPayloadUsingWallet(
           { orderHashes: payloadValue },
           this.uiWallet
@@ -691,7 +694,7 @@ export class BluefinClient {
           },
         });
       } else {
-        signature = this.orderSigner.signPayload({
+        signature = await this.orderSigner.signPayload({
           orderHashes: payloadValue,
         });
       }
@@ -702,7 +705,7 @@ export class BluefinClient {
           : signature?.publicKey
       }`;
     } catch {
-      throw Error("Siging cancelled by user");
+      throw Error("Signing cancelled by user");
     }
   };
 
@@ -791,9 +794,7 @@ export class BluefinClient {
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
           address: this.uiWallet
-            ? await (
-                this.signer as any as ExtendedWalletContextState
-              ).getAddress()
+            ? (this.signer as any as ExtendedWalletContextState).getAddress()
             : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
@@ -883,9 +884,36 @@ export class BluefinClient {
     const position = userPosition.data as any as GetPositionResponse;
 
     if (Object.keys(position).length > 0) {
-      return this.contractCalls.adjustLeverageContractCall(
+      //When not connected via UI
+      if (!this.uiWallet) {
+        const signedTx =
+          await this.contractCalls.adjustLeverageContractCallRawTransaction(
+            params.leverage,
+            params.symbol,
+            this.getPublicAddress,
+            params.parentAddress
+          );
+
+        const {
+          ok,
+          data,
+          response: { errorCode, message },
+        } = await this.updateLeverage({
+          symbol: params.symbol,
+          leverage: params.leverage,
+          parentAddress: params.parentAddress,
+          signedTransaction: signedTx,
+        });
+        const response: ResponseSchema = { ok, data, code: errorCode, message };
+        //If API is successful return response else make direct contract call to update the leverage
+        if (response.ok) {
+          return response;
+        }
+      }
+      return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
+        this.getPublicAddress,
         params.parentAddress
       );
     }
@@ -927,7 +955,7 @@ export class BluefinClient {
    * @description
    * Deposits USDC to Margin Bank contract
    * @param amount amount of USDC to deposit
-   * @param coinID coinID of USDC coint to use
+   * @param coinID coinID of USDC coin to use
    * @returns ResponseSchema
    */
   depositToMarginBank = async (
@@ -938,7 +966,11 @@ export class BluefinClient {
 
     //if CoinID provided
     if (coinID)
-      return this.contractCalls.depositToMarginBankContractCall(amount, coinID);
+      return this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinID,
+        this.getPublicAddress
+      );
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -953,7 +985,8 @@ export class BluefinClient {
     if (coinHavingBalance) {
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
-        coinHavingBalance
+        coinHavingBalance,
+        this.getPublicAddress
       );
     }
 
@@ -968,13 +1001,13 @@ export class BluefinClient {
         this.signer
       );
 
-      let coinHavingbalanceAfterMerge,
+      let coinHavingBalanceAfterMerge,
         retries = 5;
 
-      while (!coinHavingbalanceAfterMerge && retries--) {
+      while (!coinHavingBalanceAfterMerge && retries--) {
         //sleep for 1 second to merge the coins
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        coinHavingbalanceAfterMerge = (
+        coinHavingBalanceAfterMerge = (
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
               amount,
@@ -985,10 +1018,11 @@ export class BluefinClient {
         )?.coinObjectId;
       }
 
-      if (coinHavingbalanceAfterMerge) {
+      if (coinHavingBalanceAfterMerge) {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
-          coinHavingbalanceAfterMerge
+          coinHavingBalanceAfterMerge,
+          this.getPublicAddress
         );
       }
     }
@@ -1088,7 +1122,7 @@ export class BluefinClient {
   /**
    * @description
    * Gets state of orderbook for provided market. At max top 50 bids/asks are retrievable
-   * @param params GetOrdebookRequest
+   * @param params GetOrderbookRequest
    * @returns GetOrderbookResponse
    */
   getOrderbook = async (params: GetOrderbookRequest) => {
@@ -1260,7 +1294,7 @@ export class BluefinClient {
 
   /**
    * @description
-   * Gets publically available market info about market(s)
+   * Gets publicly available market info about market(s)
    * @param symbol (optional) market symbol get information about, by default fetches info on all available markets
    * @returns ExchangeInfo or ExchangeInfo[] in case no market was provided as input
    */
@@ -1385,9 +1419,9 @@ export class BluefinClient {
    * @param params LinkReferredUserRequest
    * @returns LinkReferredUserResponse
    */
-  linkReferredUser = async (params: LinkReferredUserRequest) => {
+  affiliateLinkReferredUser = async (params: LinkReferredUserRequest) => {
     const response = await this.apiService.post<LinkReferredUserResponse>(
-      SERVICE_URLS.GROWTH.LINK_REFERRED_USER,
+      SERVICE_URLS.GROWTH.AFFILIATE_LINK_REFERRED_USER,
       params,
       { isAuthenticationRequired: true }
     );
@@ -1396,13 +1430,14 @@ export class BluefinClient {
 
   /**
    * Gets referrer Info
-   * @param campaignId
+   * @param parentAddress
    * @returns GetReferrerInfoResponse
    */
-  getReferrerInfo = async (campaignId: number) => {
+
+  getReferrerInfo = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetReferrerInfoResponse>(
       SERVICE_URLS.GROWTH.REFERRER_INFO,
-      { campaignId },
+      { parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1422,12 +1457,13 @@ export class BluefinClient {
   /**
    * Gets campaign reward details
    * @param campaignId
+   * @param parentAddress
    * @returns GetCampaignRewardsResponse
    */
-  getCampaignRewards = async (campaignId: number) => {
+  getCampaignRewards = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetCampaignRewardsResponse>(
       SERVICE_URLS.GROWTH.CAMPAIGN_REWARDS,
-      { campaignId },
+      { campaignId, parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1436,12 +1472,13 @@ export class BluefinClient {
   /**
    * Gets affiliate payout details
    * @param campaignId
+   * @param parentAddress
    * @returns Array of GetAffiliatePayoutsResponse
    */
-  getAffiliatePayouts = async (campaignId: number) => {
+  getAffiliatePayouts = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
       SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
-      { campaignId },
+      { campaignId, parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1465,29 +1502,19 @@ export class BluefinClient {
   };
 
   /**
-   * Gets affiliate referree count
+   * Gets referree count
    * @param campaignId
+   * @param parentAddress
    * @returns GetAffiliateRefereeCountResponse
    */
-  getAffiliateRefereeCount = async (campaignId: number) => {
+  getAffiliateRefereeCount = async (
+    campaignId: number,
+    parentAddress?: string
+  ) => {
     const response =
       await this.apiService.get<GetAffiliateRefereeCountResponse>(
-        SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
-        { campaignId },
-        { isAuthenticationRequired: true }
-      );
-    return response;
-  };
-  /**
-   * Gets affiliate referree count
-   * @param campaignId
-   * @returns GetAffiliateRefereeCountResponse
-   */
-  getRefereeCount = async (campaignId: number) => {
-    const response =
-      await this.apiService.get<GetAffiliateRefereeCountResponse>(
-        SERVICE_URLS.GROWTH.GROWTH_REFEREES_COUNT,
-        { campaignId },
+        SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
+        { campaignId, parentAddress },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1511,10 +1538,10 @@ export class BluefinClient {
    * Gets user rewards summary
    * @returns GetUserRewardsSummaryResponse
    */
-  getUserRewardsSummary = async () => {
+  getUserRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetUserRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.USER_REWARDS_SUMMARY,
-      {},
+      { parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1523,13 +1550,17 @@ export class BluefinClient {
   /**
    * Gets rewards overview
    * @param campaignId
+   * @param parentAddress
    * @returns GetTradeAndEarnRewardsOverviewResponse
    */
-  getTradeAndEarnRewardsOverview = async (campaignId: number) => {
+  getTradeAndEarnRewardsOverview = async (
+    campaignId: number,
+    parentAddress?: string
+  ) => {
     const response =
       await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
         SERVICE_URLS.GROWTH.REWARDS_OVERVIEW,
-        { campaignId },
+        { campaignId, parentAddress },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1556,11 +1587,11 @@ export class BluefinClient {
    * Gets total historical trading reward details
    * @returns GetTotalHistoricalTradingRewardsResponse
    */
-  getTotalHistoricalTradingRewards = async () => {
+  getTotalHistoricalTradingRewards = async (parentAddress?: string) => {
     const response =
       await this.apiService.get<GetTotalHistoricalTradingRewardsResponse>(
         SERVICE_URLS.GROWTH.TOTAL_HISTORICAL_TRADING_REWARDS,
-        {},
+        { parentAddress },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1570,10 +1601,10 @@ export class BluefinClient {
    * Gets maker rewards summary
    * @returns GetMakerRewardsSummaryResponse
    */
-  getMakerRewardsSummary = async () => {
+  getMakerRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetMakerRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.MAKER_REWARDS_SUMMARY,
-      {},
+      { parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1595,11 +1626,11 @@ export class BluefinClient {
 
   /**
    * Gets market maker whitelist status
-   * @returns GetUserWhiteListStatusForMarkeMaker
+   * @returns GetUserWhiteListStatusForMarketMaker
    */
   getUserWhiteListStatusForMarketMaker = async () => {
     const response =
-      await this.apiService.get<GetUserWhiteListStatusForMarkeMakerResponse>(
+      await this.apiService.get<GetUserWhiteListStatusForMarketMakerResponse>(
         SERVICE_URLS.GROWTH.MAKER_WHITELIST_STATUS,
         {},
         { isAuthenticationRequired: true }
@@ -1615,11 +1646,13 @@ export class BluefinClient {
   getOpenReferralRefereeDetails = async (payload: {
     cursor: string;
     pageSize: number;
+    parentAddress?: string;
   }) => {
     const response = await this.apiService.get<{
       data: OpenReferralRefereeDetails;
       nextCursor: string;
       isMoreDataAvailable: boolean;
+      parentAddress?: string;
     }>(SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREE_DETAILS, payload, {
       isAuthenticationRequired: true,
     });
@@ -1631,7 +1664,10 @@ export class BluefinClient {
    * @param payload
    * @returns OpenReferralDetails
    */
-  getOpenReferralDetails = async (payload: { campaignId: number }) => {
+  getOpenReferralDetails = async (payload: {
+    campaignId: number;
+    parentAddress?: string;
+  }) => {
     const response = await this.apiService.get<OpenReferralDetails>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREES_COUNT,
       payload,
@@ -1647,6 +1683,7 @@ export class BluefinClient {
   getOpenReferralPayouts = async (payload: {
     cursor: string;
     pageSize: number;
+    parentAddress?: string;
   }) => {
     const response = await this.apiService.get<{
       data: OpenReferralPayoutList;
@@ -1661,6 +1698,7 @@ export class BluefinClient {
   /**
    * generate open referral code
    * @param campaignId
+   * @param parentAddress
    * @returns OpenReferralOverview
    */
   generateOpenReferralReferralCode = async (payload: {
@@ -1680,10 +1718,10 @@ export class BluefinClient {
    * get open referral overview
    * @returns OpenReferralOverview
    */
-  getOpenReferralOverview = async () => {
+  getOpenReferralOverview = async (parentAddress?: string) => {
     const response = await this.apiService.get<OpenReferralOverview>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_OVERVIEW,
-      undefined,
+      { parentAddress },
       {
         isAuthenticationRequired: true,
       }
@@ -1720,7 +1758,7 @@ export class BluefinClient {
    * @param keypair keypair of the account to be used for placing orders
    * @returns void
    */
-  private initOrderSigner = (keypair: Keypair) => {
+  private initOrderSigner = (keypair: Signer) => {
     this.orderSigner = new OrderSigner(keypair);
   };
 
@@ -1812,7 +1850,7 @@ export class BluefinClient {
    */
   private updateLeverage = async (params: adjustLeverageRequest) => {
     const response = await this.apiService.post<AdjustLeverageResponse>(
-      SERVICE_URLS.USER.ADJUST_LEVERGAE,
+      SERVICE_URLS.USER.ADJUST_LEVERAGE,
       {
         symbol: params.symbol,
         address: params.parentAddress
@@ -1820,6 +1858,7 @@ export class BluefinClient {
           : this.getPublicAddress(),
         leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
+        signedTransaction: params.signedTransaction,
       },
       { isAuthenticationRequired: true }
     );

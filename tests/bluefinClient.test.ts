@@ -1001,15 +1001,14 @@ describe("BluefinClient", () => {
       expect((response?.data as any).error?.code).to.be.equal(3078);
     });
     it("should not link referred user when given incorrect refer code", async () => {
-      const response = await client.linkReferredUser({
+      const response = await client.affiliateLinkReferredUser({
         referralCode: "testReferCode",
-        campaignId: 2,
       });
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(9000);
     });
     it("should get referrer info", async () => {
-      const response = await client.getReferrerInfo(2);
+      const response = await client.getReferrerInfo();
       expect(response.ok).to.be.equal(true);
     });
     it("should get campaign details", async () => {
@@ -1057,7 +1056,7 @@ describe("BluefinClient", () => {
     it("should not get affiliate count when user is not an affiliate", async () => {
       const response = await client.getAffiliateRefereeCount(2);
       expect(response.ok).to.be.equal(false);
-      expect((response?.data as any).error?.code).to.be.equal(3078);
+      expect((response?.data as any).error?.code).to.be.equal(9000);
     });
   });
 
@@ -1781,15 +1780,14 @@ describe("BluefinClient via ReadOnlyToken", () => {
       expect((response?.data as any).error?.code).to.be.equal(2004);
     });
     it("should not allow link referred user on readOnlyToken", async () => {
-      const response = await readOnlyClient.linkReferredUser({
+      const response = await readOnlyClient.affiliateLinkReferredUser({
         referralCode: "testReferCode",
-        campaignId: 2,
       });
       expect(response.ok).to.be.equal(false);
       expect((response?.data as any).error?.code).to.be.equal(2004);
     });
     it("should get referrer info", async () => {
-      const response = await readOnlyClient.getReferrerInfo(2);
+      const response = await readOnlyClient.getReferrerInfo();
       expect(response.ok).to.be.equal(true);
     });
     it("should get campaign details", async () => {
@@ -1837,7 +1835,7 @@ describe("BluefinClient via ReadOnlyToken", () => {
     it("should not get affiliate count when user is not an affiliate", async () => {
       const response = await readOnlyClient.getAffiliateRefereeCount(2);
       expect(response.ok).to.be.equal(false);
-      expect((response?.data as any).error?.code).to.be.equal(3078);
+      expect((response?.data as any).error?.code).to.be.equal(9000);
     });
   });
 

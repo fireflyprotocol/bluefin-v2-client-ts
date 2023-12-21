@@ -1,17 +1,15 @@
-
-
 import {
-  ORDER_STATUS,
-  ORDER_SIDE,
-  TIME_IN_FORCE,
-  MARGIN_TYPE,
-  ORDER_TYPE,
-  CANCEL_REASON,
-  MarketSymbol,
   address,
+  CANCEL_REASON,
   Interval,
-  WalletContextState,
-  SuiProvider,
+  MARGIN_TYPE,
+  MarketSymbol,
+  ORDER_SIDE,
+  ORDER_STATUS,
+  ORDER_TYPE,
+  SuiClient,
+  TIME_IN_FORCE,
+  BaseWallet,
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -477,8 +475,8 @@ export interface adjustLeverageRequest {
   symbol: MarketSymbol;
   leverage: number;
   parentAddress?: string;
+  signedTransaction?: string;
 }
-
 export interface AdjustLeverageResponse {
   symbol: string;
   address: string;
@@ -573,9 +571,9 @@ export interface ObjectDetails {
 }
 
 export interface ExtendedWalletContextState
-  extends Omit<WalletContextState, "signMessage"> {
-  wallet: WalletContextState;
-  provider: SuiProvider;
+  extends Omit<BaseWallet, "signMessage"> {
+  wallet: BaseWallet;
+  provider: SuiClient;
   signData: (data: Uint8Array) => Promise<string>;
   getAddress: () => string | undefined;
   signMessage: (
@@ -630,6 +628,7 @@ export interface GetAffiliateRefereeDetailsRequest {
   campaignId: number;
   pageNumber?: number;
   pageSize?: number;
+  parentAddress?: string;
 }
 export interface GetAffiliateRefereeDetailsResponse {
   data: AffiliateRefereeDetailsData[];
@@ -651,6 +650,7 @@ export interface GetAffiliateRefereeCountResponse {
 export interface GetUserRewardsHistoryRequest {
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 export interface GetUserRewardsHistoryResponse {
   data: UserRewardsHistoryData[];
@@ -695,6 +695,7 @@ export interface GetTradeAndEarnRewardsDetailRequest {
   campaignId: number;
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 
 export interface GetTradeAndEarnRewardsDetailResponse {
@@ -729,6 +730,7 @@ export interface GetMakerRewardDetailsRequest {
   symbol?: string;
   pageSize?: number;
   cursor?: number;
+  parentAddress?: string;
 }
 
 export interface GetMakerRewardDetailsResponse {
@@ -750,7 +752,7 @@ interface MakerRewardDetailsData {
   uptimePercentage?: string; //come if symbol provided in request
 }
 
-export interface GetUserWhiteListStatusForMarkeMakerResponse {
+export interface GetUserWhiteListStatusForMarketMakerResponse {
   isWhitelist: boolean;
 }
 
@@ -766,7 +768,6 @@ export interface GenerateReferralCodeResponse {
 
 export interface LinkReferredUserRequest {
   referralCode: string;
-  campaignId: number;
 }
 export interface LinkReferredUserResponse {
   referralCode: string;

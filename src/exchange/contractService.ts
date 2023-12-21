@@ -10,22 +10,24 @@ import {
   ZkPayload,
 } from "@firefly-exchange/library-sui";
 import interpolate from "interpolate";
+import { ExtendedWalletContextState } from "../interfaces/routes";
 import {
   ResponseSchema,
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
+import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
-  signer: Keypair;
+  signer: Signer;
   suiClient: SuiClient;
   marginBankId: string | undefined;
   walletAddress: string;
 
   constructor(
-    signer: Keypair,
+    signer: Signer,
     deployment: any,
     provider: SuiClient,
     is_zkLogin: boolean,
@@ -91,7 +93,8 @@ export class ContractCalls {
    * */
   depositToMarginBankContractCall = async (
     amount: number,
-    coinID: string
+    coinID: string,
+    getPublicAddress: () => address
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.onChainCalls.depositToBank(
@@ -121,6 +124,7 @@ export class ContractCalls {
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
+    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -129,13 +133,38 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account:
-            parentAddress || (await this.signer.getPublicKey().toSuiAddress()),
+          account: parentAddress || this.walletAddress,
           market: symbol,
         },
         this.signer
       );
     }, interpolate(SuccessMessages.adjustLeverage, { leverage }));
+  };
+
+  adjustLeverageContractCallRawTransaction = async (
+    leverage: number,
+    symbol: string,
+    getPublicAddress: () => address,
+    parentAddress?: string
+  ): Promise<string> => {
+    const perpId = this.onChainCalls.getPerpetualID(symbol);
+    const signedTx = await this.onChainCalls.signAdjustLeverage(
+      {
+        leverage,
+        perpID: perpId,
+        account: parentAddress || getPublicAddress(),
+        market: symbol,
+      },
+      this.signer
+    );
+
+    //serialize
+    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
+    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+    // Encode to hex for transmission
+    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
+
+    return encodedData;
   };
 
   /**

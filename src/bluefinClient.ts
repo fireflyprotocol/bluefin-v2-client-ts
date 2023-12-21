@@ -160,6 +160,8 @@ export class BluefinClient {
 
   private salt: string;
 
+  private is_wallet_extension: boolean = false;
+
   /**
    * initializes the class instance
    * @param _isTermAccepted boolean indicating if exchange terms and conditions are accepted
@@ -253,6 +255,7 @@ export class BluefinClient {
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
+      this.is_wallet_extension = true;
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -277,11 +280,12 @@ export class BluefinClient {
     const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
     this.signer = keyPair;
     this.walletAddress = walletAddress;
-    this.isZkLogin = true;
     this.maxEpoch = maxEpoch;
     this.decodedJWT = decodedJWT;
     this.proof = proof;
     this.salt = salt;
+    this.isZkLogin = true;
+    this.is_wallet_extension = false;
   };
 
   /***
@@ -340,7 +344,8 @@ export class BluefinClient {
       this.provider,
       this.isZkLogin,
       this.getZkPayload(),
-      this.walletAddress
+      this.walletAddress,
+      this.is_wallet_extension
     );
   };
 
@@ -977,7 +982,7 @@ export class BluefinClient {
       await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
         {
           amount,
-          address: this.walletAddress
+          address: this.walletAddress,
         },
         this.signer
       )
@@ -1011,7 +1016,7 @@ export class BluefinClient {
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
               amount,
-              address: this.walletAddress
+              address: this.walletAddress,
             },
             this.signer
           )

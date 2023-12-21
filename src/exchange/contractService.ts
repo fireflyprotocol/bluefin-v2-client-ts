@@ -20,11 +20,11 @@ import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
-
   signer: Signer;
   suiClient: SuiClient;
   marginBankId: string | undefined;
   walletAddress: string;
+  is_wallet_extension: boolean;
 
   constructor(
     signer: Signer,
@@ -32,17 +32,20 @@ export class ContractCalls {
     provider: SuiClient,
     is_zkLogin: boolean,
     zkPayload?: ZkPayload,
-    walletAddress?: string
+    walletAddress?: string,
+    is_wallet_extension?: boolean
   ) {
     this.signer = signer;
     this.walletAddress = walletAddress;
+    this.is_wallet_extension = is_wallet_extension;
     this.onChainCalls = new OnChainCalls(
       this.signer,
       deployment,
       provider,
       is_zkLogin,
       zkPayload,
-      walletAddress
+      walletAddress,
+      is_wallet_extension
     );
   }
 
@@ -102,7 +105,7 @@ export class ContractCalls {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: this.walletAddress,
+          accountAddress: this.walletAddress || getPublicAddress(),
         },
         this.signer
       );

@@ -918,7 +918,6 @@ export class BluefinClient {
       return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
-        this.getPublicAddress,
         params.parentAddress
       );
     }

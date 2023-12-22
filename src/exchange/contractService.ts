@@ -127,7 +127,6 @@ export class ContractCalls {
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
-    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);

@@ -36,7 +36,7 @@ export class ContractCalls {
     is_wallet_extension?: boolean
   ) {
     this.signer = signer;
-    this.walletAddress = walletAddress;
+    this.walletAddress = walletAddress || signer.toSuiAddress();
     this.is_wallet_extension = is_wallet_extension;
     this.onChainCalls = new OnChainCalls(
       this.signer,

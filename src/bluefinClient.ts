@@ -160,6 +160,8 @@ export class BluefinClient {
 
   private salt: string;
 
+  private is_wallet_extension: boolean = false;
+
   /**
    * initializes the class instance
    * @param _isTermAccepted boolean indicating if exchange terms and conditions are accepted
@@ -253,6 +255,7 @@ export class BluefinClient {
         this.signer as any as ExtendedWalletContextState
       ).getAddress();
       this.isZkLogin = false;
+      this.is_wallet_extension = true;
     } catch (err) {
       console.log(err);
       throw Error("Failed to initialize through UI");
@@ -277,11 +280,12 @@ export class BluefinClient {
     const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
     this.signer = keyPair;
     this.walletAddress = walletAddress;
-    this.isZkLogin = true;
     this.maxEpoch = maxEpoch;
     this.decodedJWT = decodedJWT;
     this.proof = proof;
     this.salt = salt;
+    this.isZkLogin = true;
+    this.is_wallet_extension = false;
   };
 
   /***
@@ -337,7 +341,11 @@ export class BluefinClient {
     this.contractCalls = new ContractCalls(
       this.getSigner(),
       _deployment,
-      this.provider
+      this.provider,
+      this.isZkLogin,
+      this.getZkPayload(),
+      this.walletAddress,
+      this.is_wallet_extension
     );
   };
 
@@ -830,9 +838,7 @@ export class BluefinClient {
   getUSDCBalance = async (): Promise<number> => {
     return this.contractCalls.onChainCalls.getUSDCBalance(
       {
-        address: this.uiWallet
-          ? (this.signer as any as ExtendedWalletContextState).getAddress()
-          : this.signer.toSuiAddress(),
+        address: this.walletAddress,
         currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
       },
       this.signer
@@ -912,7 +918,6 @@ export class BluefinClient {
       return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
-        this.getPublicAddress,
         params.parentAddress
       );
     }
@@ -976,6 +981,7 @@ export class BluefinClient {
       await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
         {
           amount,
+          address: this.walletAddress,
         },
         this.signer
       )
@@ -1009,6 +1015,7 @@ export class BluefinClient {
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
               amount,
+              address: this.walletAddress,
             },
             this.signer
           )

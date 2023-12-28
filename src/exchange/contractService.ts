@@ -7,6 +7,7 @@ import {
   toBaseNumber,
   SuiClient,
   Keypair,
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
 import interpolate from "interpolate";
 import { ExtendedWalletContextState } from "../interfaces/routes";
@@ -19,18 +20,32 @@ import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
-
   signer: Signer;
   suiClient: SuiClient;
   marginBankId: string | undefined;
+  walletAddress: string;
+  is_wallet_extension: boolean;
 
-  constructor(signer: Signer, deployment: any, provider: SuiClient) {
+  constructor(
+    signer: Signer,
+    deployment: any,
+    provider: SuiClient,
+    is_zkLogin: boolean,
+    zkPayload?: ZkPayload,
+    walletAddress?: string,
+    is_wallet_extension?: boolean
+  ) {
     this.signer = signer;
-    this.suiClient = provider;
+    this.walletAddress = walletAddress || signer.toSuiAddress();
+    this.is_wallet_extension = is_wallet_extension;
     this.onChainCalls = new OnChainCalls(
       this.signer,
       deployment,
-      this.suiClient
+      provider,
+      is_zkLogin,
+      zkPayload,
+      walletAddress,
+      is_wallet_extension
     );
   }
 
@@ -47,6 +62,7 @@ export class ContractCalls {
       const tx = await this.onChainCalls.withdrawFromBank(
         {
           amount: toBigNumberStr(amount.toString(), 6),
+          accountAddress: this.walletAddress,
         },
         this.signer
       );
@@ -64,7 +80,10 @@ export class ContractCalls {
    * */
   withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.withdrawAllMarginFromBank(this.signer);
+      return await this.onChainCalls.withdrawAllMarginFromBank(
+        this.signer,
+        this.walletAddress
+      );
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
 
@@ -86,7 +105,7 @@ export class ContractCalls {
           amount: toBigNumberStr(amount.toString(), 6),
           coinID,
           bankID: this.onChainCalls.getBankID(),
-          accountAddress: getPublicAddress(),
+          accountAddress: this.walletAddress || getPublicAddress(),
         },
         this.signer
       );
@@ -108,7 +127,6 @@ export class ContractCalls {
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
-    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -117,7 +135,7 @@ export class ContractCalls {
         {
           leverage,
           perpID: perpId,
-          account: parentAddress || getPublicAddress(),
+          account: parentAddress || this.walletAddress,
           market: symbol,
         },
         this.signer
@@ -199,6 +217,7 @@ export class ContractCalls {
             amount,
             perpID: perpId,
             market: symbol,
+            account: this.walletAddress,
           },
           this.signer
         );
@@ -208,6 +227,7 @@ export class ContractCalls {
           amount,
           perpID: perpId,
           market: symbol,
+          account: this.walletAddress,
         },
         this.signer
       );

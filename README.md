@@ -12,7 +12,7 @@
 
 A typescript Bluefin client library for creating signed orders and placing them on exchange.The library provides an interface to connect with on-chain contracts and off-chain orderbook and listen to socket events emitted from both Bluefin's on-chain and off-chain part of the protocol.
 
-The documentation about the library could be found [here](https://docs.firefly.exchange)
+The documentation about the library could be found [here](https://bluefin-exchange.readme.io/v2.0/reference/introduction)
 
 Examples on how to use the library are available [here](https://github.com/fireflyprotocol/bluefin-v2-client-ts/tree/main/examples)
 

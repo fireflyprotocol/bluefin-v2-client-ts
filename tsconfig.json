@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "es2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     "module": "commonjs" /* Specify what module code is generated. */,
     "resolveJsonModule": true /* Enable importing .json files */,
     "outDir": "dist" /* Specify an output folder for all emitted files. */,
@@ -18,7 +18,7 @@
     "sourceMap": true /* Generates corresponding '.map' file. */,
     "declaration": true /* Generates corresponding '.d.ts' file. */,
     "lib": [
-      "es2015",
+      "es2020",
       "dom"
     ] /* Specify library files to be included in the compilation. */
   },

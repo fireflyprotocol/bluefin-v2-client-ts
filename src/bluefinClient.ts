@@ -120,6 +120,25 @@ import {
   verifyDepositResponse,
 } from "./interfaces/routes";
 
+import {
+  Chain,
+  Network,
+  Platform,
+  SignAndSendSigner,
+  SignOnlySigner,
+  TokenId,
+  TokenTransfer,
+  Wormhole,
+  isTokenId,
+  normalizeAmount,
+} from "@wormhole-foundation/connect-sdk";
+
+import { EvmPlatform } from "@wormhole-foundation/connect-sdk-evm";
+
+import "@wormhole-foundation/connect-sdk-evm-tokenbridge";
+
+import { ethers } from "ethers";
+import { EvmSigner } from "./exchange/EvmSigner";
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
 
@@ -1919,4 +1938,34 @@ export class BluefinClient {
     }
     return response;
   };
+
+  async wormholeTransfer(amount: number, receriverAddress: string) {
+    const wh = new Wormhole("Testnet", [EvmPlatform]);
+    const srcChain = wh.getChain("Ethereum");
+    const token = "native";
+    // Format it for base units
+    const amt = normalizeAmount(
+      amount,
+      BigInt(srcChain.config.nativeTokenDecimals)
+    );
+
+    const evmSigner = new EvmSigner("Ethereum", receriverAddress);
+
+    const automatic = true;
+
+    const automaticXfer = wh.tokenTransfer(
+      token, // send native gas on source chain
+      amt, // amount in base units
+      Wormhole.chainAddress(srcChain.chain, evmSigner.address()), // Sender address on source chain
+      Wormhole.chainAddress(srcChain.chain, receriverAddress), // Recipient address on destination chain
+      automatic // Automatic transfer
+    );
+
+    // 1) Submit the transactions to the source chain, passing a signer to sign any txns
+    const srcTxids = (await automaticXfer).initiateTransfer(evmSigner);
+
+    console.log(srcTxids, "srcTxids");
+    // 2) If automatic, we're done, just wait for the transfer to complete
+    // if (automatic) return waitLog(automaticXfer);
+  }
 }

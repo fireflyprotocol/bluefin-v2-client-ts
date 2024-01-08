@@ -206,8 +206,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches
-    else {
+    //In case of KMS Signer any of the above condition doesn't matches,
+    else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }

@@ -161,6 +161,8 @@ export class ContractCalls {
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+    console.log("signedTx.bytes: ", signedTx.bytes);
+    console.log("signedTx.signature: ", signedTx.signature);
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
 
@@ -188,11 +190,9 @@ export class ContractCalls {
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
-    console.log("signedTx.bytes: ", signedTx.bytes);
-    console.log("signedTx.signature: ", signedTx.signature);
+
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
-
     return encodedData;
   };
 

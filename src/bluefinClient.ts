@@ -975,10 +975,7 @@ export class BluefinClient {
       const separator = "||||";
       const combinedData = Buffer.from(signedTx, "hex").toString("utf-8");
       const [transactionBlockBytes, signature] = combinedData.split(separator);
-      console.log("transactionBlockBytes: ", transactionBlockBytes);
-      console.log("signature: ", signature);
 
-      //const byte  = new TextEncoder().encode(transactionBlockBytes);
       const txb = TransactionBlock.from(transactionBlockBytes);
 
       console.log(txb.blockData.sender);

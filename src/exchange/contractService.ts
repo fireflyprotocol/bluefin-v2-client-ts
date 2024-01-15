@@ -1,22 +1,20 @@
 import {
   address,
   ADJUST_MARGIN,
-  Transaction,
   OnChainCalls,
-  toBigNumberStr,
-  toBaseNumber,
   SuiClient,
-  Keypair,
+  toBaseNumber,
+  toBigNumberStr,
+  Transaction,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
+import { Signer } from "@mysten/sui.js/cryptography";
 import interpolate from "interpolate";
-import { ExtendedWalletContextState } from "../interfaces/routes";
 import {
   ResponseSchema,
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -163,6 +161,35 @@ export class ContractCalls {
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+    // Encode to hex for transmission
+    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
+
+    return encodedData;
+  };
+
+  upsertSubAccountContractCallRawTransaction = async (
+    account: string,
+    status: boolean,
+    accountsToRemove: Array<string>,
+    subAccountsMapID?: string,
+    gasBudget?: number
+  ): Promise<string> => {
+    const signedTx = await this.onChainCalls.signUpsertSubAccount(
+      {
+        account,
+        status,
+        accountsToRemove,
+        subAccountsMapID,
+        gasBudget,
+      },
+      this.signer
+    );
+
+    //serialize
+    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
+    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+    console.log("signedTx.bytes: ", signedTx.bytes);
+    console.log("signedTx.signature: ", signedTx.signature);
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
 

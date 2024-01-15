@@ -485,6 +485,15 @@ export interface AdjustLeverageResponse {
   maxNotionalValue: string;
 }
 
+export interface SubAccountRequest {
+  accountAddress: string;
+  accountsToRemove: Array<string>;
+}
+
+export interface SignedSubAccountRequest extends SubAccountRequest {
+  signedTransaction: string;
+}
+
 export interface FundGasResponse {
   message: string;
 }

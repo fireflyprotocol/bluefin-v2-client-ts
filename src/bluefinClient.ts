@@ -180,9 +180,7 @@ export class BluefinClient {
     _account?: string | Signer,
     _scheme?: SignatureScheme,
     _isUI?: boolean,
-    _uiSignerObject?: any,
-    _isSubAccountEnabled?: boolean,
-    _parentAddress?: string
+    _uiSignerObject?: any
   ) {
     this.network = _network;
 
@@ -196,8 +194,6 @@ export class BluefinClient {
     }
 
     this.isTermAccepted = _isTermAccepted;
-    this.isSubAccountEnabled = _isSubAccountEnabled;
-    this.parentAddress = _parentAddress;
 
     if (_account && _scheme && typeof _account === "string") {
       if (_account.split(" ")[1]) {
@@ -230,7 +226,9 @@ export class BluefinClient {
   init = async (
     userOnboarding: boolean = true,
     deployment: any = null,
-    apiToken = ""
+    apiToken = "",
+    isSubAccountEnabled?: boolean,
+    parentAddress?: string
   ) => {
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
@@ -256,6 +254,8 @@ export class BluefinClient {
     if (this.isSubAccountEnabled && !this.parentAddress) {
       throw Error("Subaccount must have parent address");
     }
+    this.isSubAccountEnabled = isSubAccountEnabled;
+    this.parentAddress = parentAddress;
 
     if (this.network.UUID) {
       this.setUUID(this.network.UUID);

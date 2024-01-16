@@ -1,13 +1,13 @@
-import fs from "fs";
 import {
-  OnChainCalls,
-  Faucet,
-  toBigNumberStr,
-  SignatureScheme,
-  Keypair,
   Ed25519Keypair,
+  Faucet,
+  Keypair,
+  OnChainCalls,
   Secp256k1Keypair,
+  SignatureScheme,
+  toBigNumberStr,
 } from "@firefly-exchange/library-sui";
+import fs from "fs";
 import deploymentData from "../deployment.json";
 
 /**
@@ -78,6 +78,21 @@ export async function setupTestAccounts(
     });
   }
   return true;
+}
+
+/**
+ * @description
+ * Generate a new wallet
+ * @returns private key and public address
+ * */
+export function createWallet(): { privateKey: string; publicAddress: string } {
+  const wallet = Ed25519Keypair.generate();
+  const signerKey = wallet.export().privateKey;
+  const publicAddress = wallet.toSuiAddress();
+  return {
+    privateKey: Buffer.from(signerKey, "base64").toString("hex"),
+    publicAddress,
+  };
 }
 
 // export async function performTrade(

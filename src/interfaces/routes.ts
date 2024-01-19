@@ -1,5 +1,6 @@
 import {
   address,
+  BaseWallet,
   CANCEL_REASON,
   Interval,
   MARGIN_TYPE,
@@ -9,7 +10,6 @@ import {
   ORDER_TYPE,
   SuiClient,
   TIME_IN_FORCE,
-  BaseWallet,
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -492,6 +492,20 @@ export interface SubAccountRequest {
 
 export interface SignedSubAccountRequest extends SubAccountRequest {
   signedTransaction: string;
+}
+
+export interface SubAccountResponse {
+  userAddress: string;
+  txIndex?: number;
+  logIndex?: number;
+  blockNumber?: number;
+  id: number;
+  symbol: string;
+  subAccountAddress: string;
+  approved?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  type?: string;
 }
 
 export interface FundGasResponse {

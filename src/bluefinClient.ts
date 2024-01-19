@@ -23,7 +23,6 @@ import {
   toBigNumber,
   toBigNumberStr,
   Transaction,
-  TransactionBlock,
   usdcToBaseNumber,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
@@ -115,8 +114,10 @@ import {
   PostOrderRequest,
   PostTimerAttributes,
   PostTimerResponse,
+  SignedSubAccountRequest,
   StatusResponse,
   SubAccountRequest,
+  SubAccountResponse,
   TickerData,
   verifyDepositResponse,
 } from "./interfaces/routes";
@@ -972,43 +973,25 @@ export class BluefinClient {
           params.accountsToRemove
         );
 
-      const separator = "||||";
-      const combinedData = Buffer.from(signedTx, "hex").toString("utf-8");
-      const [transactionBlockBytes, signature] = combinedData.split(separator);
+      const request: SignedSubAccountRequest = {
+        accountAddress: params.accountAddress,
+        accountsToRemove: params.accountsToRemove,
+        signedTransaction: signedTx,
+      };
 
-      const txb = TransactionBlock.from(transactionBlockBytes);
+      const {
+        ok,
+        data,
+        response: { errorCode, message },
+      } = await this.addSubAccountFor1CT(request);
 
-      console.log(txb.blockData.sender);
-      //step1 - dry run the signed transaction
-      await this.provider.dryRunTransactionBlock({
-        transactionBlock: transactionBlockBytes,
-      });
-
-      const tx: any = await this.provider.executeTransactionBlock({
-        transactionBlock: transactionBlockBytes,
-        signature: signature,
-        options: {
-          showEffects: true,
-        },
-      });
-
-      return tx;
+      const response: ResponseSchema = { ok, data, code: errorCode, message };
+      if (response.ok) {
+        return response;
+      }
     } catch (error) {
       throw new Error(error.message);
     }
-
-    // const {
-    //   ok,
-    //   data,
-    //   response: {errorCode, message},
-    // } = await this.createAndUpdateSubAccountAPI({
-    //   parentAddress: params.parentAddress,
-    //   signedTransaction: signedTx,
-    // });
-    // const response: ResponseSchema = {ok, data, code: errorCode, message};
-    // if (response.ok) {
-    //   return response;
-    // }
   };
 
   /**
@@ -1959,6 +1942,20 @@ export class BluefinClient {
         marginType: MARGIN_TYPE.ISOLATED,
         signedTransaction: params.signedTransaction,
       },
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * @description
+   * Posts subAccount request to whitelist/remove the subaccount for One Click Trading
+   * @returns whitelisted subaccount detail
+   */
+  private addSubAccountFor1CT = async (params: SignedSubAccountRequest) => {
+    const response = await this.apiService.post<SubAccountResponse>(
+      SERVICE_URLS.USER.SUBACCOUNT_1CT,
+      params,
       { isAuthenticationRequired: true }
     );
     return response;

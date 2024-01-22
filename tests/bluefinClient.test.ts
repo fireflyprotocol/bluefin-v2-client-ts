@@ -31,7 +31,7 @@ Faucet.requestSUI(testAcctPubAddr, Networks.TESTNET_SUI.faucet);
 Faucet.requestSUI(testSubAccPubAddr, Networks.TESTNET_SUI.faucet);
 
 //* set environment from here
-const network = Networks.LOCAL;
+const network = Networks.TESTNET_SUI;
 
 let client: BluefinClient;
 
@@ -71,7 +71,7 @@ describe("BluefinClient", () => {
       );
       console.log(`- market price: ${marketPrice}`);
       console.log(`- index price: ${indexPrice}`);
-   }
+    }
   });
 
   beforeEach(async () => {
@@ -278,8 +278,7 @@ describe("BluefinClient", () => {
       const resp = await clientParentAccount.upsertSubAccount({
         accountAddress: testSubAccKey,
         accountsToRemove: []
-      }
-      );
+      });
       if (!resp.ok) {
         throw Error(resp.message);
       }
@@ -295,8 +294,6 @@ describe("BluefinClient", () => {
         false,
         null,
         "",
-        true,
-        testAcctPubAddr
       );
     });
 
@@ -309,6 +306,7 @@ describe("BluefinClient", () => {
       const res = await clientSubAccount.adjustLeverage({
         symbol,
         leverage: newLeverage,
+        parentAddress: testAcctPubAddr.toLowerCase(),
       }); // set leverage will do contract call as the account using is new
       const lev = await clientSubAccount.getUserDefaultLeverage(
         symbol,

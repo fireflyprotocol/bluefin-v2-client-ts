@@ -487,7 +487,7 @@ export interface AdjustLeverageResponse {
 
 export interface SubAccountRequest {
   accountAddress: string;
-  accountsToRemove: Array<string>;
+  accountsToRemove?: Array<string>;
 }
 
 export interface SignedSubAccountRequest extends SubAccountRequest {
@@ -499,10 +499,7 @@ export interface SubAccountResponse {
   txIndex?: number;
   logIndex?: number;
   blockNumber?: number;
-  id: number;
-  symbol: string;
   subAccountAddress: string;
-  approved?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   type?: string;

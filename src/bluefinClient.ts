@@ -143,10 +143,6 @@ export class BluefinClient {
 
   private isZkLogin: boolean = false;
 
-  private isSubAccountEnabled: boolean = false;
-
-  private parentAddress: string;
-
   private contractCalls: ContractCalls | undefined;
 
   private provider: SuiClient | undefined; // to save raw web3 provider when connecting from UI
@@ -227,9 +223,7 @@ export class BluefinClient {
   init = async (
     userOnboarding: boolean = true,
     deployment: any = null,
-    apiToken = "",
-    isSubAccountEnabled?: boolean,
-    parentAddress?: string
+    apiToken = ""
   ) => {
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
@@ -251,12 +245,6 @@ export class BluefinClient {
         await this.userOnBoarding();
       }
     }
-
-    if (this.isSubAccountEnabled && !this.parentAddress) {
-      throw Error("Subaccount must have parent address");
-    }
-    this.isSubAccountEnabled = isSubAccountEnabled;
-    this.parentAddress = parentAddress;
 
     if (this.network.UUID) {
       this.setUUID(this.network.UUID);
@@ -387,10 +375,6 @@ export class BluefinClient {
   getProvider = (): SuiClient => {
     return this.provider;
   };
-
-  getParentAddress(): string | undefined {
-    if (this.isSubAccountEnabled) return this.parentAddress;
-  }
 
   /**
    * Generate and receive readOnlyToken, this can only be accessed at the time of generation
@@ -750,7 +734,7 @@ export class BluefinClient {
         symbol: params.symbol,
         orderHashes: params.hashes,
         cancelSignature: params.signature,
-        parentAddress: params.parentAddress ?? this.getParentAddress(),
+        parentAddress: params.parentAddress,
         fromUI: true,
       },
       { isAuthenticationRequired: true }
@@ -793,7 +777,7 @@ export class BluefinClient {
         ORDER_STATUS.PARTIAL_FILLED,
         ORDER_STATUS.PENDING,
       ],
-      parentAddress: parentAddress ?? this.getParentAddress(),
+      parentAddress: parentAddress,
     });
 
     const hashes = openOrders.data?.map((order) => order.hash) as string[];
@@ -801,7 +785,7 @@ export class BluefinClient {
     const response = await this.postCancelOrder({
       hashes,
       symbol,
-      parentAddress: parentAddress ?? this.getParentAddress(),
+      parentAddress: parentAddress,
     });
 
     return response;
@@ -903,7 +887,7 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
     const userPosition = await this.getUserPosition({
       symbol: params.symbol,
-      parentAddress: params.parentAddress ?? this.getParentAddress(),
+      parentAddress: params.parentAddress,
     });
     if (!userPosition.data) {
       throw Error(`User positions data doesn't exist`);
@@ -919,7 +903,7 @@ export class BluefinClient {
             params.leverage,
             params.symbol,
             this.getPublicAddress,
-            params.parentAddress ?? this.getParentAddress()
+            params.parentAddress
           );
 
         const {
@@ -929,7 +913,7 @@ export class BluefinClient {
         } = await this.updateLeverage({
           symbol: params.symbol,
           leverage: params.leverage,
-          parentAddress: params.parentAddress ?? this.getParentAddress(),
+          parentAddress: params.parentAddress,
           signedTransaction: signedTx,
         });
         const response: ResponseSchema = { ok, data, code: errorCode, message };
@@ -941,7 +925,7 @@ export class BluefinClient {
       return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
-        params.parentAddress ?? this.getParentAddress()
+        params.parentAddress
       );
     }
     const {
@@ -951,7 +935,7 @@ export class BluefinClient {
     } = await this.updateLeverage({
       symbol: params.symbol,
       leverage: params.leverage,
-      parentAddress: params.parentAddress ?? this.getParentAddress(),
+      parentAddress: params.parentAddress,
     });
     const response: ResponseSchema = { ok, data, code: errorCode, message };
     return response;
@@ -1130,7 +1114,7 @@ export class BluefinClient {
     parentAddress?: string
   ) => {
     const accData = await this.getUserAccountData(
-      parentAddress ?? this.getParentAddress()
+      parentAddress
     );
     if (!accData.data) {
       throw Error(`Account data does not exist`);
@@ -1237,7 +1221,7 @@ export class BluefinClient {
   getUserAccountData = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetAccountDataResponse>(
       SERVICE_URLS.USER.ACCOUNT,
-      { parentAddress: parentAddress ?? this.getParentAddress() },
+      { parentAddress: parentAddress},
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1501,7 +1485,7 @@ export class BluefinClient {
   getReferrerInfo = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetReferrerInfoResponse>(
       SERVICE_URLS.GROWTH.REFERRER_INFO,
-      { parentAddress: parentAddress ?? this.getParentAddress() },
+      { parentAddress: parentAddress},
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1527,7 +1511,7 @@ export class BluefinClient {
   getCampaignRewards = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetCampaignRewardsResponse>(
       SERVICE_URLS.GROWTH.CAMPAIGN_REWARDS,
-      { campaignId, parentAddress: parentAddress ?? this.getParentAddress() },
+      { campaignId, parentAddress: parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1542,7 +1526,7 @@ export class BluefinClient {
   getAffiliatePayouts = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
       SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
-      { campaignId, parentAddress: parentAddress ?? this.getParentAddress() },
+      { campaignId, parentAddress: parentAddress },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1578,7 +1562,7 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetAffiliateRefereeCountResponse>(
         SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
-        { campaignId, parentAddress: parentAddress ?? this.getParentAddress() },
+        { campaignId, parentAddress: parentAddress },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1605,7 +1589,7 @@ export class BluefinClient {
   getUserRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetUserRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.USER_REWARDS_SUMMARY,
-      { parentAddress: parentAddress ?? this.getParentAddress() },
+      { parentAddress: parentAddress  },
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1624,7 +1608,7 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
         SERVICE_URLS.GROWTH.REWARDS_OVERVIEW,
-        { campaignId, parentAddress: parentAddress ?? this.getParentAddress() },
+        { campaignId, parentAddress: parentAddress  },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1655,7 +1639,7 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetTotalHistoricalTradingRewardsResponse>(
         SERVICE_URLS.GROWTH.TOTAL_HISTORICAL_TRADING_REWARDS,
-        { parentAddress: parentAddress ?? this.getParentAddress() },
+        { parentAddress: parentAddress },
         { isAuthenticationRequired: true }
       );
     return response;
@@ -1668,7 +1652,7 @@ export class BluefinClient {
   getMakerRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetMakerRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.MAKER_REWARDS_SUMMARY,
-      { parentAddress: parentAddress ?? this.getParentAddress() },
+      { parentAddress: parentAddress},
       { isAuthenticationRequired: true }
     );
     return response;
@@ -1714,7 +1698,7 @@ export class BluefinClient {
   }) => {
     payload = {
       ...payload,
-      parentAddress: payload.parentAddress ?? this.getParentAddress(),
+      parentAddress: payload.parentAddress,
     };
     const response = await this.apiService.get<{
       data: OpenReferralRefereeDetails;
@@ -1738,7 +1722,7 @@ export class BluefinClient {
   }) => {
     payload = {
       ...payload,
-      parentAddress: payload.parentAddress ?? this.getParentAddress(),
+      parentAddress: payload.parentAddress,
     };
     const response = await this.apiService.get<OpenReferralDetails>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREES_COUNT,
@@ -1759,7 +1743,7 @@ export class BluefinClient {
   }) => {
     payload = {
       ...payload,
-      parentAddress: payload.parentAddress ?? this.getParentAddress(),
+      parentAddress: payload.parentAddress,
     };
     const response = await this.apiService.get<{
       data: OpenReferralPayoutList;
@@ -1797,7 +1781,7 @@ export class BluefinClient {
   getOpenReferralOverview = async (parentAddress?: string) => {
     const response = await this.apiService.get<OpenReferralOverview>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_OVERVIEW,
-      { parentAddress: parentAddress ?? this.getParentAddress() },
+      { parentAddress: parentAddress },
       {
         isAuthenticationRequired: true,
       }
@@ -1891,7 +1875,6 @@ export class BluefinClient {
       leverage: toBigNumber(params.leverage || 1),
       maker:
         parentAddress ||
-        this.getParentAddress() ||
         this.getPublicAddress().toLocaleLowerCase(),
       reduceOnly: params.reduceOnly == true,
       expiration: bigNumber(
@@ -1934,7 +1917,6 @@ export class BluefinClient {
         symbol: params.symbol,
         address:
           params.parentAddress ||
-          this.getParentAddress() ||
           this.getPublicAddress(),
         leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
@@ -1992,7 +1974,7 @@ export class BluefinClient {
     const response = await this.apiService.get<GetCountDownsResponse>(
       SERVICE_URLS.USER.CANCEL_ON_DISCONNECT,
       {
-        parentAddress: parentAddress ?? this.getParentAddress(),
+        parentAddress: parentAddress,
         symbol,
       },
       { isAuthenticationRequired: true },

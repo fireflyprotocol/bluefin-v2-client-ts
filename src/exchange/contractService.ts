@@ -6,14 +6,14 @@ import {
   toBaseNumber,
   toBigNumberStr,
   Transaction,
-  ZkPayload,
+  ZkPayload
 } from "@firefly-exchange/library-sui";
 import { Signer } from "@mysten/sui.js/cryptography";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
   SuccessMessages,
-  TransformToResponseSchema,
+  TransformToResponseSchema
 } from "./contractErrorHandling.service";
 
 export class ContractCalls {
@@ -161,8 +161,7 @@ export class ContractCalls {
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
-    console.log("signedTx.bytes: ", signedTx.bytes);
-    console.log("signedTx.signature: ", signedTx.signature);
+
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
 
@@ -171,15 +170,13 @@ export class ContractCalls {
 
   upsertSubAccountContractCallRawTransaction = async (
     account: string,
-    status: boolean,
-    accountsToRemove: Array<string>,
+    accountsToRemove?: Array<string>,
     subAccountsMapID?: string,
     gasBudget?: number
   ): Promise<string> => {
     const signedTx = await this.onChainCalls.signUpsertSubAccount(
       {
         account,
-        status,
         accountsToRemove,
         subAccountsMapID,
         gasBudget,

@@ -969,7 +969,6 @@ export class BluefinClient {
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.accountAddress,
-          true,
           params.accountsToRemove
         );
 
@@ -986,9 +985,7 @@ export class BluefinClient {
       } = await this.addSubAccountFor1CT(request);
 
       const response: ResponseSchema = { ok, data, code: errorCode, message };
-      if (response.ok) {
-        return response;
-      }
+      return response;
     } catch (error) {
       throw new Error(error.message);
     }

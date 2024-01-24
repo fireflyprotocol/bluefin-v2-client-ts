@@ -954,7 +954,7 @@ export class BluefinClient {
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.subAccountAddress,
-          params.accountsToRemove
+          params.accountsToRemove ?? []
         );
 
       const request: SignedSubAccountRequest = {

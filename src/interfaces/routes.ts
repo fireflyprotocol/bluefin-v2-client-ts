@@ -486,7 +486,7 @@ export interface AdjustLeverageResponse {
 }
 
 export interface SubAccountRequest {
-  accountAddress: string;
+  subAccountAddress: string;
   accountsToRemove?: Array<string>;
 }
 

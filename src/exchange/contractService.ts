@@ -168,6 +168,15 @@ export class ContractCalls {
     return encodedData;
   };
 
+  /**
+   * @param account The sub account address
+   * @param accountsToRemove The array of sub account addresses that need to be removed on-chain (optional param)
+   * @param subAccountsMapID The id of the chain object that holds subaccounts mapping (optional param)
+   * @param gasBudget The gas budget to be passed to execute the on-chain transaction (optional param)
+   * @returns string
+   * @description
+   * This method return the signed Transaction for adding/removing the subaccount(s) on chain
+   * */
   upsertSubAccountContractCallRawTransaction = async (
     account: string,
     accountsToRemove?: Array<string>,

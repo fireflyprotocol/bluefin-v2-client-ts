@@ -29,7 +29,7 @@ export const SERVICE_URLS = {
     CANCEL_ON_DISCONNECT: "/dms-countdown",
     GENERATE_READONLY_TOKEN: "/generateReadOnlyToken",
     USER_TRADES_HISTORY: "/userTradesHistory",
-    SUBACCOUNT_1CT: "/account/add1CTSubaccount",
+    SUBACCOUNT_1CT: "/account/addSubAccountFor1CT",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",

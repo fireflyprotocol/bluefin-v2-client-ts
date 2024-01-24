@@ -24,14 +24,14 @@ import {
   toBigNumberStr,
   Transaction,
   usdcToBaseNumber,
-  ZkPayload,
+  ZkPayload
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
 import {
   parseSerializedSignature,
   SerializedSignature,
-  Signer,
+  Signer
 } from "@mysten/sui.js/cryptography";
 import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
 import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
@@ -119,7 +119,7 @@ import {
   SubAccountRequest,
   SubAccountResponse,
   TickerData,
-  verifyDepositResponse,
+  verifyDepositResponse
 } from "./interfaces/routes";
 
 export class BluefinClient {
@@ -944,8 +944,9 @@ export class BluefinClient {
   /**
    * @description
    * Whitelist subaccount and/or remove the already exists subaccounts for One Click Trading
-   * @param params SubAccountRequest comprising of accountAddress(subaccount) and the accountsToRemove(optional)
-   * @returns SubAccountResponse
+   * @param subAccountAddress 
+   * @param accountsToRemove (optional)
+   * @returns ResponseSchema
    */
   upsertSubAccount = async (
     params: SubAccountRequest

@@ -266,7 +266,7 @@ describe("BluefinClient", () => {
 
     // whitelisting sub account
     const resp = await client.upsertSubAccount({
-      accountAddress: testSubAccKey
+      subAccountAddress: testSubAccKey
     });
     expect(resp.ok).to.be.equal(true);
     expect(resp.data.subAccountAddress).to.be.equal(testSubAccPubAddr);

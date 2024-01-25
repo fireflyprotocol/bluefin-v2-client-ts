@@ -591,17 +591,6 @@ export interface ObjectDetails {
   dataType: string;
 }
 
-export interface ExtendedWalletContextState
-  extends Omit<BaseWallet, "signMessage"> {
-  wallet: BaseWallet;
-  provider: SuiClient;
-  signData: (data: Uint8Array) => Promise<string>;
-  getAddress: () => string | undefined;
-  signMessage: (
-    data: Uint8Array
-  ) => Promise<{ messageBytes: string; signature: string }>;
-}
-
 export interface GetReferrerInfoResponse {
   isReferee: boolean;
 }

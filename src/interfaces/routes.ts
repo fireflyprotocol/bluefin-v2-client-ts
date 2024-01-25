@@ -1,5 +1,6 @@
 import {
   address,
+  BaseWallet,
   CANCEL_REASON,
   Interval,
   MARGIN_TYPE,
@@ -9,7 +10,6 @@ import {
   ORDER_TYPE,
   SuiClient,
   TIME_IN_FORCE,
-  BaseWallet,
 } from "@firefly-exchange/library-sui";
 
 export interface GetTransactionHistoryRequest {
@@ -82,6 +82,7 @@ export interface PlaceOrderRequest extends OrderSignatureResponse {
 
 export interface PostOrderRequest extends OrderSignatureRequest {
   clientId?: string;
+  parentAddress?: string;
 }
 
 interface OrderResponse {
@@ -485,6 +486,26 @@ export interface AdjustLeverageResponse {
   maxNotionalValue: string;
 }
 
+export interface SubAccountRequest {
+  subAccountAddress: string;
+  accountsToRemove?: Array<string>;
+}
+
+export interface SignedSubAccountRequest extends SubAccountRequest {
+  signedTransaction: string;
+}
+
+export interface SubAccountResponse {
+  userAddress: string;
+  txIndex?: number;
+  logIndex?: number;
+  blockNumber?: number;
+  subAccountAddress: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  type?: string;
+}
+
 export interface FundGasResponse {
   message: string;
 }
@@ -568,17 +589,6 @@ export interface ObjectDetails {
   id: string;
   owner: string;
   dataType: string;
-}
-
-export interface ExtendedWalletContextState
-  extends Omit<BaseWallet, "signMessage"> {
-  wallet: BaseWallet;
-  provider: SuiClient;
-  signData: (data: Uint8Array) => Promise<string>;
-  getAddress: () => string | undefined;
-  signMessage: (
-    data: Uint8Array
-  ) => Promise<{ messageBytes: string; signature: string }>;
 }
 
 export interface GetReferrerInfoResponse {

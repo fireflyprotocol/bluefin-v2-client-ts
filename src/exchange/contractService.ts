@@ -1,22 +1,20 @@
 import {
   address,
   ADJUST_MARGIN,
-  Transaction,
   OnChainCalls,
-  toBigNumberStr,
-  toBaseNumber,
   SuiClient,
-  Keypair,
-  ZkPayload,
+  toBaseNumber,
+  toBigNumberStr,
+  Transaction,
+  ZkPayload
 } from "@firefly-exchange/library-sui";
+import { Signer } from "@mysten/sui.js/cryptography";
 import interpolate from "interpolate";
-import { ExtendedWalletContextState } from "../interfaces/routes";
 import {
   ResponseSchema,
   SuccessMessages,
-  TransformToResponseSchema,
+  TransformToResponseSchema
 } from "./contractErrorHandling.service";
-import { Signer } from "@mysten/sui.js/cryptography";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -163,9 +161,44 @@ export class ContractCalls {
     //serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
 
+    return encodedData;
+  };
+
+  /**
+   * @param account The sub account address
+   * @param accountsToRemove The array of sub account addresses that need to be removed on-chain (optional param)
+   * @param subAccountsMapID The id of the chain object that holds subaccounts mapping (optional param)
+   * @param gasBudget The gas budget to be passed to execute the on-chain transaction (optional param)
+   * @returns string
+   * @description
+   * This method return the signed Transaction for adding/removing the subaccount(s) on chain
+   * */
+  upsertSubAccountContractCallRawTransaction = async (
+    account: string,
+    accountsToRemove?: Array<string>,
+    subAccountsMapID?: string,
+    gasBudget?: number
+  ): Promise<string> => {
+    const signedTx = await this.onChainCalls.signUpsertSubAccount(
+      {
+        account,
+        accountsToRemove,
+        subAccountsMapID,
+        gasBudget,
+      },
+      this.signer
+    );
+
+    //serialize
+    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
+    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+
+    // Encode to hex for transmission
+    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
     return encodedData;
   };
 

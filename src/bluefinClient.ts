@@ -1,11 +1,12 @@
 import {
   ADJUST_MARGIN,
+  BaseWallet,
   bigNumber,
   DAPIKlineResponse,
   DecodeJWT,
   Ed25519Keypair,
+  ExtendedWalletContextState,
   getKeyPairFromPvtKey,
-  Keypair,
   MARGIN_TYPE,
   MarketSymbol,
   Order,
@@ -24,7 +25,6 @@ import {
   toBigNumberStr,
   Transaction,
   usdcToBaseNumber,
-  BaseWallet,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
 
@@ -54,7 +54,6 @@ import {
   ConfigResponse,
   ExchangeInfo,
   ExtendedNetwork,
-  ExtendedWalletContextState,
   GenerateReferralCodeRequest,
   GenerateReferralCodeResponse,
   GetAccountDataResponse,
@@ -115,7 +114,10 @@ import {
   PostOrderRequest,
   PostTimerAttributes,
   PostTimerResponse,
+  SignedSubAccountRequest,
   StatusResponse,
+  SubAccountRequest,
+  SubAccountResponse,
   TickerData,
   verifyDepositResponse,
 } from "./interfaces/routes";
@@ -652,7 +654,10 @@ export class BluefinClient {
    * @returns PlaceOrderResponse
    */
   postOrder = async (params: PostOrderRequest) => {
-    const signedOrder = await this.createSignedOrder(params);
+    const signedOrder = await this.createSignedOrder(
+      params,
+      params.parentAddress
+    );
     const response = await this.placeSignedOrder({
       ...signedOrder,
       timeInForce: params.timeInForce,
@@ -937,6 +942,42 @@ export class BluefinClient {
     });
     const response: ResponseSchema = { ok, data, code: errorCode, message };
     return response;
+  };
+
+  /**
+   * @description
+   * Whitelist subaccount and/or remove the already exists subaccounts for One Click Trading
+   * @param subAccountAddress
+   * @param accountsToRemove (optional)
+   * @returns ResponseSchema
+   */
+  upsertSubAccount = async (
+    params: SubAccountRequest
+  ): Promise<ResponseSchema> => {
+    try {
+      const signedTx =
+        await this.contractCalls.upsertSubAccountContractCallRawTransaction(
+          params.subAccountAddress,
+          params.accountsToRemove ?? []
+        );
+
+      const request: SignedSubAccountRequest = {
+        subAccountAddress: params.subAccountAddress,
+        accountsToRemove: params.accountsToRemove,
+        signedTransaction: signedTx,
+      };
+
+      const {
+        ok,
+        data,
+        response: { errorCode, message },
+      } = await this.addSubAccountFor1CT(request);
+
+      const response: ResponseSchema = { ok, data, code: errorCode, message };
+      return response;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   };
 
   /**
@@ -1862,13 +1903,25 @@ export class BluefinClient {
       SERVICE_URLS.USER.ADJUST_LEVERAGE,
       {
         symbol: params.symbol,
-        address: params.parentAddress
-          ? params.parentAddress
-          : this.getPublicAddress(),
+        address: params.parentAddress || this.getPublicAddress(),
         leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
         signedTransaction: params.signedTransaction,
       },
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * @description
+   * Posts subAccount request to whitelist/remove the subaccount for One Click Trading
+   * @returns SubAccountResponse containing whitelisted subaccount details
+   */
+  private addSubAccountFor1CT = async (params: SignedSubAccountRequest) => {
+    const response = await this.apiService.post<SubAccountResponse>(
+      SERVICE_URLS.USER.SUBACCOUNT_1CT,
+      params,
       { isAuthenticationRequired: true }
     );
     return response;

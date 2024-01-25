@@ -1916,7 +1916,7 @@ export class BluefinClient {
   /**
    * @description
    * Posts subAccount request to whitelist/remove the subaccount for One Click Trading
-   * @returns whitelisted subaccount detail
+   * @returns SubAccountResponse containing whitelisted subaccount details
    */
   private addSubAccountFor1CT = async (params: SignedSubAccountRequest) => {
     const response = await this.apiService.post<SubAccountResponse>(

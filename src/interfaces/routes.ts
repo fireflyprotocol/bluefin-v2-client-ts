@@ -82,6 +82,7 @@ export interface PlaceOrderRequest extends OrderSignatureResponse {
 
 export interface PostOrderRequest extends OrderSignatureRequest {
   clientId?: string;
+  parentAddress?: string;
 }
 
 interface OrderResponse {

@@ -1042,13 +1042,14 @@ export class BluefinClient {
 
     // Try merging users' coins if they have more than one coins
     const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
-      {},
+      { address: this.walletAddress },
       this.signer
     );
     if (usdcCoins.data.length > 1) {
       await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
         this.contractCalls.onChainCalls.getCoinType(),
-        this.signer
+        this.signer,
+        this.walletAddress
       );
 
       let coinHavingBalanceAfterMerge,

@@ -1048,7 +1048,8 @@ export class BluefinClient {
     if (usdcCoins.data.length > 1) {
       await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
         this.contractCalls.onChainCalls.getCoinType(),
-        this.signer
+        this.signer,
+        this.walletAddress
       );
 
       let coinHavingBalanceAfterMerge,

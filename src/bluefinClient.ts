@@ -26,10 +26,14 @@ import {
   Transaction,
   usdcToBaseNumber,
   ZkPayload,
+  TransactionBlock,
+  createZkSignature,
+  isEmpty,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
 import {
+  Keypair,
   parseSerializedSignature,
   SerializedSignature,
   Signer,
@@ -1973,5 +1977,35 @@ export class BluefinClient {
       );
     }
     return response;
+  };
+
+  signAndExecuteZkTransaction = async (tx: TransactionBlock) => {
+    try {
+      if (!this.signer || !this.walletAddress)
+        throw new Error("invalid signer or wallet address");
+      if (isEmpty(this.getZkPayload())) throw new Error("invalid zk payloads");
+
+      tx.setSender(this.walletAddress);
+      const { bytes, signature: userSignature } = await tx.sign({
+        client: this.provider,
+        signer: this.signer as Keypair,
+      });
+      const zkSignature = createZkSignature({
+        userSignature,
+        zkPayload: this.getZkPayload(),
+      });
+      return this.provider.executeTransactionBlock({
+        transactionBlock: bytes,
+        signature: zkSignature,
+        options: {
+          showObjectChanges: true,
+          showEffects: true,
+          showEvents: true,
+          showInput: true,
+        },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 }

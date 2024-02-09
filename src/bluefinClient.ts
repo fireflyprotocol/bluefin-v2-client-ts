@@ -28,6 +28,7 @@ import {
   ZkPayload,
   TransactionBlock,
   createZkSignature,
+  isEmpty,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -1982,7 +1983,7 @@ export class BluefinClient {
     try {
       if (!this.signer || !this.walletAddress)
         throw new Error("invalid signer or wallet address");
-      if (!this.getZkPayload()) throw new Error("invalid zk payloads");
+      if (isEmpty(this.getZkPayload())) throw new Error("invalid zk payloads");
 
       tx.setSender(this.walletAddress);
       const { bytes, signature: userSignature } = await tx.sign({

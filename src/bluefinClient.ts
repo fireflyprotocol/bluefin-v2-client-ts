@@ -1980,8 +1980,9 @@ export class BluefinClient {
 
   signAndExecuteZkTransaction = async (tx: TransactionBlock) => {
     try {
-      if (!this.isZkLogin || !this.signer || !this.walletAddress)
-        throw new Error("not a valid signer or payload");
+      if (!this.signer || !this.walletAddress)
+        throw new Error("invalid signer or wallet address");
+      if (!this.getZkPayload()) throw new Error("invalid zk payloads");
 
       tx.setSender(this.walletAddress);
       const { bytes, signature: userSignature } = await tx.sign({

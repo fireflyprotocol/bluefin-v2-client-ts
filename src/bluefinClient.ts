@@ -904,7 +904,7 @@ export class BluefinClient {
 
     if (Object.keys(position).length > 0) {
       //When not connected via UI
-      if (!this.uiWallet) {
+      if (!this.uiWallet && !this.isZkLogin) {
         const signedTx =
           await this.contractCalls.adjustLeverageContractCallRawTransaction(
             params.leverage,

@@ -281,7 +281,6 @@ export class Sockets {
 
   async onDisconnect(): Promise<void> {
     this.socketInstance.on("disconnect", async () => {
-      console.log("Disconnected From Socket Server");
       if (
         "disconnect" in this.callbacks &&
         typeof this.callbacks["disconnect"] === "function"
@@ -293,7 +292,6 @@ export class Sockets {
 
   async onConnect(): Promise<void> {
     this.socketInstance.on("connect", async () => {
-      console.log("Connected To Socket Server");
       if (
         "connect" in this.callbacks &&
         typeof this.callbacks["connect"] === "function"

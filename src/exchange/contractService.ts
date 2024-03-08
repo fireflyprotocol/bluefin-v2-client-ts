@@ -3,17 +3,18 @@ import {
   ADJUST_MARGIN,
   OnChainCalls,
   SuiClient,
+  SuiTransactionBlockResponse,
   toBaseNumber,
   toBigNumberStr,
   Transaction,
-  ZkPayload
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
 import { Signer } from "@mysten/sui.js/cryptography";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
   SuccessMessages,
-  TransformToResponseSchema
+  TransformToResponseSchema,
 } from "./contractErrorHandling.service";
 
 export class ContractCalls {
@@ -283,5 +284,27 @@ export class ContractCalls {
       );
     }
     return 0;
+  };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns Response Schema
+   * @description
+   * transfer sui tokens
+   * */
+  transferSuiBalance = async (
+    to: string,
+    balance: number
+  ): Promise<ResponseSchema> => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.transferSuiBalance(
+        {
+          to,
+          balance,
+        },
+        this.signer
+      );
+    }, interpolate(SuccessMessages.transferSuiBalance, { balance, walletAddress: to }));
   };
 }

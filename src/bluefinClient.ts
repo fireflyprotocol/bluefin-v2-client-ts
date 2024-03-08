@@ -2008,4 +2008,18 @@ export class BluefinClient {
       throw new Error(error);
     }
   };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns Response Schema
+   * @description
+   * transfer sui tokens
+   * */
+  transferSuiBalance = async (
+    to: string,
+    balance: number
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferSuiBalance(to, balance);
+  };
 }

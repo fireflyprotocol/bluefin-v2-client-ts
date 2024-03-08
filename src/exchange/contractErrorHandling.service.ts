@@ -95,6 +95,7 @@ export enum SuccessMessages {
   approveUSDC = "{amount} USDC approved.",
   depositToBank = "{amount} USDC deposited to Margin Bank.",
   setSubAccounts = "This {address} is successfully {status} as a subaccount",
+  transferSuiBalance = "{balance} SUI transferred to {walletAddress}",
 }
 
 export enum VerificationStatus {

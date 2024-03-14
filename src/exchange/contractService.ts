@@ -307,4 +307,14 @@ export class ContractCalls {
       );
     }, interpolate(SuccessMessages.transferSuiBalance, { balance, walletAddress: to }));
   };
+
+  estimateGasForSuiTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return await this.onChainCalls.estimateGasForSuiTransfer({
+      to,
+      balance,
+    });
+  };
 }

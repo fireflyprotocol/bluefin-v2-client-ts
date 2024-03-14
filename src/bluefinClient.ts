@@ -2022,4 +2022,18 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
     return this.contractCalls.transferSuiBalance(to, balance);
   };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * @description
+   * estimate gas for sui token transfer
+   * */
+  estimateGasForSuiTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForSuiTransfer(to, balance);
+  };
 }

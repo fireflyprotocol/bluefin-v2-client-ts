@@ -860,6 +860,17 @@ export class BluefinClient {
   };
 
   /**
+   * @param walletAddress wallet address of the user
+   * @returns string
+   * @description
+   * fetch user sui balance
+   * */
+
+  getSUIBalance = async (walletAddress?: string): Promise<string> => {
+    return this.contractCalls.getSUIBalance(walletAddress);
+  };
+
+  /**
    * @description
    * Faucet function, mints 10K USDC to wallet - Only works on Testnet
    * Assumes that the user wallet has native gas Tokens on Testnet
@@ -2011,7 +2022,7 @@ export class BluefinClient {
 
   /**
    * @param to recipient wallet address
-   * @param balance amount to transfer
+   * @param balance SUI amount to transfer
    * @returns Response Schema
    * @description
    * transfer sui tokens
@@ -2021,6 +2032,20 @@ export class BluefinClient {
     balance: number
   ): Promise<ResponseSchema> => {
     return this.contractCalls.transferSuiBalance(to, balance);
+  };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance USDC amount to transfer
+   * @returns Response Schema
+   * @description
+   * transfer USDC tokens
+   * */
+  transferUSDC = async (
+    to: string,
+    balance: number
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferUSDC(to, balance);
   };
 
   /**
@@ -2035,5 +2060,19 @@ export class BluefinClient {
     balance: number
   ): Promise<BigInt> => {
     return this.contractCalls.estimateGasForSuiTransfer(to, balance);
+  };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * @description
+   * estimate gas for usdc token transfer
+   * */
+  estimateGasForUsdcTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
   };
 }

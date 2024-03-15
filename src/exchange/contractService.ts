@@ -288,7 +288,7 @@ export class ContractCalls {
 
   /**
    * @param to recipient wallet address
-   * @param balance amount to transfer
+   * @param balance SUI amount to transfer
    * @returns Response Schema
    * @description
    * transfer sui tokens
@@ -308,6 +308,36 @@ export class ContractCalls {
     }, interpolate(SuccessMessages.transferSuiBalance, { balance, walletAddress: to }));
   };
 
+  /**
+   * @param to recipient wallet address
+   * @param balance USDC amount to transfer
+   * @returns Response Schema
+   * @description
+   * transfer USDC balance
+   * */
+  transferUSDC = async (
+    to: string,
+    balance: number
+  ): Promise<ResponseSchema> => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.transferUSDC(
+        {
+          to,
+          balance,
+        },
+        this.signer
+      );
+    }, interpolate(SuccessMessages.transferUSDC, { balance, walletAddress: to }));
+  };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance SUI amount to transfer
+   * @returns Response Schema
+   * @description
+   * estimate gas for sui token transfer
+   * */
+
   estimateGasForSuiTransfer = async (
     to: string,
     balance: number
@@ -316,5 +346,34 @@ export class ContractCalls {
       to,
       balance,
     });
+  };
+
+  /**
+   * @param to recipient wallet address
+   * @param balance USDC amount to transfer
+   * @returns Response Schema
+   * @description
+   * esimate gas for USDC token transfer
+   * */
+
+  estimateGasForUsdcTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return await this.onChainCalls.estimateGasForUSDCTransfer({
+      to,
+      balance,
+    });
+  };
+
+    /**
+   * @param walletAddress wallet address of the user
+   * @returns string
+   * @description
+   * fetch user sui balance
+   * */
+
+  getSUIBalance = async (walletAddress?: string): Promise<string> => {
+    return await this.onChainCalls.getUserSuiBalance(walletAddress);
   };
 }

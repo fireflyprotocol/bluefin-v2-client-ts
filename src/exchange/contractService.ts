@@ -7,6 +7,7 @@ import {
   toBaseNumber,
   toBigNumberStr,
   Transaction,
+  TRANSFERABLE_COINS,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
 import { Signer } from "@mysten/sui.js/cryptography";
@@ -288,46 +289,26 @@ export class ContractCalls {
 
   /**
    * @param to recipient wallet address
-   * @param balance SUI amount to transfer
-   * @returns Response Schema
-   * @description
-   * transfer sui tokens
-   * */
-  transferSuiBalance = async (
-    to: string,
-    balance: number
-  ): Promise<ResponseSchema> => {
-    return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.transferSuiBalance(
-        {
-          to,
-          balance,
-        },
-        this.signer
-      );
-    }, interpolate(SuccessMessages.transferSuiBalance, { balance, walletAddress: to }));
-  };
-
-  /**
-   * @param to recipient wallet address
    * @param balance USDC amount to transfer
    * @returns Response Schema
    * @description
    * transfer USDC balance
    * */
-  transferUSDC = async (
+  transferCoins = async (
     to: string,
-    balance: number
+    balance: number,
+    coin: TRANSFERABLE_COINS
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.transferUSDC(
+      return await this.onChainCalls.transferCoins(
         {
           to,
           balance,
+          coin,
         },
         this.signer
       );
-    }, interpolate(SuccessMessages.transferUSDC, { balance, walletAddress: to }));
+    }, interpolate(SuccessMessages.transferCoins, { balance, coin, walletAddress: to }));
   };
 
   /**
@@ -366,7 +347,7 @@ export class ContractCalls {
     });
   };
 
-    /**
+  /**
    * @param walletAddress wallet address of the user
    * @returns string
    * @description

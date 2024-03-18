@@ -29,6 +29,7 @@ import {
   TransactionBlock,
   createZkSignature,
   isEmpty,
+  TRANSFERABLE_COINS,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -2021,39 +2022,25 @@ export class BluefinClient {
   };
 
   /**
+   * transfer coin
    * @param to recipient wallet address
-   * @param balance SUI amount to transfer
+   * @param balance amount to transfer
+   * @param coin coin to transfer
    * @returns Response Schema
-   * @description
-   * transfer sui tokens
    * */
-  transferSuiBalance = async (
+  transferCoins = async (
     to: string,
-    balance: number
+    balance: number,
+    coin: TRANSFERABLE_COINS
   ): Promise<ResponseSchema> => {
-    return this.contractCalls.transferSuiBalance(to, balance);
+    return this.contractCalls.transferCoins(to, balance, coin);
   };
 
   /**
-   * @param to recipient wallet address
-   * @param balance USDC amount to transfer
-   * @returns Response Schema
-   * @description
-   * transfer USDC tokens
-   * */
-  transferUSDC = async (
-    to: string,
-    balance: number
-  ): Promise<ResponseSchema> => {
-    return this.contractCalls.transferUSDC(to, balance);
-  };
-
-  /**
+   * estimate gas for sui token transfer
    * @param to recipient wallet address
    * @param balance amount to transfer
    * @returns BigInt
-   * @description
-   * estimate gas for sui token transfer
    * */
   estimateGasForSuiTransfer = async (
     to: string,
@@ -2063,11 +2050,10 @@ export class BluefinClient {
   };
 
   /**
+   * estimate gas for usdc token transfer
    * @param to recipient wallet address
    * @param balance amount to transfer
    * @returns BigInt
-   * @description
-   * estimate gas for usdc token transfer
    * */
   estimateGasForUsdcTransfer = async (
     to: string,

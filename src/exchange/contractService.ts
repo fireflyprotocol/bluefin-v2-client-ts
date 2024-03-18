@@ -50,10 +50,9 @@ export class ContractCalls {
   }
 
   /**
+   * Withdraws funds from the margin bank contract
    * @param amount the amount to withdraw
    * @returns ResponseSchema
-   * @description
-   * Withdraws funds from the margin bank contract
    * */
   withdrawFromMarginBankContractCall = async (
     amount: Number
@@ -74,9 +73,8 @@ export class ContractCalls {
   };
 
   /**
-   * @returns ResponseSchema
-   * @description
    * Withdraws all funds from the margin bank contract
+   * @returns ResponseSchema
    * */
   withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
@@ -88,11 +86,10 @@ export class ContractCalls {
   };
 
   /**
+   * Deposits funds to the margin bank contract
    * @param amount the amount to deposit
    * @param coinID the coinID to deposit
    * @returns ResponseSchema
-   * @description
-   * Deposits funds to the margin bank contract
    * */
   depositToMarginBankContractCall = async (
     amount: number,
@@ -117,11 +114,10 @@ export class ContractCalls {
   };
 
   /**
+   * adjusts the leverage of the desiered position
    * @param leverage the leverage to set
    * @param symbol the position's market symbol
    * @returns ResponseSchema
-   * @description
-   * adjusts the leverage of the desiered position
    * */
 
   adjustLeverageContractCall = async (
@@ -171,13 +167,12 @@ export class ContractCalls {
   };
 
   /**
+   * This method return the signed Transaction for adding/removing the subaccount(s) on chain
    * @param account The sub account address
    * @param accountsToRemove The array of sub account addresses that need to be removed on-chain (optional param)
    * @param subAccountsMapID The id of the chain object that holds subaccounts mapping (optional param)
    * @param gasBudget The gas budget to be passed to execute the on-chain transaction (optional param)
    * @returns string
-   * @description
-   * This method return the signed Transaction for adding/removing the subaccount(s) on chain
    * */
   upsertSubAccountContractCallRawTransaction = async (
     account: string,
@@ -205,11 +200,10 @@ export class ContractCalls {
   };
 
   /**
+   * closes the desiered position
    * @param publicAddress the sub account's public address
    * @param status the status to set for sub account true = add, false = remove
    * @returns ResponseSchema
-   * @description
-   * closes the desiered position
    * */
 
   setSubAccount = async (
@@ -228,12 +222,11 @@ export class ContractCalls {
   };
 
   /**
+   * adjusts the margin of the desiered position
    * @param symbol the position's market symbol
    * @operationType the operation type to perform (add or remove)
    * @amount the amount to add or remove
    * @returns Response Schemea
-   * @description
-   * adjusts the margin of the desiered position
    * */
   adjustMarginContractCall = async (
     symbol: string,
@@ -270,9 +263,8 @@ export class ContractCalls {
   };
 
   /**
-   * @returns number
-   * @description
    * Get the margin bank balance
+   * @returns number
    * */
   getMarginBankBalance = async (): Promise<number> => {
     if (this.marginBankId) {
@@ -288,11 +280,11 @@ export class ContractCalls {
   };
 
   /**
+   * transfer coins
    * @param to recipient wallet address
-   * @param balance USDC amount to transfer
+   * @param balance amount to transfer
+   * @param coin coin to transfer
    * @returns Response Schema
-   * @description
-   * transfer USDC balance
    * */
   transferCoins = async (
     to: string,
@@ -312,11 +304,10 @@ export class ContractCalls {
   };
 
   /**
+   * estimate gas for sui token transfer
    * @param to recipient wallet address
    * @param balance SUI amount to transfer
    * @returns Response Schema
-   * @description
-   * estimate gas for sui token transfer
    * */
 
   estimateGasForSuiTransfer = async (
@@ -330,11 +321,10 @@ export class ContractCalls {
   };
 
   /**
+   * esimate gas for USDC token transfer
    * @param to recipient wallet address
    * @param balance USDC amount to transfer
    * @returns Response Schema
-   * @description
-   * esimate gas for USDC token transfer
    * */
 
   estimateGasForUsdcTransfer = async (
@@ -348,10 +338,9 @@ export class ContractCalls {
   };
 
   /**
+   * fetch user sui balance
    * @param walletAddress wallet address of the user
    * @returns string
-   * @description
-   * fetch user sui balance
    * */
 
   getSUIBalance = async (walletAddress?: string): Promise<string> => {

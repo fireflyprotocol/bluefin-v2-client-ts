@@ -861,10 +861,11 @@ export class BluefinClient {
   };
 
   /**
-   * @param walletAddress wallet address of the user
-   * @returns string
    * @description
    * fetch user sui balance
+   * @param walletAddress wallet address of the user
+   * @returns string
+  
    * */
 
   getSUIBalance = async (walletAddress?: string): Promise<string> => {

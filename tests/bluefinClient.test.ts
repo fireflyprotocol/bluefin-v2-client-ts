@@ -5,13 +5,26 @@ import chaiAsPromised from "chai-as-promised";
 import { setTimeout } from "timers/promises";
 
 import {
-  Faucet, MinifiedCandleStick, OrderSigner, ORDER_SIDE, ORDER_STATUS,
+  Faucet,
+  MinifiedCandleStick,
+  OrderSigner,
+  ORDER_SIDE,
+  ORDER_STATUS,
   // MinifiedCandleStick,
-  ORDER_TYPE, parseSigPK, toBaseNumber
+  ORDER_TYPE,
+  parseSigPK,
+  toBaseNumber,
 } from "@firefly-exchange/library-sui";
 import {
-  BluefinClient, GetAccountDataResponse, GetMarketRecentTradesResponse,
-  GetPositionResponse, GetUserTradesResponse, Networks, OrderSentForSettlementUpdateResponse, PlaceOrderResponse, TickerData
+  BluefinClient,
+  GetAccountDataResponse,
+  GetMarketRecentTradesResponse,
+  GetPositionResponse,
+  GetUserTradesResponse,
+  Networks,
+  OrderSentForSettlementUpdateResponse,
+  PlaceOrderResponse,
+  TickerData,
 } from "../index";
 import { generateRandomNumber } from "../utils/utils";
 
@@ -263,10 +276,9 @@ describe("BluefinClient", () => {
   });
 
   it("should whitelist the subaccount for One Click Trading", async () => {
-
     // whitelisting sub account
     const resp = await client.upsertSubAccount({
-      subAccountAddress: testSubAccKey
+      subAccountAddress: testSubAccKey,
     });
     expect(resp.ok).to.be.equal(true);
     expect(resp.data.subAccountAddress).to.be.equal(testSubAccPubAddr);

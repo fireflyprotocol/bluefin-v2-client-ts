@@ -29,6 +29,7 @@ import {
   TransactionBlock,
   createZkSignature,
   isEmpty,
+  TRANSFERABLE_COINS,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -857,6 +858,18 @@ export class BluefinClient {
       },
       this.signer
     );
+  };
+
+  /**
+   * @description
+   * fetch user sui balance
+   * @param walletAddress wallet address of the user
+   * @returns string
+  
+   * */
+
+  getSUIBalance = async (walletAddress?: string): Promise<string> => {
+    return this.contractCalls.getSUIBalance(walletAddress);
   };
 
   /**
@@ -2007,5 +2020,46 @@ export class BluefinClient {
     } catch (error) {
       throw new Error(error);
     }
+  };
+
+  /**
+   * transfer coin
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @param coin coin to transfer
+   * @returns Response Schema
+   * */
+  transferCoins = async (
+    to: string,
+    balance: number,
+    coin: TRANSFERABLE_COINS
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferCoins(to, balance, coin);
+  };
+
+  /**
+   * estimate gas for sui token transfer
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * */
+  estimateGasForSuiTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForSuiTransfer(to, balance);
+  };
+
+  /**
+   * estimate gas for usdc token transfer
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * */
+  estimateGasForUsdcTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
   };
 }

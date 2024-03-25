@@ -2,11 +2,13 @@ import {
   ADJUST_MARGIN,
   BaseWallet,
   bigNumber,
+  createZkSignature,
   DAPIKlineResponse,
   DecodeJWT,
   Ed25519Keypair,
   ExtendedWalletContextState,
   getKeyPairFromPvtKey,
+  isEmpty,
   MARGIN_TYPE,
   MarketSymbol,
   Order,
@@ -24,12 +26,10 @@ import {
   toBigNumber,
   toBigNumberStr,
   Transaction,
+  TransactionBlock,
+  TRANSFERABLE_COINS,
   usdcToBaseNumber,
   ZkPayload,
-  TransactionBlock,
-  createZkSignature,
-  isEmpty,
-  TRANSFERABLE_COINS,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -58,6 +58,7 @@ import {
   CancelOrderResponse,
   ConfigResponse,
   ExchangeInfo,
+  ExpiredSubAccounts1CTResponse,
   ExtendedNetwork,
   GenerateReferralCodeRequest,
   GenerateReferralCodeResponse,
@@ -972,10 +973,11 @@ export class BluefinClient {
     params: SubAccountRequest
   ): Promise<ResponseSchema> => {
     try {
+      const apiResponse = await this.getExpiredAccountsFor1CT();
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.subAccountAddress,
-          params.accountsToRemove ?? []
+          apiResponse?.data?.expiredSubAccounts ?? []
         );
 
       const request: SignedSubAccountRequest = {
@@ -1940,6 +1942,20 @@ export class BluefinClient {
     const response = await this.apiService.post<SubAccountResponse>(
       SERVICE_URLS.USER.SUBACCOUNT_1CT,
       params,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * @description
+   * Get expired 1CT subAccount list for user that are still active
+   * @returns ExpiredSubAccounts1CTResponse
+   */
+  private getExpiredAccountsFor1CT = async () => {
+    const response = await this.apiService.get<ExpiredSubAccounts1CTResponse>(
+      SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
+      null,
       { isAuthenticationRequired: true }
     );
     return response;

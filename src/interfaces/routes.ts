@@ -506,6 +506,11 @@ export interface SubAccountResponse {
   type?: string;
 }
 
+export interface Expired1CTSubAccountsResponse {
+  /** The list of subaccounts that are expired and their status is active */
+  expiredSubAccounts: Array<string>;
+}
+
 export interface FundGasResponse {
   message: string;
 }

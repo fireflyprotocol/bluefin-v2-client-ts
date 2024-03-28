@@ -58,7 +58,7 @@ import {
   CancelOrderResponse,
   ConfigResponse,
   ExchangeInfo,
-  ExpiredSubAccounts1CTResponse,
+  Expired1CTSubAccountsResponse,
   ExtendedNetwork,
   GenerateReferralCodeRequest,
   GenerateReferralCodeResponse,
@@ -1953,7 +1953,7 @@ export class BluefinClient {
    * @returns ExpiredSubAccounts1CTResponse
    */
   private getExpiredAccountsFor1CT = async () => {
-    const response = await this.apiService.get<ExpiredSubAccounts1CTResponse>(
+    const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
       SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
       null,
       { isAuthenticationRequired: true }

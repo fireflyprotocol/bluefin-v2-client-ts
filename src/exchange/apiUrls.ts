@@ -30,7 +30,7 @@ export const SERVICE_URLS = {
     GENERATE_READONLY_TOKEN: "/generateReadOnlyToken",
     USER_TRADES_HISTORY: "/userTradesHistory",
     SUBACCOUNT_1CT: "/account/addSubAccountFor1CT",
-    EXPIRED_SUBACCOUNT_1CT: "/account/expiredAccounts1CT",
+    EXPIRED_SUBACCOUNT_1CT: "/account/expired1CTAccounts",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",

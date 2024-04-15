@@ -27,9 +27,6 @@ export class InteractorCalls {
   InteractorCalls: Interactor;
   signer: Signer;
   suiClient: SuiClient;
-  marginBankId: string | undefined;
-  walletAddress: string;
-  is_wallet_extension: boolean;
 
   constructor(
     signer: Signer,

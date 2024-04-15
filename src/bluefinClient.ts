@@ -49,6 +49,7 @@ import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { ContractCalls } from "./exchange/contractService";
+import { InteractorCalls } from "./exchange/interactorService";
 import { Sockets } from "./exchange/sockets";
 import { WebSockets } from "./exchange/WebSocket";
 import {
@@ -151,6 +152,8 @@ export class BluefinClient {
 
   private contractCalls: ContractCalls | undefined;
 
+  private interactorCalls: InteractorCalls | undefined;
+
   private provider: SuiClient | undefined; // to save raw web3 provider when connecting from UI
 
   private isTermAccepted = false;
@@ -214,8 +217,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches,
-    else if (_account) {
+    //In case of KMS Signer any of the above condition doesn't matches, 
+    else if(_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -241,11 +244,13 @@ export class BluefinClient {
         throw Error("Signer not initialized");
       }
       await this.initContractCalls(deployment);
+      // for BLV contract calls
+      await this.initInteractorCalls();
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : (this.signer as any as ExtendedWalletContextState).getAddress();
+          ? this.signer.toSuiAddress()
+          : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -358,6 +363,24 @@ export class BluefinClient {
       this.getZkPayload(),
       this.walletAddress,
       this.is_wallet_extension
+    );
+  };
+
+  /**
+   * @description
+   * initializes contract calls
+   * @param deployment (optional) The deployment json provided by deployer
+   */
+   initInteractorCalls = async () => {
+    if (!this.signer) {
+      throw Error("Signer not Initialized");
+    }
+    const _deployment = await this.getVaultConfigsForInteractor();
+
+    this.interactorCalls = new InteractorCalls(
+      this.getSigner(),
+      _deployment,
+      this.provider
     );
   };
 
@@ -1854,6 +1877,28 @@ export class BluefinClient {
       }
     }
   };
+    /**
+   * @description
+   * Gets deployment json from local file (will get from DAPI in future)
+   * @returns deployment json
+   * */
+     private getVaultConfigsForInteractor = async (): Promise<any> => {
+      try {
+        // Fetch data from the given URL
+        const response = await this.apiService.get<ConfigResponse>(
+          SERVICE_URLS.MARKET.CONFIG
+        );
+        // The data property of the response object contains our configuration
+        return response.data.deployment;
+      } catch (error) {
+        // If Axios threw an error, it will be stored in error.response
+        if (error.response) {
+          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+        } else {
+          throw new Error(`An error occurred: ${error}`);
+        }
+      }
+    };
 
   /**
    * Function to create order payload that is to be signed on-chain

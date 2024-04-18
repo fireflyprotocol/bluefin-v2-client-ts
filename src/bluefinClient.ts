@@ -31,6 +31,7 @@ import {
   usdcToBaseNumber,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
+import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
 import { toB64 } from "@mysten/bcs";
 import {
@@ -126,6 +127,9 @@ import {
   SubAccountRequest,
   SubAccountResponse,
   TickerData,
+  UserVaultDetail,
+  UserVaultTransferRequest,
+  VaultDetail,
   verifyDepositResponse,
 } from "./interfaces/routes";
 
@@ -1874,31 +1878,6 @@ export class BluefinClient {
       }
     }
   };
-  /**
- * @description
- * Gets deployment json from local file (will get from DAPI in future)
- * @returns deployment json
- * */
-  private getVaultConfigsForInteractor = async (): Promise<any> => {
-    try {
-      // Fetch data from the given URL
-      const response = await this.apiService.get<any>(
-        VAULT_URLS.VAULT.CONFIG,
-        {},
-        { isAuthenticationRequired: true },
-        this.network.vaultURL
-      );
-      // The data property of the response object contains our configuration
-      return response.data.deployment;
-    } catch (error) {
-      // If Axios threw an error, it will be stored in error.response
-      if (error.response) {
-        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
-      } else {
-        throw new Error(`An error occurred: ${error}`);
-      }
-    }
-  };
 
   /**
    * Function to create order payload that is to be signed on-chain
@@ -2123,4 +2102,180 @@ export class BluefinClient {
   ): Promise<BigInt> => {
     return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
   };
+
+
+  ///// ******************* Vault APIs *****************/////
+  /**
+   * @description
+   * Gets deployment json from vaultConfig table 
+   * @returns deployment json
+   * */
+  private getVaultConfigsForInteractor = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<any>(
+        VAULT_URLS.VAULT.CONFIG,
+        {},
+        { isAuthenticationRequired: false },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data[0].config;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets user's vault details
+   * @returns user vault details
+   * */
+  public getUserVaultDetails = async (userAddress: string, vaultId: string): Promise<UserVaultDetail> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserVaultDetail>(
+        VAULT_URLS.USER.VAULT_USER,
+        {
+          userAddress: userAddress,
+          vaultId: vaultId
+        },
+        { isAuthenticationRequired: false },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch user vault detail: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets user's vault details
+   * @returns user vault details
+   * */
+  public getVaultDetails = async (vaultId: string): Promise<VaultDetail> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<VaultDetail>(
+        VAULT_URLS.VAULT.DETAILS,
+        {
+          vaultId: vaultId
+        },
+        { isAuthenticationRequired: false },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch vault detail: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+
+  /**
+   * @description
+   * Gets vault pending withdraw requests
+   * @returns pending withdraw requests
+   * */
+  public getPendingWithdrawRequests = async (vaultId: string): Promise<UserVaultTransferRequest> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserVaultTransferRequest>(
+        VAULT_URLS.VAULT.PENDING_WITHDRAW_REQUESTS,
+        { vaultId: vaultId },
+        { isAuthenticationRequired: false },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch vault pending withdraw requests: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+  * @description
+  * Gets user vault details summary
+  * @returns pending withdraw requests
+  * */
+  public getUserVaultDetailsSummary = async (userAddress: string): Promise<UserVaultTransferRequest> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserVaultTransferRequest>(
+        VAULT_URLS.USER.VAULT_USER_SUMMARY,
+        { userAddress: userAddress },
+        { isAuthenticationRequired: false },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch user vault summary data: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * withdraws USDC from Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  withdrawFromVault = async (vaultName: string, amount?: number,): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.interactorCalls.withdrawFromVaultContractCall(amount, vaultName);
+    }
+
+  };
+
+  /**
+   * @description
+   * deposit USDC to Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  depositToVault = async (vaultName: string, amount?: number,): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.interactorCalls.depositToVaultContractCall(amount, vaultName);
+    }
+
+  };
+
+  /**
+   * @description
+   * claim USDC from Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  claimFromVault = async (vaultName: string, signaturePayload: SignaturePayload, signature: string): Promise<ResponseSchema> => {
+    return this.interactorCalls.claimFundsFromVaultContractCall(vaultName, signaturePayload, signature);
+  };
+
+
 }

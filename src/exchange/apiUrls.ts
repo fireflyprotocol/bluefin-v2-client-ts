@@ -68,5 +68,15 @@ export const SERVICE_URLS = {
 export const VAULT_URLS = {
   VAULT: {
     CONFIG: "/vaultDetails/vaultConfigs",
+    DETAILS: "/vaultDetails",
+    PENDING_WITHDRAW_REQUESTS: "/vaultPendingWithdrawRequests",
+  },
+
+  USER:
+  {
+    VAULT_USER: "/userVaultDetails",
+    VAULT_USER_SUMMARY: "/userVaultDetailsSummary"
   }
+
+
 };

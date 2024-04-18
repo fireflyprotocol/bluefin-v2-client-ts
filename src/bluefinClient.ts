@@ -46,7 +46,7 @@ import { sha256 } from "@noble/hashes/sha256";
 import { generateRandomNumber } from "../utils/utils";
 import { Networks, POST_ORDER_BASE } from "./constants";
 import { APIService } from "./exchange/apiService";
-import { SERVICE_URLS } from "./exchange/apiUrls";
+import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { ContractCalls } from "./exchange/contractService";
 import { InteractorCalls } from "./exchange/interactorService";
@@ -218,7 +218,7 @@ export class BluefinClient {
       this.initializeWithKeyPair(_account);
     }
     //In case of KMS Signer any of the above condition doesn't matches, 
-    else if(_account) {
+    else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -371,7 +371,7 @@ export class BluefinClient {
    * initializes contract calls
    * @param deployment (optional) The deployment json provided by deployer
    */
-   initInteractorCalls = async () => {
+  initInteractorCalls = async () => {
     if (!this.signer) {
       throw Error("Signer not Initialized");
     }
@@ -505,9 +505,8 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${
-      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-    }`;
+    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+      }`;
   };
 
   /**
@@ -616,7 +615,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.STOP_LIMIT
+          order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -626,11 +625,10 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`,
+      orderSignature: `${signature?.signature}${signature?.publicAddress
+        ? signature?.publicAddress
+        : signature?.publicKey
+        }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -743,11 +741,10 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`;
+      return `${signature?.signature}${signature?.publicAddress
+        ? signature?.publicAddress
+        : signature?.publicKey
+        }`;
     } catch {
       throw Error("Signing cancelled by user");
     }
@@ -1877,28 +1874,31 @@ export class BluefinClient {
       }
     }
   };
-    /**
-   * @description
-   * Gets deployment json from local file (will get from DAPI in future)
-   * @returns deployment json
-   * */
-     private getVaultConfigsForInteractor = async (): Promise<any> => {
-      try {
-        // Fetch data from the given URL
-        const response = await this.apiService.get<ConfigResponse>(
-          SERVICE_URLS.MARKET.CONFIG
-        );
-        // The data property of the response object contains our configuration
-        return response.data.deployment;
-      } catch (error) {
-        // If Axios threw an error, it will be stored in error.response
-        if (error.response) {
-          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
-        } else {
-          throw new Error(`An error occurred: ${error}`);
-        }
+  /**
+ * @description
+ * Gets deployment json from local file (will get from DAPI in future)
+ * @returns deployment json
+ * */
+  private getVaultConfigsForInteractor = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<any>(
+        VAULT_URLS.VAULT.CONFIG,
+        {},
+        { isAuthenticationRequired: true },
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data.deployment;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
       }
-    };
+    }
+  };
 
   /**
    * Function to create order payload that is to be signed on-chain

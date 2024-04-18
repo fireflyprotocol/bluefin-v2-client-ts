@@ -556,6 +556,7 @@ export interface ExtendedNetwork extends NetworkConfigs {
   onboardingUrl?: string;
   webSocketURL: string;
   dmsURL?: string;
+  vaultURL?: string;
   UUID?: string;
 }
 
@@ -589,6 +590,10 @@ export interface ConfigResponse {
     };
   };
 }
+
+
+
+
 
 export interface ObjectDetails {
   id: string;

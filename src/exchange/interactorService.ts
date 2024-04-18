@@ -60,7 +60,7 @@ export class InteractorCalls {
       );
       
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    }, interpolate(SuccessMessages.withdrawFundsFromVault, { amount }));
   };
 
   // /**
@@ -81,7 +81,7 @@ export class InteractorCalls {
       );
       
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    }, interpolate(SuccessMessages.depositToVault, { amount }));
   };
 
   // /**
@@ -105,7 +105,7 @@ export class InteractorCalls {
       );
       
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, {  }));
+    }, interpolate(SuccessMessages.claimFundsFronVault, {  }));
   };
 
   // /**

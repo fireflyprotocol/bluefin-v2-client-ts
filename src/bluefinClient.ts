@@ -127,7 +127,9 @@ import {
   SubAccountRequest,
   SubAccountResponse,
   TickerData,
+  UserPendingWithdrawRequest,
   UserVaultDetail,
+  UserVaultDetailSummary,
   UserVaultTransferRequest,
   VaultDetail,
   verifyDepositResponse,
@@ -2194,12 +2196,12 @@ export class BluefinClient {
    * Gets vault pending withdraw requests
    * @returns pending withdraw requests
    * */
-  public getPendingWithdrawRequests = async (vaultId: string): Promise<UserVaultTransferRequest> => {
+  public getPendingWithdrawRequests = async (vaultId: string, startTime?: string, endTime?: number): Promise<UserPendingWithdrawRequest> => {
     try {
       // Fetch data from the given URL
-      const response = await this.apiService.get<UserVaultTransferRequest>(
+      const response = await this.apiService.get<UserPendingWithdrawRequest>(
         VAULT_URLS.VAULT.PENDING_WITHDRAW_REQUESTS,
-        { vaultId: vaultId },
+        { vaultId: vaultId, startTime: startTime, endTime: endTime },
         { isAuthenticationRequired: false },
         this.network.vaultURL
       );
@@ -2220,10 +2222,10 @@ export class BluefinClient {
   * Gets user vault details summary
   * @returns pending withdraw requests
   * */
-  public getUserVaultDetailsSummary = async (userAddress: string): Promise<UserVaultTransferRequest> => {
+  public getUserVaultDetailsSummary = async (userAddress: string): Promise<UserVaultDetailSummary> => {
     try {
       // Fetch data from the given URL
-      const response = await this.apiService.get<UserVaultTransferRequest>(
+      const response = await this.apiService.get<UserVaultDetailSummary>(
         VAULT_URLS.USER.VAULT_USER_SUMMARY,
         { userAddress: userAddress },
         { isAuthenticationRequired: false },

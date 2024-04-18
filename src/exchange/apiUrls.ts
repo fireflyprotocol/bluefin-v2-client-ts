@@ -69,7 +69,7 @@ export const VAULT_URLS = {
   VAULT: {
     CONFIG: "/vaultDetails/vaultConfigs",
     DETAILS: "/vaultDetails",
-    PENDING_WITHDRAW_REQUESTS: "/vaultPendingWithdrawRequests",
+    PENDING_WITHDRAW_REQUESTS: "/vaultDetails/vaultPendingWithdrawRequests",
   },
 
   USER:

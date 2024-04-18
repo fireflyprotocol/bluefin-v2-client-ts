@@ -912,6 +912,11 @@ export interface UserVaultDetail {
   updatedAt?: Date;
   sequenceNumber: number;
 }
+export interface UserPendingWithdrawRequest {
+ 
+  distinctUserRequestsCount: number;
+  totalWithdrawAmount: number;
+}
 export interface UserVaultTransferRequest {
   id: number;
   userAddress: string;

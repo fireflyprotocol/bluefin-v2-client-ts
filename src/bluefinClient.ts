@@ -275,7 +275,18 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
-      this.uiWallet = uiSignerObject.wallet;
+      mixpanel.track("initializeWithHook-0", {
+        uiWallet: uiSignerObject.wallet,
+        signer: uiSignerObject,
+      });
+      if (uiSignerObject.wallet) {
+        this.uiWallet = uiSignerObject.wallet;
+      } else {
+        this.uiWallet = uiSignerObject;
+      }
+      mixpanel.track("initializeWithHook-1", {
+        uiWallet: this.uiWallet,
+      });
       this.signer = uiSignerObject as any;
       this.walletAddress = (
         this.signer as any as ExtendedWalletContextState
@@ -523,6 +534,9 @@ export class BluefinClient {
     });
 
     if (this.uiWallet) {
+      mixpanel.track("createOnboardingSignature-5", {
+        wallet: this.uiWallet,
+      });
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet

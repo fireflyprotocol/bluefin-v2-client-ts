@@ -247,11 +247,6 @@ export class BluefinClient {
       await this.initContractCalls(deployment);
       // for BLV contract calls
       await this.initInteractorCalls();
-      this.walletAddress = this.isZkLogin
-        ? this.walletAddress
-        : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -264,8 +259,10 @@ export class BluefinClient {
   };
 
   initializeWithHook = async (
-    uiSignerObject: ExtendedWalletContextState
+    uiSignerObject: ExtendedWalletContextState,
+    walletAddress: string
   ): Promise<void> => {
+    console.log(uiSignerObject, "signer");
     try {
       //init mix panel
       mixpanel.init("8bf62bd9c14d27eae67fd9d645c81f3e", {
@@ -280,18 +277,12 @@ export class BluefinClient {
         uiWallet: uiSignerObject.wallet,
         signer: uiSignerObject,
       });
-      if (uiSignerObject.wallet) {
-        this.uiWallet = uiSignerObject.wallet;
-      } else {
-        this.uiWallet = uiSignerObject;
-      }
+      this.uiWallet = uiSignerObject;
       mixpanel.track("initializeWithHook-1", {
         uiWallet: this.uiWallet,
       });
       this.signer = uiSignerObject as any;
-      this.walletAddress = (
-        this.signer as any as ExtendedWalletContextState
-      ).getAddress();
+      this.walletAddress = walletAddress;
       this.isZkLogin = false;
       this.is_wallet_extension = true;
     } catch (err) {
@@ -895,9 +886,7 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: this.uiWallet
-            ? (this.signer as any as ExtendedWalletContextState).getAddress()
-            : this.signer.toSuiAddress(),
+          address: this.walletAddress,
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,

@@ -235,14 +235,6 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    //init mix panel
-    mixpanel.init("8bf62bd9c14d27eae67fd9d645c81f3e", {
-      debug: true,
-      ignore_dnt: true,
-      loaded: function () {
-        mixpanel.get_distinct_id();
-      },
-    });
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -275,6 +267,15 @@ export class BluefinClient {
     uiSignerObject: ExtendedWalletContextState
   ): Promise<void> => {
     try {
+      //init mix panel
+      mixpanel.init("8bf62bd9c14d27eae67fd9d645c81f3e", {
+        debug: true,
+        ignore_dnt: true,
+        loaded: function () {
+          mixpanel.get_distinct_id();
+        },
+      });
+
       mixpanel.track("initializeWithHook-0", {
         uiWallet: uiSignerObject.wallet,
         signer: uiSignerObject,

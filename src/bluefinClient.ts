@@ -128,6 +128,7 @@ import {
   TickerData,
   verifyDepositResponse,
 } from "./interfaces/routes";
+import mixpanel from "mixpanel-browser";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -217,8 +218,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches, 
-    else if(_account) {
+    //In case of KMS Signer any of the above condition doesn't matches,
+    else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -234,6 +235,14 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
+    //init mix panel
+    mixpanel.init("8bf62bd9c14d27eae67fd9d645c81f3e", {
+      debug: true,
+      ignore_dnt: true,
+      loaded: function () {
+        mixpanel.get_distinct_id();
+      },
+    });
     if (apiToken) {
       this.apiService.setApiToken(apiToken);
       // for socket
@@ -249,8 +258,8 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : (this.signer as any as ExtendedWalletContextState).getAddress();
+        ? this.signer.toSuiAddress()
+        : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -371,7 +380,7 @@ export class BluefinClient {
    * initializes contract calls
    * @param deployment (optional) The deployment json provided by deployer
    */
-   initInteractorCalls = async () => {
+  initInteractorCalls = async () => {
     if (!this.signer) {
       throw Error("Signer not Initialized");
     }
@@ -424,6 +433,10 @@ export class BluefinClient {
    * @returns auth token
    */
   userOnBoarding = async (token?: string) => {
+    mixpanel.track("userOnBoarding-0", {
+      msg: "executing fn",
+    });
+
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
@@ -431,12 +444,22 @@ export class BluefinClient {
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
+      mixpanel.track("userOnBoarding-1", {
+        authTokenResponse,
+      });
+
       if (!authTokenResponse.ok || !authTokenResponse.data) {
+        mixpanel.track("userOnBoarding-2", {
+          error: `Authorization error: ${authTokenResponse.response.message}`,
+        });
         throw Error(
           `Authorization error: ${authTokenResponse.response.message}`
         );
       }
       userAuthToken = authTokenResponse.data.token;
+      mixpanel.track("userOnBoarding-3", {
+        userAuthToken,
+      });
     }
     // for api
     this.apiService.setAuthToken(userAuthToken);
@@ -485,11 +508,19 @@ export class BluefinClient {
   };
 
   createOnboardingSignature = async () => {
+    mixpanel.track("createOnboardingSignature-0", {
+      msg: "executing fn",
+    });
+
     let signature: SigPK;
 
     const onboardingSignature = {
       onboardingUrl: this.network.onboardingUrl,
     };
+
+    mixpanel.track("createOnboardingSignature-1", {
+      onboardingSignature,
+    });
 
     if (this.uiWallet) {
       signature = await OrderSigner.signPayloadUsingWallet(
@@ -505,6 +536,18 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
+    mixpanel.track("createOnboardingSignature-2", {
+      signature,
+    });
+
+    mixpanel.track("createOnboardingSignature-3", {
+      finalSignature: `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`,
+    });
+
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
@@ -1877,28 +1920,28 @@ export class BluefinClient {
       }
     }
   };
-    /**
+  /**
    * @description
    * Gets deployment json from local file (will get from DAPI in future)
    * @returns deployment json
    * */
-     private getVaultConfigsForInteractor = async (): Promise<any> => {
-      try {
-        // Fetch data from the given URL
-        const response = await this.apiService.get<ConfigResponse>(
-          SERVICE_URLS.MARKET.CONFIG
-        );
-        // The data property of the response object contains our configuration
-        return response.data.deployment;
-      } catch (error) {
-        // If Axios threw an error, it will be stored in error.response
-        if (error.response) {
-          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
-        } else {
-          throw new Error(`An error occurred: ${error}`);
-        }
+  private getVaultConfigsForInteractor = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<ConfigResponse>(
+        SERVICE_URLS.MARKET.CONFIG
+      );
+      // The data property of the response object contains our configuration
+      return response.data.deployment;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
       }
-    };
+    }
+  };
 
   /**
    * Function to create order payload that is to be signed on-chain

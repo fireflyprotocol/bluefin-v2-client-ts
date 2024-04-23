@@ -2,11 +2,13 @@ import {
   ADJUST_MARGIN,
   BaseWallet,
   bigNumber,
+  createZkSignature,
   DAPIKlineResponse,
   DecodeJWT,
   Ed25519Keypair,
   ExtendedWalletContextState,
   getKeyPairFromPvtKey,
+  isEmpty,
   MARGIN_TYPE,
   MarketSymbol,
   Order,
@@ -24,11 +26,10 @@ import {
   toBigNumber,
   toBigNumberStr,
   Transaction,
+  TransactionBlock,
+  TRANSFERABLE_COINS,
   usdcToBaseNumber,
   ZkPayload,
-  TransactionBlock,
-  createZkSignature,
-  isEmpty,
 } from "@firefly-exchange/library-sui";
 
 import { toB64 } from "@mysten/bcs";
@@ -48,6 +49,7 @@ import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS } from "./exchange/apiUrls";
 import { ResponseSchema } from "./exchange/contractErrorHandling.service";
 import { ContractCalls } from "./exchange/contractService";
+import { InteractorCalls } from "./exchange/interactorService";
 import { Sockets } from "./exchange/sockets";
 import { WebSockets } from "./exchange/WebSocket";
 import {
@@ -57,6 +59,7 @@ import {
   CancelOrderResponse,
   ConfigResponse,
   ExchangeInfo,
+  Expired1CTSubAccountsResponse,
   ExtendedNetwork,
   GenerateReferralCodeRequest,
   GenerateReferralCodeResponse,
@@ -149,6 +152,8 @@ export class BluefinClient {
 
   private contractCalls: ContractCalls | undefined;
 
+  private interactorCalls: InteractorCalls | undefined;
+
   private provider: SuiClient | undefined; // to save raw web3 provider when connecting from UI
 
   private isTermAccepted = false;
@@ -212,8 +217,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches,
-    else if (_account) {
+    //In case of KMS Signer any of the above condition doesn't matches, 
+    else if(_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -239,11 +244,13 @@ export class BluefinClient {
         throw Error("Signer not initialized");
       }
       await this.initContractCalls(deployment);
+      // for BLV contract calls
+      await this.initInteractorCalls();
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : (this.signer as any as ExtendedWalletContextState).getAddress();
+          ? this.signer.toSuiAddress()
+          : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -356,6 +363,24 @@ export class BluefinClient {
       this.getZkPayload(),
       this.walletAddress,
       this.is_wallet_extension
+    );
+  };
+
+  /**
+   * @description
+   * initializes contract calls
+   * @param deployment (optional) The deployment json provided by deployer
+   */
+   initInteractorCalls = async () => {
+    if (!this.signer) {
+      throw Error("Signer not Initialized");
+    }
+    const _deployment = await this.getVaultConfigsForInteractor();
+
+    this.interactorCalls = new InteractorCalls(
+      this.getSigner(),
+      _deployment,
+      this.provider
     );
   };
 
@@ -861,6 +886,18 @@ export class BluefinClient {
 
   /**
    * @description
+   * fetch user sui balance
+   * @param walletAddress wallet address of the user
+   * @returns string
+  
+   * */
+
+  getSUIBalance = async (walletAddress?: string): Promise<string> => {
+    return this.contractCalls.getSUIBalance(walletAddress);
+  };
+
+  /**
+   * @description
    * Faucet function, mints 10K USDC to wallet - Only works on Testnet
    * Assumes that the user wallet has native gas Tokens on Testnet
    * @returns Boolean true if user is funded, false otherwise
@@ -959,10 +996,11 @@ export class BluefinClient {
     params: SubAccountRequest
   ): Promise<ResponseSchema> => {
     try {
+      const apiResponse = await this.getExpiredAccountsFor1CT();
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.subAccountAddress,
-          params.accountsToRemove ?? []
+          apiResponse?.data?.expiredSubAccounts ?? []
         );
 
       const request: SignedSubAccountRequest = {
@@ -1839,6 +1877,28 @@ export class BluefinClient {
       }
     }
   };
+    /**
+   * @description
+   * Gets deployment json from local file (will get from DAPI in future)
+   * @returns deployment json
+   * */
+     private getVaultConfigsForInteractor = async (): Promise<any> => {
+      try {
+        // Fetch data from the given URL
+        const response = await this.apiService.get<ConfigResponse>(
+          SERVICE_URLS.MARKET.CONFIG
+        );
+        // The data property of the response object contains our configuration
+        return response.data.deployment;
+      } catch (error) {
+        // If Axios threw an error, it will be stored in error.response
+        if (error.response) {
+          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+        } else {
+          throw new Error(`An error occurred: ${error}`);
+        }
+      }
+    };
 
   /**
    * Function to create order payload that is to be signed on-chain
@@ -1934,6 +1994,20 @@ export class BluefinClient {
 
   /**
    * @description
+   * Get expired 1CT subAccount list for user that are still active
+   * @returns ExpiredSubAccounts1CTResponse
+   */
+  private getExpiredAccountsFor1CT = async () => {
+    const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
+      SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
+      null,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * @description
    * Reset timer for cancel on disconnect for open orders
    * @param params PostTimerAttributes containing the countdowns of all markets
    * @returns PostTimerResponse containing accepted and failed countdowns. If status is not 201, request wasn't successful.
@@ -2007,5 +2081,46 @@ export class BluefinClient {
     } catch (error) {
       throw new Error(error);
     }
+  };
+
+  /**
+   * transfer coin
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @param coin coin to transfer
+   * @returns Response Schema
+   * */
+  transferCoins = async (
+    to: string,
+    balance: number,
+    coin: TRANSFERABLE_COINS
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferCoins(to, balance, coin);
+  };
+
+  /**
+   * estimate gas for sui token transfer
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * */
+  estimateGasForSuiTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForSuiTransfer(to, balance);
+  };
+
+  /**
+   * estimate gas for usdc token transfer
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @returns BigInt
+   * */
+  estimateGasForUsdcTransfer = async (
+    to: string,
+    balance: number
+  ): Promise<BigInt> => {
+    return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
   };
 }

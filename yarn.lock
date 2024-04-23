@@ -981,10 +981,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.3.14":
-  version "1.3.14"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.3.14.tgz#f6618c97d9310f6acfdd719d99beb30271a4f598"
-  integrity sha512-a2Lh/FZxiUTmkTFBK2L8FMQxsqATEB4OwUE6n6qzPCPxsml5saCk8eAQPgIHgqX/Zg5eWDOZFFeEtY6PDFd3Ww==
+"@firefly-exchange/library-sui@^1.4.7":
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.4.7.tgz#b9c9033640ab45ed4e19bd9c0da45e3d80e1edb1"
+  integrity sha512-MiqyisDk7dU7GNR7AozwMUteowsquRLrmNBeTo0t+Bq6agip+MiSF/FBG68SyIe4E0XYmyGfmMc1DPV7oQNUXg==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/sui.js" "^0.48.0"
@@ -1097,13 +1097,6 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@mysten/bcs@0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.10.1.tgz#8c6b7667541c58b5e90fc20b531529d21c81be18"
-  integrity sha512-cQDb7Rhz2J82ZqgVQiHykuwKUlgiLWS2bjoajPPW0uvXlb75qrgKuaxh1UzsaRhHy3egk/APc0xjiZoqdbzB4w==
-  dependencies:
-    bs58 "^5.0.0"
-
 "@mysten/bcs@0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.8.1.tgz#30d3256a728a4a934ae608d118347289fe0ba1e7"
@@ -1118,7 +1111,7 @@
   dependencies:
     bs58 "^5.0.0"
 
-"@mysten/sui.js@0.45.1":
+"@mysten/sui.js@0.45.1", "@mysten/sui.js@^0.45.0":
   version "0.45.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.45.1.tgz#df609856e067060f8fc71d6c8fd8858f8055b329"
   integrity sha512-B6RKfBAR1yr3EvHyQzXgkyOGOXE7jUbgblyitK/25CGp4Uba4VHEZ/N5DCbiuTJdt2k1H42sSXqIGfYqHN+6Cw==
@@ -1156,20 +1149,6 @@
   integrity sha512-kGeV5F3IYThiliVbIou3YOOGAr8TdNyub4hGY2gevnphFQF8SukwQk8cyzuEEsAVSDUt0rsA9xxpncSgX+RjMA==
   dependencies:
     "@mysten/bcs" "0.9.0"
-    "@noble/curves" "^1.1.0"
-    "@noble/hashes" "^1.3.1"
-    "@scure/bip32" "^1.3.1"
-    "@scure/bip39" "^1.2.1"
-    "@suchipi/femver" "^1.0.0"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
-"@mysten/sui.js@^0.49.1":
-  version "0.49.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.49.1.tgz#7adc391377254233bac2cad9da64619a6380beb9"
-  integrity sha512-xMndhhlnlVYjMVmBkXnGs9wdw7/bh3R/QggD/DkqGG7Iq7RL2uldtAeIFYsPGfTua/TJW8RFX7q59RagIOwWdw==
-  dependencies:
-    "@mysten/bcs" "0.10.1"
     "@noble/curves" "^1.1.0"
     "@noble/hashes" "^1.3.1"
     "@scure/bip32" "^1.3.1"

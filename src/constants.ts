@@ -1,6 +1,17 @@
 // import { Network } from "@firefly-exchange/library-sui";
 
 export const Networks = {
+  DEVNET_SUI: {
+    name: "devnet",
+    url: "https://fullnode.testnet.sui.io:443",
+    apiGateway: "https://dapi.api.sui-dev.bluefin.io",
+    dmsURL: "https://dapi.api.sui-dev.bluefin.io/dead-man-switch",
+    socketURL: "wss://dapi.api.sui-dev.bluefin.io",
+    webSocketURL: "wss://notifications.api.sui-dev.bluefin.io",
+    onboardingUrl: "https://devnet.bluefin.io",
+    faucet: "https://faucet.devnet.sui.io",
+    UUID: "",
+  },
   TESTNET_SUI: {
     name: "testnet",
     url: "https://fullnode.testnet.sui.io:443",

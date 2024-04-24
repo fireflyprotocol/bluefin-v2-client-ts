@@ -217,8 +217,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches, 
-    else if(_account) {
+    //In case of KMS Signer any of the above condition doesn't matches,
+    else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -246,11 +246,6 @@ export class BluefinClient {
       await this.initContractCalls(deployment);
       // for BLV contract calls
       await this.initInteractorCalls();
-      this.walletAddress = this.isZkLogin
-        ? this.walletAddress
-        : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -263,14 +258,13 @@ export class BluefinClient {
   };
 
   initializeWithHook = async (
-    uiSignerObject: ExtendedWalletContextState
+    uiSignerObject: ExtendedWalletContextState,
+    walletAddress: string
   ): Promise<void> => {
     try {
-      this.uiWallet = uiSignerObject.wallet;
+      this.uiWallet = uiSignerObject;
       this.signer = uiSignerObject as any;
-      this.walletAddress = (
-        this.signer as any as ExtendedWalletContextState
-      ).getAddress();
+      this.walletAddress = walletAddress;
       this.isZkLogin = false;
       this.is_wallet_extension = true;
     } catch (err) {
@@ -371,7 +365,7 @@ export class BluefinClient {
    * initializes contract calls
    * @param deployment (optional) The deployment json provided by deployer
    */
-   initInteractorCalls = async () => {
+  initInteractorCalls = async () => {
     if (!this.signer) {
       throw Error("Signer not Initialized");
     }
@@ -837,9 +831,7 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: this.uiWallet
-            ? (this.signer as any as ExtendedWalletContextState).getAddress()
-            : this.signer.toSuiAddress(),
+          address: this.walletAddress,
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,
@@ -1877,28 +1869,28 @@ export class BluefinClient {
       }
     }
   };
-    /**
+  /**
    * @description
    * Gets deployment json from local file (will get from DAPI in future)
    * @returns deployment json
    * */
-     private getVaultConfigsForInteractor = async (): Promise<any> => {
-      try {
-        // Fetch data from the given URL
-        const response = await this.apiService.get<ConfigResponse>(
-          SERVICE_URLS.MARKET.CONFIG
-        );
-        // The data property of the response object contains our configuration
-        return response.data.deployment;
-      } catch (error) {
-        // If Axios threw an error, it will be stored in error.response
-        if (error.response) {
-          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
-        } else {
-          throw new Error(`An error occurred: ${error}`);
-        }
+  private getVaultConfigsForInteractor = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<ConfigResponse>(
+        SERVICE_URLS.MARKET.CONFIG
+      );
+      // The data property of the response object contains our configuration
+      return response.data.deployment;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
       }
-    };
+    }
+  };
 
   /**
    * Function to create order payload that is to be signed on-chain

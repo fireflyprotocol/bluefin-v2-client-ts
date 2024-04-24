@@ -128,7 +128,6 @@ import {
   TickerData,
   verifyDepositResponse,
 } from "./interfaces/routes";
-import mixpanel from "mixpanel-browser";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -264,23 +263,7 @@ export class BluefinClient {
   ): Promise<void> => {
     console.log(uiSignerObject, "signer");
     try {
-      //init mix panel
-      mixpanel.init("8bf62bd9c14d27eae67fd9d645c81f3e", {
-        debug: true,
-        ignore_dnt: true,
-        loaded: function () {
-          mixpanel.get_distinct_id();
-        },
-      });
-
-      mixpanel.track("initializeWithHook-0", {
-        uiWallet: uiSignerObject.wallet,
-        signer: uiSignerObject,
-      });
       this.uiWallet = uiSignerObject;
-      mixpanel.track("initializeWithHook-1", {
-        uiWallet: this.uiWallet,
-      });
       this.signer = uiSignerObject as any;
       this.walletAddress = walletAddress;
       this.isZkLogin = false;
@@ -436,10 +419,6 @@ export class BluefinClient {
    * @returns auth token
    */
   userOnBoarding = async (token?: string) => {
-    mixpanel.track("userOnBoarding-0", {
-      msg: "executing fn",
-    });
-
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
@@ -447,22 +426,12 @@ export class BluefinClient {
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
-      mixpanel.track("userOnBoarding-1", {
-        authTokenResponse,
-      });
-
       if (!authTokenResponse.ok || !authTokenResponse.data) {
-        mixpanel.track("userOnBoarding-2", {
-          error: `Authorization error: ${authTokenResponse.response.message}`,
-        });
         throw Error(
           `Authorization error: ${authTokenResponse.response.message}`
         );
       }
       userAuthToken = authTokenResponse.data.token;
-      mixpanel.track("userOnBoarding-3", {
-        userAuthToken,
-      });
     }
     // for api
     this.apiService.setAuthToken(userAuthToken);
@@ -511,24 +480,13 @@ export class BluefinClient {
   };
 
   createOnboardingSignature = async () => {
-    mixpanel.track("createOnboardingSignature-0", {
-      msg: "executing fn",
-    });
-
     let signature: SigPK;
 
     const onboardingSignature = {
       onboardingUrl: this.network.onboardingUrl,
     };
 
-    mixpanel.track("createOnboardingSignature-1", {
-      onboardingSignature,
-    });
-
     if (this.uiWallet) {
-      mixpanel.track("createOnboardingSignature-5", {
-        wallet: this.uiWallet,
-      });
       signature = await OrderSigner.signPayloadUsingWallet(
         onboardingSignature,
         this.uiWallet
@@ -542,17 +500,6 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
-    mixpanel.track("createOnboardingSignature-2", {
-      signature,
-    });
-
-    mixpanel.track("createOnboardingSignature-3", {
-      finalSignature: `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`,
-    });
 
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey

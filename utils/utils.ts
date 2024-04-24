@@ -6,7 +6,7 @@ import {
   Secp256k1Keypair,
   SignatureScheme,
   toBigNumberStr,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 import fs from "fs";
 import deploymentData from "../deployment.json";
 

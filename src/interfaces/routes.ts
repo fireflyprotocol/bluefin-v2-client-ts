@@ -10,7 +10,7 @@ import {
   ORDER_TYPE,
   SuiClient,
   TIME_IN_FORCE,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market

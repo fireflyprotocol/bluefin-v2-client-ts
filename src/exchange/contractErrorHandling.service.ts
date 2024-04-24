@@ -2,7 +2,7 @@ import {
   getValue,
   SuiTransactionBlockResponse,
   Transaction,
-} from "@firefly-exchange/library-sui/";
+} from "@mak201010/library-sui/";
 import { serializeError } from "eth-rpc-errors";
 
 const lockErrorRetryDelayMS = 2000;

@@ -1097,6 +1097,32 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@mak201010/library-sui@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@mak201010/library-sui/-/library-sui-1.0.0.tgz#a03cd9e7811122b7c2b1d35f75d3ebe95123e7d6"
+  integrity sha512-lOCnuy+KZ0uIxvOTgKY1FrlMbzBWcEe9WmLMMw7p8QVQODmvKspDltvFmjrE7NbE4kif2M3QliWdoQEsa3pQ1Q==
+  dependencies:
+    "@aws-sdk/client-kms" "^3.438.0"
+    "@mysten/sui.js" "^0.48.0"
+    "@mysten/wallet-standard" "^0.8.10"
+    "@mysten/zklogin" "^0.3.5"
+    "@noble/hashes" "^1.2.0"
+    "@noble/secp256k1" "^1.7.1"
+    add "^2.0.6"
+    asn1.js "^5.4.1"
+    avsc "^5.7.6"
+    bignumber.js "^9.1.0"
+    chai-as-promised "^7.1.1"
+    dotenv "^16.0.3"
+    dotenv-parse-variables "^2.0.0"
+    eth-crypto "^2.6.0"
+    ethereumjs-wallet "^1.0.2"
+    lodash "^4.17.21"
+    socket.io-client "^4.6.2"
+    ts-binary-serializer "^2.1.3"
+    yargs "^17.6.2"
+    yarn "^1.22.19"
+
 "@mysten/bcs@0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.8.1.tgz#30d3256a728a4a934ae608d118347289fe0ba1e7"

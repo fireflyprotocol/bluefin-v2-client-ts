@@ -9,7 +9,7 @@ import {
   Transaction,
   TRANSFERABLE_COINS,
   ZkPayload,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 import { Signer } from "@mysten/sui.js/cryptography";
 import interpolate from "interpolate";
 import {

@@ -15,7 +15,7 @@ import {
   getSignerFromSeed,
   readFile,
   SuiClient,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 import { BluefinClient, Networks, OrderSignatureResponse } from "../index";
 import { setupTestAccounts } from "../utils/utils";
 

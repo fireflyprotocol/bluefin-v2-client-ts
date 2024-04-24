@@ -30,7 +30,7 @@ import {
   TRANSFERABLE_COINS,
   usdcToBaseNumber,
   ZkPayload,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 
 import { toB64 } from "@mysten/bcs";
 import {

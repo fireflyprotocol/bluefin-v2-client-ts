@@ -9,11 +9,11 @@ import {
   Keypair,
   ZkPayload,
   BigNumberable,
-} from "@firefly-exchange/library-sui";
+} from "@mak201010/library-sui";
 import interpolate from "interpolate";
 import {
   Interactor
-} from "@firefly-exchange/library-sui/dist/src/blv/interactor";
+} from "@mak201010/library-sui/dist/src/blv/interactor";
 
 import {
   ResponseSchema,
@@ -21,7 +21,7 @@ import {
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
 import { Signer } from "@mysten/sui.js/cryptography";
-import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import { SignaturePayload } from "@mak201010/library-sui/dist/src/blv/interface";
 
 export class InteractorCalls {
   InteractorCalls: Interactor;

@@ -386,7 +386,8 @@ export class BluefinClient {
     this.interactorCalls = new InteractorCalls(
       this.getSigner(),
       _deployment,
-      this.provider
+      this.provider,
+      this.is_wallet_extension
     );
   };
 

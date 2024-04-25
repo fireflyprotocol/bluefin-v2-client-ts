@@ -32,13 +32,14 @@ export class InteractorCalls {
     signer: Signer,
     deployment: any,
     provider: SuiClient,
-   
+    isWalletExtension: boolean
   ) {
     this.signer = signer;
     this.InteractorCalls = new Interactor(
       provider,
       deployment,
-      this.signer
+      this.signer,
+      isWalletExtension
     );
   }
 

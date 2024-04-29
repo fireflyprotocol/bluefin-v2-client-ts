@@ -556,6 +556,7 @@ export interface ExtendedNetwork extends NetworkConfigs {
   onboardingUrl?: string;
   webSocketURL: string;
   dmsURL?: string;
+  vaultURL?: string;
   UUID?: string;
 }
 
@@ -589,6 +590,10 @@ export interface ConfigResponse {
     };
   };
 }
+
+
+
+
 
 export interface ObjectDetails {
   id: string;
@@ -869,6 +874,78 @@ export type OpenReferralOverview = {
   latestEpochReferralMultiplier: string;
   latestEpochRefereeMultiplier: string;
 };
+export interface VaultDetail {
+  id: string;
+  vaultStoreId: string;
+  bank: string;
+  bankAccount: string;
+  claimsManager: string;
+  holdingAccount: string;
+  operator: string;
+  depositPaused: boolean;
+  withdrawPaused: boolean;
+  claimsPaused: boolean;
+  totallockedamount: string;
+  maxCap: string;
+  coinBalance: string;
+  withdrawAmount: string;
+  lendingAgreement?: string;
+  bankBalance: string;
+  marketMaker: string;
+  APY: number;
+  age: string;
+  sequenceNumber: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserVaultDetail {
+  id: number;
+  userAddress: string;
+  userLockedAmount: string;
+  vaultId: string;
+  withdrawAmountRequested: string;
+  claimableAmount: string;
+  claimSignature?: string;
+  nonce?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  sequenceNumber: number;
+}
+export interface UserPendingWithdrawRequest {
+ 
+  distinctUserRequestsCount: number;
+  totalWithdrawAmount: number;
+}
+export interface UserVaultTransferRequest {
+  id: number;
+  userAddress: string;
+  amount: string;
+  vaultId: string;
+  requestType: "DEPOSIT" | "WITHDRAW";
+  requestStatus: "APPROVED" | "CLAIMABLE" | "CLAIMED";
+  sequenceNumber: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface UserVaultDetailSummary {
+  marketMaker: string;
+  APY: string;
+  TVL: string;
+  vaultTotalVolume: string;
+  age: string;
+  lendingAgreement: string;
+  userLockedAmount: string;
+  userWithdrawAmountRequested: string;
+  claimableAmount: string;
+}
+
+export interface VaultConfig {
+  id?: number;
+  config?: any;
+}
+
 
 export type OpenReferralRefereeDetail = {
   refereeAddress: string;

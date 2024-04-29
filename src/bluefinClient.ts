@@ -31,27 +31,28 @@ import {
   usdcToBaseNumber,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
+import {SignaturePayload} from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
-import { toB64 } from "@mysten/bcs";
+import {toB64} from "@mysten/bcs";
 import {
   Keypair,
   parseSerializedSignature,
   SerializedSignature,
   Signer,
 } from "@mysten/sui.js/cryptography";
-import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
-import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
-import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
-import { sha256 } from "@noble/hashes/sha256";
-import { generateRandomNumber } from "../utils/utils";
-import { Networks, POST_ORDER_BASE } from "./constants";
-import { APIService } from "./exchange/apiService";
-import { SERVICE_URLS } from "./exchange/apiUrls";
-import { ResponseSchema } from "./exchange/contractErrorHandling.service";
-import { ContractCalls } from "./exchange/contractService";
-import { InteractorCalls } from "./exchange/interactorService";
-import { Sockets } from "./exchange/sockets";
-import { WebSockets } from "./exchange/WebSocket";
+import {SignatureScheme} from "@mysten/sui.js/src/cryptography/signature-scheme";
+import {publicKeyFromRawBytes} from "@mysten/sui.js/verify";
+import {genAddressSeed, getZkLoginSignature} from "@mysten/zklogin";
+import {sha256} from "@noble/hashes/sha256";
+import {generateRandomNumber} from "../utils/utils";
+import {Networks, POST_ORDER_BASE} from "./constants";
+import {APIService} from "./exchange/apiService";
+import {SERVICE_URLS, VAULT_URLS} from "./exchange/apiUrls";
+import {ResponseSchema} from "./exchange/contractErrorHandling.service";
+import {ContractCalls} from "./exchange/contractService";
+import {InteractorCalls} from "./exchange/interactorService";
+import {Sockets} from "./exchange/sockets";
+import {WebSockets} from "./exchange/WebSocket";
 import {
   adjustLeverageRequest,
   AdjustLeverageResponse,
@@ -126,6 +127,10 @@ import {
   SubAccountRequest,
   SubAccountResponse,
   TickerData,
+  UserPendingWithdrawRequest,
+  UserVaultDetail,
+  UserVaultDetailSummary,
+  VaultDetail,
   verifyDepositResponse,
 } from "./interfaces/routes";
 
@@ -190,7 +195,7 @@ export class BluefinClient {
   ) {
     this.network = _network;
 
-    this.provider = new SuiClient({ url: _network.url });
+    this.provider = new SuiClient({url: _network.url});
 
     this.apiService = new APIService(this.network.apiGateway);
 
@@ -217,8 +222,8 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches, 
-    else if(_account) {
+    //In case of KMS Signer any of the above condition doesn't matches,
+    else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
   }
@@ -249,8 +254,8 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : (this.signer as any as ExtendedWalletContextState).getAddress();
+        ? this.signer.toSuiAddress()
+        : (this.signer as any as ExtendedWalletContextState).getAddress();
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();
@@ -371,7 +376,7 @@ export class BluefinClient {
    * initializes contract calls
    * @param deployment (optional) The deployment json provided by deployer
    */
-   initInteractorCalls = async () => {
+  initInteractorCalls = async () => {
     if (!this.signer) {
       throw Error("Signer not Initialized");
     }
@@ -380,7 +385,11 @@ export class BluefinClient {
     this.interactorCalls = new InteractorCalls(
       this.getSigner(),
       _deployment,
-      this.provider
+      this.provider,
+      this.is_wallet_extension,
+      this.isZkLogin,
+      this.getZkPayload(),
+      this.walletAddress
     );
   };
 
@@ -413,7 +422,7 @@ export class BluefinClient {
     const response = await this.apiService.post<string>(
       SERVICE_URLS.USER.GENERATE_READONLY_TOKEN,
       {},
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -455,7 +464,7 @@ export class BluefinClient {
     userSignature: string;
     zkPayload: ZkPayload;
   }) {
-    const { salt, decodedJWT, proof, maxEpoch } = zkPayload;
+    const {salt, decodedJWT, proof, maxEpoch} = zkPayload;
     const addressSeed: string = genAddressSeed(
       BigInt(salt!),
       "sub",
@@ -532,7 +541,7 @@ export class BluefinClient {
     let parsedSignature = parseSerializedSignature(signature);
     if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
       //zk login signature
-      const { userSignature } = parsedSignature.zkLogin;
+      const {userSignature} = parsedSignature.zkLogin;
 
       //convert user sig to b64
       const convertedUserSignature = toB64(userSignature as any);
@@ -670,7 +679,7 @@ export class BluefinClient {
           ? `bluefin-client: ${params.clientId}`
           : "bluefin-client",
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
 
     return response;
@@ -723,12 +732,12 @@ export class BluefinClient {
       if (this.uiWallet) {
         //connected via UI
         signature = await OrderSigner.signPayloadUsingWallet(
-          { orderHashes: payloadValue },
+          {orderHashes: payloadValue},
           this.uiWallet
         );
       } else if (this.isZkLogin) {
         signature = await OrderSigner.signPayloadUsingZKSignature({
-          payload: { orderHashes: payloadValue },
+          payload: {orderHashes: payloadValue},
           signer: this.signer,
           zkPayload: {
             decodedJWT: this.decodedJWT,
@@ -769,7 +778,7 @@ export class BluefinClient {
         parentAddress: params.parentAddress,
         fromUI: true,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -812,7 +821,7 @@ export class BluefinClient {
       parentAddress,
     });
 
-    const hashes = openOrders.data?.map((order) => order.hash) as string[];
+    const hashes = openOrders.data?.map(order => order.hash) as string[];
 
     const response = await this.postCancelOrder({
       hashes,
@@ -852,7 +861,7 @@ export class BluefinClient {
     const coins = await this.contractCalls.onChainCalls.getUSDCCoins({
       address: await this.signer.toSuiAddress(),
     });
-    coins.data.forEach((coin) => {
+    coins.data.forEach(coin => {
       coin.balance = usdcToBaseNumber(coin.balance);
     });
 
@@ -953,14 +962,14 @@ export class BluefinClient {
         const {
           ok,
           data,
-          response: { errorCode, message },
+          response: {errorCode, message},
         } = await this.updateLeverage({
           symbol: params.symbol,
           leverage: params.leverage,
           parentAddress: params.parentAddress,
           signedTransaction: signedTx,
         });
-        const response: ResponseSchema = { ok, data, code: errorCode, message };
+        const response: ResponseSchema = {ok, data, code: errorCode, message};
         //If API is successful return response else make direct contract call to update the leverage
         if (response.ok) {
           return response;
@@ -975,13 +984,13 @@ export class BluefinClient {
     const {
       ok,
       data,
-      response: { errorCode, message },
+      response: {errorCode, message},
     } = await this.updateLeverage({
       symbol: params.symbol,
       leverage: params.leverage,
       parentAddress: params.parentAddress,
     });
-    const response: ResponseSchema = { ok, data, code: errorCode, message };
+    const response: ResponseSchema = {ok, data, code: errorCode, message};
     return response;
   };
 
@@ -1012,10 +1021,10 @@ export class BluefinClient {
       const {
         ok,
         data,
-        response: { errorCode, message },
+        response: {errorCode, message},
       } = await this.addSubAccountFor1CT(request);
 
-      const response: ResponseSchema = { ok, data, code: errorCode, message };
+      const response: ResponseSchema = {ok, data, code: errorCode, message};
       return response;
     } catch (error) {
       throw new Error(error.message);
@@ -1084,7 +1093,7 @@ export class BluefinClient {
 
     // Try merging users' coins if they have more than one coins
     const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
-      { address: this.walletAddress },
+      {address: this.walletAddress},
       this.signer
     );
     if (usdcCoins.data.length > 1) {
@@ -1099,7 +1108,7 @@ export class BluefinClient {
 
       while (!coinHavingBalanceAfterMerge && retries--) {
         //sleep for 1 second to merge the coins
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         coinHavingBalanceAfterMerge = (
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
             {
@@ -1165,7 +1174,7 @@ export class BluefinClient {
       throw Error(`Account data does not exist`);
     }
 
-    const accDataByMarket = accData.data.accountDataByMarket.filter((data) => {
+    const accDataByMarket = accData.data.accountDataByMarket.filter(data => {
       return data.symbol === symbol;
     });
     /// found accountDataByMarket
@@ -1192,7 +1201,7 @@ export class BluefinClient {
       {
         ...params,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1206,8 +1215,8 @@ export class BluefinClient {
   getUserPosition = async (params: GetPositionRequest) => {
     const response = await this.apiService.get<GetPositionResponse[]>(
       SERVICE_URLS.USER.USER_POSITIONS,
-      { ...params },
-      { isAuthenticationRequired: true }
+      {...params},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1236,8 +1245,8 @@ export class BluefinClient {
   getUserTrades = async (params: GetUserTradesRequest) => {
     const response = await this.apiService.get<GetUserTradesResponse>(
       SERVICE_URLS.USER.USER_TRADES,
-      { ...params },
-      { isAuthenticationRequired: true }
+      {...params},
+      {isAuthenticationRequired: true}
     );
 
     return response;
@@ -1251,8 +1260,8 @@ export class BluefinClient {
   getUserTradesHistory = async (params: GetUserTradesHistoryRequest) => {
     const response = await this.apiService.get<GetUserTradesHistoryResponse>(
       SERVICE_URLS.USER.USER_TRADES_HISTORY,
-      { ...params },
-      { isAuthenticationRequired: true }
+      {...params},
+      {isAuthenticationRequired: true}
     );
 
     return response;
@@ -1266,8 +1275,8 @@ export class BluefinClient {
   getUserAccountData = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetAccountDataResponse>(
       SERVICE_URLS.USER.ACCOUNT,
-      { parentAddress },
-      { isAuthenticationRequired: true }
+      {parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1281,8 +1290,8 @@ export class BluefinClient {
   verifyDeposit = async (amount: number) => {
     const response = await this.apiService.get<verifyDepositResponse>(
       SERVICE_URLS.USER.VERIFY_DEPOSIT,
-      { depositAmount: amount },
-      { isAuthenticationRequired: true }
+      {depositAmount: amount},
+      {isAuthenticationRequired: true}
     );
 
     return response;
@@ -1302,7 +1311,7 @@ export class BluefinClient {
       {
         ...params,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1319,7 +1328,7 @@ export class BluefinClient {
       {
         ...params,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1336,7 +1345,7 @@ export class BluefinClient {
       {
         ...params,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1394,7 +1403,7 @@ export class BluefinClient {
   getExchangeInfo = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<ExchangeInfo>(
       SERVICE_URLS.MARKET.EXCHANGE_INFO,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1408,7 +1417,7 @@ export class BluefinClient {
   getMarketData = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<MarketData>(
       SERVICE_URLS.MARKET.MARKET_DATA,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1422,7 +1431,7 @@ export class BluefinClient {
   getMarketMetaInfo = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<MarketMeta>(
       SERVICE_URLS.MARKET.META,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1436,7 +1445,7 @@ export class BluefinClient {
   getMasterInfo = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<MasterInfo>(
       SERVICE_URLS.MARKET.MASTER_INFO,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1462,7 +1471,7 @@ export class BluefinClient {
   getContractAddresses = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<Record<string, object>>(
       SERVICE_URLS.MARKET.CONTRACT_ADDRESSES,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1488,7 +1497,7 @@ export class BluefinClient {
   getTickerData = async (symbol?: MarketSymbol) => {
     const response = await this.apiService.get<TickerData>(
       SERVICE_URLS.MARKET.TICKER,
-      { symbol }
+      {symbol}
     );
     return response;
   };
@@ -1502,7 +1511,7 @@ export class BluefinClient {
     const response = await this.apiService.post<GenerateReferralCodeResponse>(
       SERVICE_URLS.GROWTH.GENERATE_CODE,
       params,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1516,7 +1525,7 @@ export class BluefinClient {
     const response = await this.apiService.post<LinkReferredUserResponse>(
       SERVICE_URLS.GROWTH.AFFILIATE_LINK_REFERRED_USER,
       params,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1530,8 +1539,8 @@ export class BluefinClient {
   getReferrerInfo = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetReferrerInfoResponse>(
       SERVICE_URLS.GROWTH.REFERRER_INFO,
-      { parentAddress },
-      { isAuthenticationRequired: true }
+      {parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1556,8 +1565,8 @@ export class BluefinClient {
   getCampaignRewards = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetCampaignRewardsResponse>(
       SERVICE_URLS.GROWTH.CAMPAIGN_REWARDS,
-      { campaignId, parentAddress },
-      { isAuthenticationRequired: true }
+      {campaignId, parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1571,8 +1580,8 @@ export class BluefinClient {
   getAffiliatePayouts = async (campaignId: number, parentAddress?: string) => {
     const response = await this.apiService.get<GetAffiliatePayoutsResponse[]>(
       SERVICE_URLS.GROWTH.AFFILIATE_PAYOUTS,
-      { campaignId, parentAddress },
-      { isAuthenticationRequired: true }
+      {campaignId, parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1589,7 +1598,7 @@ export class BluefinClient {
       await this.apiService.get<GetAffiliateRefereeDetailsResponse>(
         SERVICE_URLS.GROWTH.AFFILIATE_REFEREE_DETAILS,
         params,
-        { isAuthenticationRequired: true }
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1607,8 +1616,8 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetAffiliateRefereeCountResponse>(
         SERVICE_URLS.GROWTH.AFFILIATE_REFEREES_COUNT,
-        { campaignId, parentAddress },
-        { isAuthenticationRequired: true }
+        {campaignId, parentAddress},
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1622,7 +1631,7 @@ export class BluefinClient {
     const response = await this.apiService.get<GetUserRewardsHistoryResponse>(
       SERVICE_URLS.GROWTH.USER_REWARDS_HISTORY,
       params,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1634,8 +1643,8 @@ export class BluefinClient {
   getUserRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetUserRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.USER_REWARDS_SUMMARY,
-      { parentAddress },
-      { isAuthenticationRequired: true }
+      {parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1653,8 +1662,8 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetTradeAndEarnRewardsOverviewResponse>(
         SERVICE_URLS.GROWTH.REWARDS_OVERVIEW,
-        { campaignId, parentAddress },
-        { isAuthenticationRequired: true }
+        {campaignId, parentAddress},
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1671,7 +1680,7 @@ export class BluefinClient {
       await this.apiService.get<GetTradeAndEarnRewardsDetailResponse>(
         SERVICE_URLS.GROWTH.REWARDS_DETAILS,
         params,
-        { isAuthenticationRequired: true }
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1684,8 +1693,8 @@ export class BluefinClient {
     const response =
       await this.apiService.get<GetTotalHistoricalTradingRewardsResponse>(
         SERVICE_URLS.GROWTH.TOTAL_HISTORICAL_TRADING_REWARDS,
-        { parentAddress },
-        { isAuthenticationRequired: true }
+        {parentAddress},
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1697,8 +1706,8 @@ export class BluefinClient {
   getMakerRewardsSummary = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetMakerRewardsSummaryResponse>(
       SERVICE_URLS.GROWTH.MAKER_REWARDS_SUMMARY,
-      { parentAddress },
-      { isAuthenticationRequired: true }
+      {parentAddress},
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1712,7 +1721,7 @@ export class BluefinClient {
     const response = await this.apiService.get<GetMakerRewardDetailsResponse>(
       SERVICE_URLS.GROWTH.MAKER_REWARDS_DETAILS,
       params,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1726,7 +1735,7 @@ export class BluefinClient {
       await this.apiService.get<GetUserWhiteListStatusForMarketMakerResponse>(
         SERVICE_URLS.GROWTH.MAKER_WHITELIST_STATUS,
         {},
-        { isAuthenticationRequired: true }
+        {isAuthenticationRequired: true}
       );
     return response;
   };
@@ -1764,7 +1773,7 @@ export class BluefinClient {
     const response = await this.apiService.get<OpenReferralDetails>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_REFEREES_COUNT,
       payload,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1794,9 +1803,7 @@ export class BluefinClient {
    * @param parentAddress
    * @returns OpenReferralOverview
    */
-  generateOpenReferralReferralCode = async (payload: {
-    campaignId: string;
-  }) => {
+  generateOpenReferralReferralCode = async (payload: {campaignId: string}) => {
     const response = await this.apiService.post<{
       referralAddress: string;
       referralCode: string;
@@ -1814,7 +1821,7 @@ export class BluefinClient {
   getOpenReferralOverview = async (parentAddress?: string) => {
     const response = await this.apiService.get<OpenReferralOverview>(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_OVERVIEW,
-      { parentAddress },
+      {parentAddress},
       {
         isAuthenticationRequired: true,
       }
@@ -1828,7 +1835,7 @@ export class BluefinClient {
    * @returns boolean
    */
 
-  openReferralLinkReferredUser = async (payload: { referralCode: string }) => {
+  openReferralLinkReferredUser = async (payload: {referralCode: string}) => {
     const response = await this.apiService.post(
       SERVICE_URLS.GROWTH.OPEN_REFERRAL_LINK_REFERRED_USER,
       payload,
@@ -1877,28 +1884,6 @@ export class BluefinClient {
       }
     }
   };
-    /**
-   * @description
-   * Gets deployment json from local file (will get from DAPI in future)
-   * @returns deployment json
-   * */
-     private getVaultConfigsForInteractor = async (): Promise<any> => {
-      try {
-        // Fetch data from the given URL
-        const response = await this.apiService.get<ConfigResponse>(
-          SERVICE_URLS.MARKET.CONFIG
-        );
-        // The data property of the response object contains our configuration
-        return response.data.deployment;
-      } catch (error) {
-        // If Axios threw an error, it will be stored in error.response
-        if (error.response) {
-          throw new Error(`Failed to fetch deployment: ${error.response.status}`);
-        } else {
-          throw new Error(`An error occurred: ${error}`);
-        }
-      }
-    };
 
   /**
    * Function to create order payload that is to be signed on-chain
@@ -1973,7 +1958,7 @@ export class BluefinClient {
         marginType: MARGIN_TYPE.ISOLATED,
         signedTransaction: params.signedTransaction,
       },
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -1987,7 +1972,7 @@ export class BluefinClient {
     const response = await this.apiService.post<SubAccountResponse>(
       SERVICE_URLS.USER.SUBACCOUNT_1CT,
       params,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -2001,7 +1986,7 @@ export class BluefinClient {
     const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
       SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
       null,
-      { isAuthenticationRequired: true }
+      {isAuthenticationRequired: true}
     );
     return response;
   };
@@ -2016,7 +2001,7 @@ export class BluefinClient {
     const response = await this.apiService.post<PostTimerResponse>(
       SERVICE_URLS.USER.CANCEL_ON_DISCONNECT,
       params,
-      { isAuthenticationRequired: true },
+      {isAuthenticationRequired: true},
       this.network.dmsURL
     );
     if (response.status === 503) {
@@ -2042,7 +2027,7 @@ export class BluefinClient {
         parentAddress,
         symbol,
       },
-      { isAuthenticationRequired: true },
+      {isAuthenticationRequired: true},
       this.network.dmsURL
     );
     if (response.status === 503) {
@@ -2060,7 +2045,7 @@ export class BluefinClient {
       if (isEmpty(this.getZkPayload())) throw new Error("invalid zk payloads");
 
       tx.setSender(this.walletAddress);
-      const { bytes, signature: userSignature } = await tx.sign({
+      const {bytes, signature: userSignature} = await tx.sign({
         client: this.provider,
         signer: this.signer as Keypair,
       });
@@ -2122,5 +2107,209 @@ export class BluefinClient {
     balance: number
   ): Promise<BigInt> => {
     return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
+  };
+
+  ///// ******************* Vault APIs *****************/////
+  /**
+   * @description
+   * Gets deployment json from vaultConfig table
+   * @returns deployment json
+   * */
+  private getVaultConfigsForInteractor = async (): Promise<any> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<any>(
+        VAULT_URLS.VAULT.CONFIG,
+        {},
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data[0].config;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(`Failed to fetch deployment: ${error.response.status}`);
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets user's vault details
+   * @returns user vault details
+   * */
+  public getUserVaultDetails = async (
+    userAddress: string,
+    vaultId: string
+  ): Promise<UserVaultDetail> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserVaultDetail>(
+        VAULT_URLS.USER.VAULT_USER,
+        {
+          userAddress: userAddress,
+          vaultId: vaultId,
+        },
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch user vault detail: ${error.response.status}`
+        );
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets user's vault details
+   * @returns user vault details
+   * */
+  public getVaultDetails = async (vaultId: string): Promise<VaultDetail> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<VaultDetail>(
+        VAULT_URLS.VAULT.DETAILS,
+        {
+          vaultId: vaultId,
+        },
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch vault detail: ${error.response.status}`
+        );
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets vault pending withdraw requests
+   * @returns pending withdraw requests
+   * */
+  public getPendingWithdrawRequests = async (
+    vaultId: string,
+    startTime?: string,
+    endTime?: number
+  ): Promise<UserPendingWithdrawRequest> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserPendingWithdrawRequest>(
+        VAULT_URLS.VAULT.PENDING_WITHDRAW_REQUESTS,
+        {vaultId: vaultId, startTime: startTime, endTime: endTime},
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch vault pending withdraw requests: ${error.response.status}`
+        );
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * Gets user vault details summary
+   * @returns pending withdraw requests
+   * */
+  public getUserVaultDetailsSummary = async (
+    userAddress: string
+  ): Promise<UserVaultDetailSummary> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<UserVaultDetailSummary>(
+        VAULT_URLS.USER.VAULT_USER_SUMMARY,
+        {userAddress: userAddress},
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch user vault summary data: ${error.response.status}`
+        );
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
+  };
+
+  /**
+   * @description
+   * withdraws USDC from Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  withdrawFromVault = async (
+    vaultName: string,
+    amount?: number
+  ): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.interactorCalls.withdrawFromVaultContractCall(
+        amount,
+        vaultName
+      );
+    }
+  };
+
+  /**
+   * @description
+   * deposit USDC to Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  depositToVault = async (
+    vaultName: string,
+    amount?: number
+  ): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.interactorCalls.depositToVaultContractCall(amount, vaultName);
+    }
+  };
+
+  /**
+   * @description
+   * claim USDC from Vault Bank
+   * @param amount amount of USDC to withdraw
+   * @returns ResponseSchema
+   */
+  claimFromVault = async (
+    vaultName: string,
+    signaturePayload: SignaturePayload,
+    signature: string
+  ): Promise<ResponseSchema> => {
+    return this.interactorCalls.claimFundsFromVaultContractCall(
+      vaultName,
+      signaturePayload,
+      signature
+    );
   };
 }

@@ -64,3 +64,19 @@ export const SERVICE_URLS = {
     ORDERS_HASH_V2: "/v2/user/orders/hash",
   },
 };
+
+export const VAULT_URLS = {
+  VAULT: {
+    CONFIG: "/vaultDetails/vaultConfigs",
+    DETAILS: "/vaultDetails",
+    PENDING_WITHDRAW_REQUESTS: "/vaultDetails/vaultPendingWithdrawRequests",
+  },
+
+  USER:
+  {
+    VAULT_USER: "/userVaultDetails",
+    VAULT_USER_SUMMARY: "/userVaultDetailsSummary"
+  }
+
+
+};

@@ -1,27 +1,18 @@
 import {
-  address,
-  ADJUST_MARGIN,
-  Transaction,
-  OnChainCalls,
-  toBigNumberStr,
-  toBaseNumber,
-  SuiClient,
-  Keypair,
-  ZkPayload,
   BigNumberable,
+  SuiClient,
+  ZkPayload,
 } from "@firefly-exchange/library-sui";
+import {Interactor} from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 import interpolate from "interpolate";
-import {
-  Interactor
-} from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 
+import {SignaturePayload} from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import {Signer} from "@mysten/sui.js/cryptography";
 import {
   ResponseSchema,
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { Signer } from "@mysten/sui.js/cryptography";
-import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
 export class InteractorCalls {
   InteractorCalls: Interactor;
@@ -32,13 +23,20 @@ export class InteractorCalls {
     signer: Signer,
     deployment: any,
     provider: SuiClient,
-   
+    isWalletExtension: boolean,
+    isZKLogin?: boolean,
+    zkPayload?: ZkPayload,
+    walletAddress?: string
   ) {
     this.signer = signer;
     this.InteractorCalls = new Interactor(
       provider,
       deployment,
-      this.signer
+      this.signer,
+      isWalletExtension,
+      isZKLogin,
+      zkPayload,
+      walletAddress
     );
   }
 
@@ -55,12 +53,12 @@ export class InteractorCalls {
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.requestWithdrawFromVault(
-        vaultName, amount
-
+        vaultName,
+        amount
       );
-      
+
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    }, interpolate(SuccessMessages.withdrawFundsFromVault, {amount}));
   };
 
   // /**
@@ -75,13 +73,10 @@ export class InteractorCalls {
     vaultName: string
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      const tx = await this.InteractorCalls.depositToVault(
-        vaultName, amount
+      const tx = await this.InteractorCalls.depositToVault(vaultName, amount);
 
-      );
-      
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    }, interpolate(SuccessMessages.depositToVault, {amount}));
   };
 
   // /**
@@ -100,12 +95,12 @@ export class InteractorCalls {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFunds(
         vaultName,
-       signaturePayload,
-       signature
+        signaturePayload,
+        signature
       );
-      
+
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, {  }));
+    }, interpolate(SuccessMessages.claimFundsFronVault, {}));
   };
 
   // /**
@@ -120,13 +115,13 @@ export class InteractorCalls {
     amount: string
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      const tx = await this.InteractorCalls.moveProfitWithdrawalFundsToHoldingAccount(
-      vaultName,
-      amount
-      );
-      
+      const tx =
+        await this.InteractorCalls.moveProfitWithdrawalFundsToHoldingAccount(
+          vaultName,
+          amount
+        );
+
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    }, interpolate(SuccessMessages.withdrawMargin, {amount}));
   };
 }
-

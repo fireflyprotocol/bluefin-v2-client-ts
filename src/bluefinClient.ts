@@ -849,7 +849,9 @@ export class BluefinClient {
       const coin =
         await this.contractCalls.onChainCalls.getUSDCoinHavingBalance({
           amount,
-          address: this.walletAddress,
+          address: this.is_wallet_extension
+            ? this.walletAddress
+            : this.signer.toSuiAddress(),
           currencyID: this.contractCalls.onChainCalls.getCurrencyID(),
           limit,
           cursor,

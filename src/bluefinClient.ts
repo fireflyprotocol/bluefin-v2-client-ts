@@ -48,7 +48,10 @@ import {generateRandomNumber} from "../utils/utils";
 import {Networks, POST_ORDER_BASE} from "./constants";
 import {APIService} from "./exchange/apiService";
 import {SERVICE_URLS, VAULT_URLS} from "./exchange/apiUrls";
-import {ResponseSchema} from "./exchange/contractErrorHandling.service";
+import {
+  ResponseSchema,
+  VaultTVLInterval,
+} from "./exchange/contractErrorHandling.service";
 import {ContractCalls} from "./exchange/contractService";
 import {InteractorCalls} from "./exchange/interactorService";
 import {Sockets} from "./exchange/sockets";
@@ -104,6 +107,7 @@ import {
   GetUserTransactionHistoryResponse,
   GetUserTransferHistoryResponse,
   GetUserWhiteListStatusForMarketMakerResponse,
+  IVaultsTVLDatapointsMap,
   LinkReferredUserRequest,
   LinkReferredUserResponse,
   MarketData,
@@ -2311,5 +2315,37 @@ export class BluefinClient {
       signaturePayload,
       signature
     );
+  };
+
+  /**
+   * @description
+   * Gets vault TVL graph data
+   * @returns pending withdraw requests
+   * */
+  public getVaultTVL = async (
+    vaultName: string,
+    endTime?: number,
+    intervals?: Array<VaultTVLInterval>
+  ): Promise<IVaultsTVLDatapointsMap> => {
+    try {
+      // Fetch data from the given URL
+      const response = await this.apiService.get<IVaultsTVLDatapointsMap>(
+        VAULT_URLS.USER.VAULT_TVL_GRAPH_DATA,
+        {vaultName, endTime, intervals},
+        {isAuthenticationRequired: false},
+        this.network.vaultURL
+      );
+      // The data property of the response object contains our configuration
+      return response.data;
+    } catch (error) {
+      // If Axios threw an error, it will be stored in error.response
+      if (error.response) {
+        throw new Error(
+          `Failed to fetch user vault summary data: ${error.response.status}`
+        );
+      } else {
+        throw new Error(`An error occurred: ${error}`);
+      }
+    }
   };
 }

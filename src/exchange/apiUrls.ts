@@ -72,11 +72,8 @@ export const VAULT_URLS = {
     PENDING_WITHDRAW_REQUESTS: "/vaultDetails/vaultPendingWithdrawRequests",
   },
 
-  USER:
-  {
+  USER: {
     VAULT_USER: "/userVaultDetails",
-    VAULT_USER_SUMMARY: "/userVaultDetailsSummary"
-  }
-
-
+    VAULT_USER_SUMMARY: "/userVaultDetailsSummary",
+  },
 };

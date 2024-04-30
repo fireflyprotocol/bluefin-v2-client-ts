@@ -3,11 +3,11 @@ import {
   SuiClient,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
-import {Interactor} from "@firefly-exchange/library-sui/dist/src/blv/interactor";
+import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 import interpolate from "interpolate";
 
-import {SignaturePayload} from "@firefly-exchange/library-sui/dist/src/blv/interface";
-import {Signer} from "@mysten/sui.js/cryptography";
+import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import { Signer } from "@mysten/sui.js/cryptography";
 import {
   ResponseSchema,
   SuccessMessages,
@@ -58,7 +58,7 @@ export class InteractorCalls {
       );
 
       return tx;
-    }, interpolate(SuccessMessages.withdrawFundsFromVault, {amount}));
+    }, interpolate(SuccessMessages.withdrawFundsFromVault, { amount }));
   };
 
   // /**
@@ -76,7 +76,7 @@ export class InteractorCalls {
       const tx = await this.InteractorCalls.depositToVault(vaultName, amount);
 
       return tx;
-    }, interpolate(SuccessMessages.depositToVault, {amount}));
+    }, interpolate(SuccessMessages.depositToVault, { amount }));
   };
 
   // /**
@@ -122,6 +122,6 @@ export class InteractorCalls {
         );
 
       return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, {amount}));
+    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
   };
 }

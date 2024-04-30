@@ -1,4 +1,3 @@
-
 export const Networks = {
   DEVNET_SUI: {
     name: "devnet",

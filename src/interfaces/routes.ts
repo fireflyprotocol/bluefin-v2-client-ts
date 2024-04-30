@@ -591,10 +591,6 @@ export interface ConfigResponse {
   };
 }
 
-
-
-
-
 export interface ObjectDetails {
   id: string;
   owner: string;
@@ -913,7 +909,6 @@ export interface UserVaultDetail {
   sequenceNumber: number;
 }
 export interface UserPendingWithdrawRequest {
- 
   distinctUserRequestsCount: number;
   totalWithdrawAmount: number;
 }
@@ -945,7 +940,6 @@ export interface VaultConfig {
   id?: number;
   config?: any;
 }
-
 
 export type OpenReferralRefereeDetail = {
   refereeAddress: string;

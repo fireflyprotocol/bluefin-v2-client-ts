@@ -251,6 +251,15 @@ export class BluefinClient {
       await this.initContractCalls(deployment);
       // for BLV contract calls
       await this.initInteractorCalls();
+
+      this.walletAddress = this.isZkLogin
+        ? this.walletAddress
+        : this.signer.toSuiAddress
+        ? this.signer.toSuiAddress()
+        : (this.signer as any as ExtendedWalletContextState).getAddress
+        ? (this.signer as any as ExtendedWalletContextState).getAddress()
+        : this.walletAddress;
+
       // onboard user if not onboarded
       if (userOnboarding) {
         await this.userOnBoarding();

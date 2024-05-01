@@ -3,7 +3,7 @@ import {
   SuiTransactionBlockResponse,
   Transaction,
 } from "@firefly-exchange/library-sui/";
-import {serializeError} from "eth-rpc-errors";
+import { serializeError } from "eth-rpc-errors";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;
@@ -77,11 +77,11 @@ export const TransformToResponseSchema = async (
     } catch (error: any) {
       if (error.toString().indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
         console.log("Retrying on sui lock error %o", error);
-        await new Promise(resolve =>
+        await new Promise((resolve) =>
           setTimeout(resolve, lockErrorRetryDelayMS)
         );
       } else {
-        return handleResponse({...serializeError(error)}, false);
+        return handleResponse({ ...serializeError(error) }, false);
       }
     }
   }

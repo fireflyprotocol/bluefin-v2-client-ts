@@ -1,6 +1,5 @@
 import {
   address,
-  BaseWallet,
   CANCEL_REASON,
   Interval,
   MARGIN_TYPE,
@@ -8,7 +7,6 @@ import {
   ORDER_SIDE,
   ORDER_STATUS,
   ORDER_TYPE,
-  SuiClient,
   TIME_IN_FORCE,
 } from "@firefly-exchange/library-sui";
 
@@ -939,6 +937,10 @@ export interface UserVaultDetailSummary {
 export interface VaultConfig {
   id?: number;
   config?: any;
+}
+
+export interface IVaultsTVLDatapointsMap {
+  [key: string]: Array<any>;
 }
 
 export type OpenReferralRefereeDetail = {

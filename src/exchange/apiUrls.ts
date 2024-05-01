@@ -75,5 +75,6 @@ export const VAULT_URLS = {
   USER: {
     VAULT_USER: "/userVaultDetails",
     VAULT_USER_SUMMARY: "/userVaultDetailsSummary",
+    VAULT_TVL_GRAPH_DATA: "/vaultTVLDatapoints",
   },
 };

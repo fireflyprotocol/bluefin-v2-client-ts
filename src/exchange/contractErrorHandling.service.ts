@@ -3,7 +3,7 @@ import {
   SuiTransactionBlockResponse,
   Transaction,
 } from "@firefly-exchange/library-sui/";
-import { serializeError } from "eth-rpc-errors";
+import {serializeError} from "eth-rpc-errors";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;
@@ -77,11 +77,11 @@ export const TransformToResponseSchema = async (
     } catch (error: any) {
       if (error.toString().indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
         console.log("Retrying on sui lock error %o", error);
-        await new Promise((resolve) =>
+        await new Promise(resolve =>
           setTimeout(resolve, lockErrorRetryDelayMS)
         );
       } else {
-        return handleResponse({ ...serializeError(error) }, false);
+        return handleResponse({...serializeError(error)}, false);
       }
     }
   }
@@ -110,4 +110,11 @@ export enum VerificationStatus {
 export enum APIErrorMessages {
   // eslint-disable-next-line max-len
   restrictedUser = "This wallet address has been identified as high-risk. You will not be able to open any new positions or deposit funds on the exchange. You may, however, close out any open positions and withdraw free collateral",
+}
+
+export enum VaultTVLInterval {
+  DAY = "TWENTY_MINUTES",
+  WEEK = "THREE_HOURS",
+  MONTH = "TWELVE_HOURS",
+  ALL = "FOUR_DAYS",
 }

@@ -1,5 +1,3 @@
-// import { Network } from "@firefly-exchange/library-sui";
-
 export const Networks = {
   DEVNET_SUI: {
     name: "devnet",

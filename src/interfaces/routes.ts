@@ -762,8 +762,8 @@ interface MakerRewardDetailsData {
   startDate: string;
   endDate: string;
   cursor: string;
-  liquidityScore?: string; //come if symbol provided in request
-  uptimePercentage?: string; //come if symbol provided in request
+  liquidityScore?: string; // come if symbol provided in request
+  uptimePercentage?: string; // come if symbol provided in request
 }
 
 export interface GetUserWhiteListStatusForMarketMakerResponse {
@@ -932,6 +932,7 @@ export interface UserVaultDetailSummary {
   userLockedAmount: string;
   userWithdrawAmountRequested: string;
   claimableAmount: string;
+  vaultId: string;
 }
 
 export interface VaultConfig {
@@ -958,3 +959,4 @@ export type OpenReferralDetails = {
   referralCode: string;
   referralCount: number;
 };
+

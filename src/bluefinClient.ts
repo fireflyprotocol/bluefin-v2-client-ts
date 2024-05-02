@@ -2154,10 +2154,10 @@ export class BluefinClient {
   public getUserVaultDetails = async (
     userAddress: string,
     vaultId: string
-  ): Promise<UserVaultDetail> => {
+  ): Promise<UserVaultDetail[]> => {
     try {
       // Fetch data from the given URL
-      const response = await this.apiService.get<UserVaultDetail>(
+      const response = await this.apiService.get<UserVaultDetail[]>(
         VAULT_URLS.USER.VAULT_USER,
         {
           userAddress: userAddress,
@@ -2249,10 +2249,10 @@ export class BluefinClient {
    * */
   public getUserVaultDetailsSummary = async (
     userAddress: string
-  ): Promise<UserVaultDetailSummary> => {
+  ): Promise<UserVaultDetailSummary[]> => {
     try {
       // Fetch data from the given URL
-      const response = await this.apiService.get<UserVaultDetailSummary>(
+      const response = await this.apiService.get<UserVaultDetailSummary[]>(
         VAULT_URLS.USER.VAULT_USER_SUMMARY,
         { userAddress: userAddress },
         { isAuthenticationRequired: false },

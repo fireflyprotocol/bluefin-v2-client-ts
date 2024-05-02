@@ -885,7 +885,7 @@ export interface VaultDetail {
   withdrawAmount: string;
   lendingAgreement?: string;
   bankBalance: string;
-  marketMaker: string;
+  vaultName: string;
   APY: number;
   age: string;
   sequenceNumber: number;
@@ -923,7 +923,7 @@ export interface UserVaultTransferRequest {
 }
 
 export interface UserVaultDetailSummary {
-  marketMaker: string;
+  vaultName: string;
   APY: string;
   TVL: string;
   vaultTotalVolume: string;

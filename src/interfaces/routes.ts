@@ -9,6 +9,7 @@ import {
   ORDER_TYPE,
   TIME_IN_FORCE,
 } from "@firefly-exchange/library-sui";
+import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
@@ -960,3 +961,7 @@ export type OpenReferralDetails = {
   referralCount: number;
 };
 
+export interface BatchClaimPayload {
+  payload: SignaturePayload;
+  signature: string;
+}

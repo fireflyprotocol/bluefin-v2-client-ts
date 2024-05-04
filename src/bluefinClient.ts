@@ -60,6 +60,7 @@ import {
   adjustLeverageRequest,
   AdjustLeverageResponse,
   AuthorizeHashResponse,
+  BatchClaimPayload,
   CancelOrderResponse,
   ConfigResponse,
   ExchangeInfo,
@@ -226,7 +227,7 @@ export class BluefinClient {
     ) {
       this.initializeWithKeyPair(_account);
     }
-    //In case of KMS Signer any of the above condition doesn't matches,
+    // In case of KMS Signer any of the above condition doesn't matches,
     else if (_account) {
       this.initializeWithKeyPair(_account as Signer);
     }
@@ -317,12 +318,13 @@ export class BluefinClient {
     this.is_wallet_extension = false;
   };
 
-  /***
+  /** *
    * Set UUID to api headers for colocation partners
    */
   setUUID = (uuid: string) => {
     this.apiService.setUUID(uuid);
   };
+
   /**
    * @description
    * initializes web3 and wallet with the given account private key
@@ -484,7 +486,7 @@ export class BluefinClient {
         ...proof,
         addressSeed,
       },
-      maxEpoch: maxEpoch,
+      maxEpoch,
       userSignature,
     });
 
@@ -537,6 +539,7 @@ export class BluefinClient {
     }
     return this.walletAddress;
   };
+
   parseAndShapeSignedData = ({
     signature,
     isParsingRequired = true,
@@ -545,21 +548,21 @@ export class BluefinClient {
     isParsingRequired?: boolean;
   }): SigPK => {
     let data: SigPK;
-    let parsedSignature = parseSerializedSignature(signature);
+    const parsedSignature = parseSerializedSignature(signature);
     if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
-      //zk login signature
+      // zk login signature
       const { userSignature } = parsedSignature.zkLogin;
 
-      //convert user sig to b64
+      // convert user sig to b64
       const convertedUserSignature = toB64(userSignature as any);
 
-      //reparse b64 converted user sig
+      // reparse b64 converted user sig
       const parsedUserSignature = parseSerializedSignature(
         convertedUserSignature
       );
 
       data = {
-        signature: Buffer.from(parsedSignature.signature).toString("hex") + "3",
+        signature: `${Buffer.from(parsedSignature.signature).toString("hex")}3`,
         publicKey: publicKeyFromRawBytes(
           parsedUserSignature.signatureScheme,
           parsedUserSignature.publicKey
@@ -592,14 +595,12 @@ export class BluefinClient {
         signer: this.signer,
         zkPayload: this.getZkPayload(),
       });
-    } else {
-      if (this.orderSigner.signOrder)
-        signature = await this.orderSigner.signOrder(orderToSign);
-      else
-        throw Error(
-          "On of OrderSigner or uiWallet needs to be initialized before signing order "
-        );
-    }
+    } else if (this.orderSigner.signOrder)
+      signature = await this.orderSigner.signOrder(orderToSign);
+    else
+      throw Error(
+        "On of OrderSigner or uiWallet needs to be initialized before signing order "
+      );
     return signature;
   };
 
@@ -730,14 +731,14 @@ export class BluefinClient {
     try {
       let signature: SigPK;
 
-      //taking the hash of list of hashes of cancel signature
+      // taking the hash of list of hashes of cancel signature
       const hashOfHash = Buffer.from(
         sha256(JSON.stringify(params.hashes))
       ).toString("hex");
-      let payloadValue: string[] = [];
+      const payloadValue: string[] = [];
       payloadValue.push(hashOfHash);
       if (this.uiWallet) {
-        //connected via UI
+        // connected via UI
         signature = await OrderSigner.signPayloadUsingWallet(
           { orderHashes: payloadValue },
           this.uiWallet
@@ -803,7 +804,7 @@ export class BluefinClient {
     const signature = await this.createOrderCancellationSignature(params);
     const response = await this.placeCancelOrder({
       ...params,
-      signature: signature,
+      signature,
     });
     return response;
   };
@@ -957,7 +958,7 @@ export class BluefinClient {
     const position = userPosition.data as any as GetPositionResponse;
 
     if (Object.keys(position).length > 0) {
-      //When not connected via UI
+      // When not connected via UI
       if (!this.uiWallet && !this.isZkLogin) {
         const signedTx =
           await this.contractCalls.adjustLeverageContractCallRawTransaction(
@@ -978,7 +979,7 @@ export class BluefinClient {
           signedTransaction: signedTx,
         });
         const response: ResponseSchema = { ok, data, code: errorCode, message };
-        //If API is successful return response else make direct contract call to update the leverage
+        // If API is successful return response else make direct contract call to update the leverage
         if (response.ok) {
           return response;
         }
@@ -1073,7 +1074,7 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
     if (!amount) throw Error(`No amount specified for deposit`);
 
-    //if CoinID provided
+    // if CoinID provided
     if (coinID)
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
@@ -1111,11 +1112,11 @@ export class BluefinClient {
         this.walletAddress
       );
 
-      let coinHavingBalanceAfterMerge,
-        retries = 5;
+      let coinHavingBalanceAfterMerge;
+      let retries = 5;
 
       while (!coinHavingBalanceAfterMerge && retries--) {
-        //sleep for 1 second to merge the coins
+        // sleep for 1 second to merge the coins
         await new Promise((resolve) => setTimeout(resolve, 1000));
         coinHavingBalanceAfterMerge = (
           await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
@@ -1747,7 +1748,8 @@ export class BluefinClient {
       );
     return response;
   };
-  //Open referral Program
+
+  // Open referral Program
   /**
    * get open referral referee details
    * @param payload
@@ -1785,6 +1787,7 @@ export class BluefinClient {
     );
     return response;
   };
+
   /**
    * get open referral payouts
    * @param payload
@@ -1856,7 +1859,7 @@ export class BluefinClient {
     return response;
   };
 
-  //Open referral Program
+  // Open referral Program
 
   //= ==============================================================//
   //                    PRIVATE HELPER FUNCTIONS
@@ -2119,7 +2122,7 @@ export class BluefinClient {
     return this.contractCalls.estimateGasForUsdcTransfer(to, balance);
   };
 
-  ///// ******************* Vault APIs *****************/////
+  /// // ******************* Vault APIs *****************/////
   /**
    * @description
    * Gets deployment json from vaultConfig table
@@ -2160,8 +2163,8 @@ export class BluefinClient {
       const response = await this.apiService.get<UserVaultDetail[]>(
         VAULT_URLS.USER.VAULT_USER,
         {
-          userAddress: userAddress,
-          vaultId: vaultId,
+          userAddress,
+          vaultId,
         },
         { isAuthenticationRequired: false },
         this.network.vaultURL
@@ -2191,7 +2194,7 @@ export class BluefinClient {
       const response = await this.apiService.get<VaultDetail>(
         VAULT_URLS.VAULT.DETAILS,
         {
-          vaultId: vaultId,
+          vaultId,
         },
         { isAuthenticationRequired: false },
         this.network.vaultURL
@@ -2224,7 +2227,7 @@ export class BluefinClient {
       // Fetch data from the given URL
       const response = await this.apiService.get<UserPendingWithdrawRequest>(
         VAULT_URLS.VAULT.PENDING_WITHDRAW_REQUESTS,
-        { vaultId: vaultId, startTime: startTime, endTime: endTime },
+        { vaultId, startTime, endTime },
         { isAuthenticationRequired: false },
         this.network.vaultURL
       );
@@ -2254,7 +2257,7 @@ export class BluefinClient {
       // Fetch data from the given URL
       const response = await this.apiService.get<UserVaultDetailSummary[]>(
         VAULT_URLS.USER.VAULT_USER_SUMMARY,
-        { userAddress: userAddress },
+        { userAddress },
         { isAuthenticationRequired: false },
         this.network.vaultURL
       );
@@ -2303,6 +2306,18 @@ export class BluefinClient {
     if (amount) {
       return this.interactorCalls.depositToVaultContractCall(amount, vaultName);
     }
+  };
+
+  /**
+   * @description
+   * claim all vaults in batch contract call
+   * @param batch array containing SignaturePayload and user's signature
+   * @returns ResponseSchema
+   */
+  calimFromVaultBatch = async (
+    batch: BatchClaimPayload[]
+  ): Promise<ResponseSchema> => {
+    return this.interactorCalls.claimFundsFromVaultBatchContractCall(batch);
   };
 
   /**

@@ -2,6 +2,7 @@ import {
   BigNumberable,
   SuiClient,
   ZkPayload,
+  toBaseNumber,
 } from "@firefly-exchange/library-sui";
 import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 import interpolate from "interpolate";
@@ -13,10 +14,13 @@ import {
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
+import { BatchClaimPayload } from "../interfaces/routes";
 
 export class InteractorCalls {
   InteractorCalls: Interactor;
+
   signer: Signer;
+
   suiClient: SuiClient;
 
   constructor(
@@ -101,6 +105,26 @@ export class InteractorCalls {
 
       return tx;
     }, interpolate(SuccessMessages.claimFundsFronVault, {}));
+  };
+
+  // /**
+  //  * @param vaultName name of the vault to claim funds from
+  //  * @param signaturePayload payload with claim data
+  //  * @param signature signature for claim data
+  //  * @returns ResponseSchema
+  //  * @description
+  //  * Withdraws funds from the margin bank contract
+  //  * */
+  claimFundsFromVaultBatchContractCall = async (
+    batch: BatchClaimPayload[]
+  ): Promise<ResponseSchema> => {
+    const amount = batch.reduce((b, { payload }) => {
+      return b + toBaseNumber(payload.amount, 6);
+    }, 0);
+    return TransformToResponseSchema(async () => {
+      const tx = await this.InteractorCalls.claimFundsBatch(batch);
+      return tx;
+    }, interpolate(SuccessMessages.claimFundsFronVault, {amount}));
   };
 
   // /**

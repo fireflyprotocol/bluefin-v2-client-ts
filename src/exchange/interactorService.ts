@@ -1,7 +1,9 @@
 import {
   BigNumberable,
   SuiClient,
+  SuiTransactionBlockResponse,
   ZkPayload,
+  bnToBaseStr,
   toBaseNumber,
 } from "@firefly-exchange/library-sui";
 import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
@@ -119,12 +121,12 @@ export class InteractorCalls {
     batch: BatchClaimPayload[]
   ): Promise<ResponseSchema> => {
     const amount = batch.reduce((b, { payload }) => {
-      return b + toBaseNumber(payload.amount, 6);
+      return b + +payload.amount;
     }, 0);
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFundsBatch(batch);
       return tx;
-    }, interpolate(SuccessMessages.claimFundsFronVault, {amount}));
+    }, interpolate(SuccessMessages.claimFundsFronVault, { amount: bnToBaseStr(amount, 2, 6) }));
   };
 
   // /**

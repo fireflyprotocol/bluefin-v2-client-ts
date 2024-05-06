@@ -2314,7 +2314,7 @@ export class BluefinClient {
    * @param batch array containing SignaturePayload and user's signature
    * @returns ResponseSchema
    */
-  calimFromVaultBatch = async (
+  claimFromVaultBatch = async (
     batch: BatchClaimPayload[]
   ): Promise<ResponseSchema> => {
     return this.interactorCalls.claimFundsFromVaultBatchContractCall(batch);

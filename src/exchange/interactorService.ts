@@ -106,7 +106,7 @@ export class InteractorCalls {
       );
 
       return tx;
-    }, interpolate(SuccessMessages.claimFundsFronVault, {}));
+    }, interpolate(SuccessMessages.claimFundsFromVault, {}));
   };
 
   // /**
@@ -126,7 +126,7 @@ export class InteractorCalls {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFundsBatch(batch);
       return tx;
-    }, interpolate(SuccessMessages.claimFundsFronVault, { amount: bnToBaseStr(amount, 2, 6) }));
+    }, interpolate(SuccessMessages.claimFundsFromVault, { amount: bnToBaseStr(amount, 2, 6) }));
   };
 
   // /**

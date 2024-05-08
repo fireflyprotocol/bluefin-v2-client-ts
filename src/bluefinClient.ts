@@ -2138,7 +2138,7 @@ export class BluefinClient {
         this.network.vaultURL
       );
       // The data property of the response object contains our configuration
-      return response.data[0].config;
+      return response.data?.[0]?.config;
     } catch (error) {
       // If Axios threw an error, it will be stored in error.response
       if (error.response) {

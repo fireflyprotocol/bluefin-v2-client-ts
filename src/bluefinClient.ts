@@ -2303,7 +2303,6 @@ export class BluefinClient {
     vaultName: string,
     amount?: number
   ): Promise<ResponseSchema> => {
-
     const coinHavingBalance = (
       await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
         {

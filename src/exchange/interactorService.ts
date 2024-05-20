@@ -76,10 +76,18 @@ export class InteractorCalls {
   //  * */
   depositToVaultContractCall = async (
     amount: BigNumberable,
-    vaultName: string
+    vaultName: string,
+    options?: {
+      receiver?: string;
+      coinId?: string;
+    }
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      const tx = await this.InteractorCalls.depositToVault(vaultName, amount);
+      const tx = await this.InteractorCalls.depositToVault(
+        vaultName,
+        amount,
+        options
+      );
 
       return tx;
     }, interpolate(SuccessMessages.depositToVault, { amount }));

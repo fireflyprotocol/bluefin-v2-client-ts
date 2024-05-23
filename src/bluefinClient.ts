@@ -2130,15 +2130,17 @@ export class BluefinClient {
    * */
   private getVaultConfigsForInteractor = async (): Promise<any> => {
     try {
-      // Fetch data from the given URL
-      const response = await this.apiService.get<any>(
-        VAULT_URLS.VAULT.CONFIG,
-        {},
-        { isAuthenticationRequired: false },
-        this.network.vaultURL
-      );
-      // The data property of the response object contains our configuration
-      return response.data?.[0]?.config;
+      if (this.network.vaultURL) {
+        // Fetch data from the given URL
+        const response = await this.apiService.get<any>(
+          VAULT_URLS.VAULT.CONFIG,
+          {},
+          { isAuthenticationRequired: false },
+          this.network.vaultURL
+        );
+        // The data property of the response object contains our configuration
+        return response.data?.[0]?.config;
+      }
     } catch (error) {
       // If Axios threw an error, it will be stored in error.response
       if (error.response) {

@@ -68,6 +68,7 @@ export class ContractCalls {
         {
           amount: toBigNumberStr(amount.toString(), 6),
           accountAddress: this.walletAddress,
+          sponsor: true,
         },
         this.signer
       );
@@ -117,6 +118,7 @@ export class ContractCalls {
           coinID,
           bankID: this.onChainCalls.getBankID(),
           accountAddress: this.walletAddress || getPublicAddress(),
+          sponsor,
         },
         this.signer
       );

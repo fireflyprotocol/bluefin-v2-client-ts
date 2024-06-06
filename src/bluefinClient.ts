@@ -1083,17 +1083,54 @@ export class BluefinClient {
    */
   depositToMarginBank = async (
     amount: number,
-    coinID?: string
+    coinID?: string,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
+    if (sponsorTx) {
+      const sponsorTxPayload = await this.depositToMarginBankSponsored(
+        amount,
+        coinID,
+        true
+      );
+      const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
+      return {
+        ok: true,
+        code: 200,
+        data: res,
+        message: "Deposit Successful",
+      };
+    }
+    return this.depositToMarginBankSponsored(amount, coinID, false);
+  };
+
+  depositToMarginBankSponsored = async (
+    amount: number,
+    coinID?: string,
+    sponsorTx?: boolean
+  ) => {
     if (!amount) throw Error(`No amount specified for deposit`);
 
     // if CoinID provided
-    if (coinID)
-      return this.contractCalls.depositToMarginBankContractCall(
-        amount,
-        coinID,
-        this.getPublicAddress
-      );
+    if (coinID) {
+      if (sponsorTx) {
+        const contractCall =
+          await this.contractCalls.depositToMarginBankContractCall(
+            amount,
+            coinID,
+            this.getPublicAddress,
+            sponsorTx
+          );
+        this.signAndExecuteSponsoredTx(contractCall.data);
+      } else {
+        const contractCall = this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinID,
+          this.getPublicAddress,
+          sponsorTx
+        );
+        return contractCall;
+      }
+    }
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -1109,7 +1146,8 @@ export class BluefinClient {
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
         coinHavingBalance,
-        this.getPublicAddress
+        this.getPublicAddress,
+        sponsorTx
       );
     }
 
@@ -1146,7 +1184,8 @@ export class BluefinClient {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
           coinHavingBalanceAfterMerge,
-          this.getPublicAddress
+          this.getPublicAddress,
+          sponsorTx
         );
       }
     }
@@ -1160,9 +1199,47 @@ export class BluefinClient {
    * @param amount amount of USDC to withdraw
    * @returns ResponseSchema
    */
-  withdrawFromMarginBank = async (amount?: number): Promise<ResponseSchema> => {
+  withdrawFromMarginBank = async (
+    amount?: number,
+    sponsorTx?: boolean
+  ): Promise<ResponseSchema> => {
+    if (sponsorTx) {
+      if (amount) {
+        const sponsorTxPayload =
+          await this.contractCalls.withdrawFromMarginBankContractCall(
+            amount,
+            true
+          );
+        try {
+          const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
+          return {
+            ok: true,
+            code: 200,
+            data: res,
+            message: "Withdraw Successful",
+          };
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        return this.contractCalls.withdrawAllFromMarginBankContractCall();
+      }
+    }
     if (amount) {
       return this.contractCalls.withdrawFromMarginBankContractCall(amount);
+    }
+    return this.contractCalls.withdrawAllFromMarginBankContractCall();
+  };
+
+  withdrawFromMarginBankSponsored = async (
+    amount?: number,
+    sponsorTx?: boolean
+  ): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.contractCalls.withdrawFromMarginBankContractCall(
+        amount,
+        sponsorTx
+      );
     }
     return this.contractCalls.withdrawAllFromMarginBankContractCall();
   };

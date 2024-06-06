@@ -986,11 +986,24 @@ export class BluefinClient {
           return response;
         }
       }
-      return await this.contractCalls.adjustLeverageContractCall(
-        params.leverage,
-        params.symbol,
-        params.parentAddress
-      );
+      if (params.sponsorTx) {
+        const sponsorPayload =
+          await this.contractCalls.adjustLeverageContractCall(
+            params.leverage,
+            params.symbol,
+            params.parentAddress,
+            true
+          );
+        if (sponsorPayload.ok) {
+          this.signAndExecuteSponsoredTx(sponsorPayload);
+        }
+      } else {
+        return await this.contractCalls.adjustLeverageContractCall(
+          params.leverage,
+          params.symbol,
+          params.parentAddress
+        );
+      }
     }
     const {
       ok,
@@ -1064,7 +1077,9 @@ export class BluefinClient {
         amount,
         sponsorTx
       );
-      await this.signAndExecuteSponsoredTx(sponsorPayload);
+      if (sponsorPayload.ok) {
+        await this.signAndExecuteSponsoredTx(sponsorPayload);
+      }
     }
     return this.contractCalls.adjustMarginContractCall(
       symbol,

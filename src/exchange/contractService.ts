@@ -145,7 +145,8 @@ export class ContractCalls {
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
-    parentAddress?: string
+    parentAddress?: string,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
     return TransformToResponseSchema(async () => {
@@ -155,6 +156,7 @@ export class ContractCalls {
           perpID: perpId,
           account: parentAddress || this.walletAddress,
           market: symbol,
+          sponsor: sponsorTx,
         },
         this.signer
       );

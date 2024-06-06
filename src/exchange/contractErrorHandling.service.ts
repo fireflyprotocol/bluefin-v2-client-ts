@@ -2,6 +2,7 @@ import {
   getValue,
   SuiTransactionBlockResponse,
   Transaction,
+  TransactionBlock,
 } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
 
@@ -50,30 +51,42 @@ export const handleResponse = (
 };
 
 export const TransformToResponseSchema = async (
-  contactCall: () => Promise<SuiTransactionBlockResponse>,
-  successMessage: string
+  contactCall: () => Promise<SuiTransactionBlockResponse | TransactionBlock>,
+  successMessage: string,
+  isSponsored?: boolean
 ): Promise<ResponseSchema> => {
   for (let retryNo = 0; retryNo < lockErrorMaxRetries; retryNo++) {
     try {
-      const tx = await contactCall();
-      if (Transaction.getStatus(tx) === "success") {
+      if (!isSponsored) {
+        const tx =
+          await (contactCall() as Promise<SuiTransactionBlockResponse>);
+        if (Transaction.getStatus(tx) === "success") {
+          return handleResponse(
+            {
+              data: tx,
+              message: successMessage,
+              code: 200,
+            },
+            true
+          );
+        }
         return handleResponse(
           {
             data: tx,
-            message: successMessage,
-            code: 200,
+            message: Transaction.getError(tx),
+            code: 400,
           },
-          true
+          false
         );
       }
-      return handleResponse(
-        {
-          data: tx,
-          message: Transaction.getError(tx),
-          code: 400,
-        },
-        false
-      );
+      const res = await (contactCall() as unknown as TransactionBlock);
+      const obj = {
+        data: res,
+        code: 200,
+        message: "",
+        ok: true,
+      };
+      return obj;
     } catch (error: any) {
       if (error.toString().indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
         console.log("Retrying on sui lock error %o", error);

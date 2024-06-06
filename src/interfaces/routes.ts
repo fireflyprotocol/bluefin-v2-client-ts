@@ -510,6 +510,17 @@ export interface Expired1CTSubAccountsResponse {
   expiredSubAccounts: Array<string>;
 }
 
+export interface SponsorTxResponse {
+  status: boolean;
+  message: string;
+  data: {
+    expireAtTime: number;
+    signature: string;
+    txDigest: string;
+    txBytes: string;
+  };
+}
+
 export interface FundGasResponse {
   message: string;
 }

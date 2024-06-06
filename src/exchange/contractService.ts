@@ -20,10 +20,15 @@ import {
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
+
   signer: Signer;
+
   suiClient: SuiClient;
+
   marginBankId: string | undefined;
+
   walletAddress: string;
+
   is_wallet_extension: boolean;
 
   constructor(
@@ -55,7 +60,8 @@ export class ContractCalls {
    * @returns ResponseSchema
    * */
   withdrawFromMarginBankContractCall = async (
-    amount: Number
+    amount: Number,
+    sponsor?: boolean
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.onChainCalls.withdrawFromBank(
@@ -66,7 +72,13 @@ export class ContractCalls {
         this.signer
       );
       if (tx && !this.marginBankId) {
-        this.marginBankId = Transaction.getBankAccountID(tx);
+        if (sponsor) {
+          this.marginBankId = Transaction.getBankAccountID(
+            tx as SuiTransactionBlockResponse
+          );
+        } else {
+          this.marginBankId = "";
+        }
       }
       return tx;
     }, interpolate(SuccessMessages.withdrawMargin, { amount }));
@@ -78,10 +90,11 @@ export class ContractCalls {
    * */
   withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.withdrawAllMarginFromBank(
+      const r = await this.onChainCalls.withdrawAllMarginFromBank(
         this.signer,
         this.walletAddress
       );
+      return r;
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
 
@@ -94,7 +107,8 @@ export class ContractCalls {
   depositToMarginBankContractCall = async (
     amount: number,
     coinID: string,
-    getPublicAddress: () => address
+    getPublicAddress: () => address,
+    sponsor?: boolean
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.onChainCalls.depositToBank(
@@ -107,7 +121,13 @@ export class ContractCalls {
         this.signer
       );
       if (tx && !this.marginBankId) {
-        this.marginBankId = Transaction.getBankAccountID(tx);
+        if (sponsor) {
+          this.marginBankId = Transaction.getBankAccountID(
+            tx as SuiTransactionBlockResponse
+          );
+        } else {
+          this.marginBankId = "";
+        }
       }
       return tx;
     }, interpolate(SuccessMessages.depositToBank, { amount }));
@@ -156,7 +176,7 @@ export class ContractCalls {
       this.signer
     );
 
-    //serialize
+    // serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
 
@@ -190,7 +210,7 @@ export class ContractCalls {
       this.signer
     );
 
-    //serialize
+    // serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
     const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
 
@@ -231,16 +251,52 @@ export class ContractCalls {
   adjustMarginContractCall = async (
     symbol: string,
     operationType: ADJUST_MARGIN,
-    amount: number
+    amount: number,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
     const msg =
-      operationType == ADJUST_MARGIN.Add
+      operationType === ADJUST_MARGIN.Add
         ? interpolate(SuccessMessages.adjustMarginAdd, { amount })
         : interpolate(SuccessMessages.adjustMarginRemove, { amount });
-    return TransformToResponseSchema(async () => {
-      if (operationType === ADJUST_MARGIN.Add) {
-        return this.onChainCalls.addMargin(
+    return TransformToResponseSchema(
+      async () => {
+        if (operationType === ADJUST_MARGIN.Add) {
+          if (sponsorTx) {
+            return this.onChainCalls.addMargin(
+              {
+                amount,
+                perpID: perpId,
+                market: symbol,
+                account: this.walletAddress,
+                sponsor: true,
+              },
+              this.signer
+            );
+          }
+          return this.onChainCalls.addMargin(
+            {
+              amount,
+              perpID: perpId,
+              market: symbol,
+              account: this.walletAddress,
+            },
+            this.signer
+          );
+        }
+        if (sponsorTx) {
+          return this.onChainCalls.removeMargin(
+            {
+              amount,
+              perpID: perpId,
+              market: symbol,
+              account: this.walletAddress,
+              sponsor: true,
+            },
+            this.signer
+          );
+        }
+        return this.onChainCalls.removeMargin(
           {
             amount,
             perpID: perpId,
@@ -249,17 +305,10 @@ export class ContractCalls {
           },
           this.signer
         );
-      }
-      return await this.onChainCalls.removeMargin(
-        {
-          amount,
-          perpID: perpId,
-          market: symbol,
-          account: this.walletAddress,
-        },
-        this.signer
-      );
-    }, msg);
+      },
+      msg,
+      sponsorTx
+    );
   };
 
   /**

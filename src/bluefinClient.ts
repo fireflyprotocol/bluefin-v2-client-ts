@@ -30,10 +30,11 @@ import {
   TRANSFERABLE_COINS,
   usdcToBaseNumber,
   ZkPayload,
+  SuiBlocks,
 } from "@firefly-exchange/library-sui";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
-import { toB64 } from "@mysten/bcs";
+import { toB64, fromB64 } from "@mysten/bcs";
 import {
   Keypair,
   parseSerializedSignature,
@@ -128,6 +129,7 @@ import {
   PostTimerAttributes,
   PostTimerResponse,
   SignedSubAccountRequest,
+  SponsorTxResponse,
   StatusResponse,
   SubAccountRequest,
   SubAccountResponse,
@@ -984,11 +986,24 @@ export class BluefinClient {
           return response;
         }
       }
-      return await this.contractCalls.adjustLeverageContractCall(
-        params.leverage,
-        params.symbol,
-        params.parentAddress
-      );
+      if (params.sponsorTx) {
+        const sponsorPayload =
+          await this.contractCalls.adjustLeverageContractCall(
+            params.leverage,
+            params.symbol,
+            params.parentAddress,
+            true
+          );
+        if (sponsorPayload.ok) {
+          this.signAndExecuteSponsoredTx(sponsorPayload);
+        }
+      } else {
+        return await this.contractCalls.adjustLeverageContractCall(
+          params.leverage,
+          params.symbol,
+          params.parentAddress
+        );
+      }
     }
     const {
       ok,
@@ -1052,12 +1067,25 @@ export class BluefinClient {
   adjustMargin = async (
     symbol: MarketSymbol,
     operationType: ADJUST_MARGIN,
-    amount: number
+    amount: number,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
+    if (sponsorTx) {
+      const sponsorPayload = await this.contractCalls.adjustMarginContractCall(
+        symbol,
+        operationType,
+        amount,
+        sponsorTx
+      );
+      if (sponsorPayload.ok) {
+        await this.signAndExecuteSponsoredTx(sponsorPayload);
+      }
+    }
     return this.contractCalls.adjustMarginContractCall(
       symbol,
       operationType,
-      amount
+      amount,
+      sponsorTx
     );
   };
 
@@ -1070,17 +1098,54 @@ export class BluefinClient {
    */
   depositToMarginBank = async (
     amount: number,
-    coinID?: string
+    coinID?: string,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
+    if (sponsorTx) {
+      const sponsorTxPayload = await this.depositToMarginBankSponsored(
+        amount,
+        coinID,
+        true
+      );
+      const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
+      return {
+        ok: true,
+        code: 200,
+        data: res,
+        message: "Deposit Successful",
+      };
+    }
+    return this.depositToMarginBankSponsored(amount, coinID, false);
+  };
+
+  depositToMarginBankSponsored = async (
+    amount: number,
+    coinID?: string,
+    sponsorTx?: boolean
+  ) => {
     if (!amount) throw Error(`No amount specified for deposit`);
 
     // if CoinID provided
-    if (coinID)
-      return this.contractCalls.depositToMarginBankContractCall(
-        amount,
-        coinID,
-        this.getPublicAddress
-      );
+    if (coinID) {
+      if (sponsorTx) {
+        const contractCall =
+          await this.contractCalls.depositToMarginBankContractCall(
+            amount,
+            coinID,
+            this.getPublicAddress,
+            sponsorTx
+          );
+        this.signAndExecuteSponsoredTx(contractCall.data);
+      } else {
+        const contractCall = this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinID,
+          this.getPublicAddress,
+          sponsorTx
+        );
+        return contractCall;
+      }
+    }
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -1096,7 +1161,8 @@ export class BluefinClient {
       return this.contractCalls.depositToMarginBankContractCall(
         amount,
         coinHavingBalance,
-        this.getPublicAddress
+        this.getPublicAddress,
+        sponsorTx
       );
     }
 
@@ -1133,7 +1199,8 @@ export class BluefinClient {
         return this.contractCalls.depositToMarginBankContractCall(
           amount,
           coinHavingBalanceAfterMerge,
-          this.getPublicAddress
+          this.getPublicAddress,
+          sponsorTx
         );
       }
     }
@@ -1147,9 +1214,47 @@ export class BluefinClient {
    * @param amount amount of USDC to withdraw
    * @returns ResponseSchema
    */
-  withdrawFromMarginBank = async (amount?: number): Promise<ResponseSchema> => {
+  withdrawFromMarginBank = async (
+    amount?: number,
+    sponsorTx?: boolean
+  ): Promise<ResponseSchema> => {
+    if (sponsorTx) {
+      if (amount) {
+        const sponsorTxPayload =
+          await this.contractCalls.withdrawFromMarginBankContractCall(
+            amount,
+            true
+          );
+        try {
+          const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
+          return {
+            ok: true,
+            code: 200,
+            data: res,
+            message: "Withdraw Successful",
+          };
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        return this.contractCalls.withdrawAllFromMarginBankContractCall();
+      }
+    }
     if (amount) {
       return this.contractCalls.withdrawFromMarginBankContractCall(amount);
+    }
+    return this.contractCalls.withdrawAllFromMarginBankContractCall();
+  };
+
+  withdrawFromMarginBankSponsored = async (
+    amount?: number,
+    sponsorTx?: boolean
+  ): Promise<ResponseSchema> => {
+    if (amount) {
+      return this.contractCalls.withdrawFromMarginBankContractCall(
+        amount,
+        sponsorTx
+      );
     }
     return this.contractCalls.withdrawAllFromMarginBankContractCall();
   };
@@ -1899,6 +2004,49 @@ export class BluefinClient {
   };
 
   /**
+   * @description
+   * prompts user to sign the transaction and executes
+   *  @param sponsorPayload payload from library-sui
+   * @returns completed transaction
+   * */
+
+  private signAndExecuteSponsoredTx = async (sponsorPayload) => {
+    const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
+      sponsorPayload.data,
+      this.provider
+    );
+    const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
+    const { data, ok } = sponsorTxResponse;
+    if (ok) {
+      const txBytes = fromB64(data.data.txBytes);
+      const txBlock = TransactionBlock.from(txBytes);
+      if (this.uiWallet) {
+        const { transactionBlockBytes, signature } = await (
+          this.signer as unknown as ExtendedWalletContextState
+        ).signTransactionBlock({
+          transactionBlock: txBlock,
+        });
+        const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+          transactionBlockBytes,
+          signature,
+          data.data.signature,
+          this.provider
+        );
+        return executedResponse;
+      }
+      const { signature } = await this.signer.signTransactionBlock(txBytes);
+      SuiBlocks.executeSponsoredTxBlock(
+        data.data.txBytes,
+        signature,
+        data.data.signature,
+        this.provider
+      );
+    } else {
+      return data;
+    }
+  };
+
+  /**
    * Function to create order payload that is to be signed on-chain
    * @param params OrderSignatureRequest
    * @returns Order
@@ -1999,6 +2147,20 @@ export class BluefinClient {
     const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
       SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
       null,
+      { isAuthenticationRequired: true }
+    );
+    return response;
+  };
+
+  /**
+   * @description
+   * Get transcation response for sponsored payload
+   * @returns SponsorTxResponse
+   */
+  getSponsoredTxResponse = async (txBytes) => {
+    const response = await this.apiService.post<SponsorTxResponse>(
+      SERVICE_URLS.USER.SPONSOR_TX,
+      { txBytes },
       { isAuthenticationRequired: true }
     );
     return response;

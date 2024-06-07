@@ -476,6 +476,7 @@ export interface adjustLeverageRequest {
   leverage: number;
   parentAddress?: string;
   signedTransaction?: string;
+  sponsorTx?: string;
 }
 export interface AdjustLeverageResponse {
   symbol: string;
@@ -508,6 +509,17 @@ export interface SubAccountResponse {
 export interface Expired1CTSubAccountsResponse {
   /** The list of subaccounts that are expired and their status is active */
   expiredSubAccounts: Array<string>;
+}
+
+export interface SponsorTxResponse {
+  status: boolean;
+  message: string;
+  data: {
+    expireAtTime: number;
+    signature: string;
+    txDigest: string;
+    txBytes: string;
+  };
 }
 
 export interface FundGasResponse {

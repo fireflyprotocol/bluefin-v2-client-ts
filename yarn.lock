@@ -981,10 +981,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.4.16":
-  version "1.4.16"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.4.16.tgz#81c4f4b5d87996204f64c91b8ed8e8ccfcd604bb"
-  integrity sha512-FkDer9jCqbqyrcM/3q9z1BhngMJCjX93JO8fwV2u88dX5pp5jIBiGbYlScjjQTJ4HJ+BQ/+lHGBsPcG/hbPr6A==
+"@firefly-exchange/library-sui@^1.4.19":
+  version "1.4.19"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.4.19.tgz#6b9b0848090f778c786607c48e5cc9db4c1b1b2d"
+  integrity sha512-/IYuVAqkzanMNFJPh++F/n+0CUx+yZjT5gbGbBNdQ1nsg1+oNKr0FksURs27dRLlb1I1AjNX+/OFYdVYBI/Vwg==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/sui.js" "^0.48.0"
@@ -1108,6 +1108,13 @@
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.9.0.tgz#d95c13d822647d0ce5a1ff24b5cb4732e5f95727"
   integrity sha512-h56essa8oSS4/J0Dby8k8stMoOSt+QZIEIeZNtgTOWh9HeV69yFg2BUg/+Rk7jzfWzvUmw9lFyKNipXcD5QOTw==
+  dependencies:
+    bs58 "^5.0.0"
+
+"@mysten/bcs@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.0.2.tgz#d24b051f1a0652d44f61d0a6d8b94f7351fdae1e"
+  integrity sha512-haHT0km/9yIIe8lwo8gDFxGLnoxfRF4WmEVCz4lDXbEVQRsZkF0zB97kukiwMjDuFBaGVUhrOMCLz6td8tSMaQ==
   dependencies:
     bs58 "^5.0.0"
 

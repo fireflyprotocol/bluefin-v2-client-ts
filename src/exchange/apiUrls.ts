@@ -31,6 +31,7 @@ export const SERVICE_URLS = {
     USER_TRADES_HISTORY: "/userTradesHistory",
     SUBACCOUNT_1CT: "/account/addSubAccountFor1CT",
     EXPIRED_SUBACCOUNT_1CT: "/account/expired1CTAccounts",
+    SPONSOR_TX: "/account/sponsorTx",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",

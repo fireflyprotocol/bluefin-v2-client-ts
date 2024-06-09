@@ -991,18 +991,25 @@ export class BluefinClient {
             params.leverage,
             params.symbol,
             params.parentAddress,
-            true
+            params.sponsorTx
           );
-        if (sponsorPayload.ok) {
-          this.signAndExecuteSponsoredTx(sponsorPayload);
-        }
-      } else {
-        return await this.contractCalls.adjustLeverageContractCall(
-          params.leverage,
-          params.symbol,
-          params.parentAddress
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsorPayload
         );
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            message: "Leverage Updated",
+            data: "",
+          };
+        }
       }
+      return await this.contractCalls.adjustLeverageContractCall(
+        params.leverage,
+        params.symbol,
+        params.parentAddress
+      );
     }
     const {
       ok,
@@ -1025,7 +1032,8 @@ export class BluefinClient {
    * @returns ResponseSchema
    */
   upsertSubAccount = async (
-    params: SubAccountRequest
+    params: SubAccountRequest,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     try {
       const apiResponse = await this.getExpiredAccountsFor1CT();
@@ -1038,7 +1046,7 @@ export class BluefinClient {
       const request: SignedSubAccountRequest = {
         subAccountAddress: params.subAccountAddress,
         accountsToRemove: params.accountsToRemove,
-        signedTransaction: signedTx,
+        signedTransaction: signedTx as string,
       };
 
       const {
@@ -1183,11 +1191,30 @@ export class BluefinClient {
       this.signer
     );
     if (usdcCoins.data.length > 1) {
-      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
-        this.contractCalls.onChainCalls.getCoinType(),
-        this.signer,
-        this.walletAddress
-      );
+      if (sponsorTx) {
+        try {
+          const sponsorPayload =
+            await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+              this.contractCalls.onChainCalls.getCoinType(),
+              this.signer,
+              this.walletAddress,
+              sponsorTx
+            );
+          this.signAndExecuteSponsoredTx({
+            ok: true,
+            data: sponsorPayload,
+            message: "",
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+          this.contractCalls.onChainCalls.getCoinType(),
+          this.signer,
+          this.walletAddress
+        );
+      }
 
       let coinHavingBalanceAfterMerge;
       let retries = 5;
@@ -1288,9 +1315,22 @@ export class BluefinClient {
    */
   setSubAccount = async (
     publicAddress: string,
-    status: boolean
+    status: boolean,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
-    return this.contractCalls.setSubAccount(publicAddress, status);
+    if (sponsorTx) {
+      const sponsorPayload = await this.contractCalls.setSubAccount(
+        publicAddress,
+        status,
+        true
+      );
+      if (sponsorPayload?.ok) {
+        const sponsorTxResponse =
+          this.signAndExecuteSponsoredTx(sponsorPayload);
+      }
+    } else {
+      return this.contractCalls.setSubAccount(publicAddress, status, true);
+    }
   };
 
   /**
@@ -2030,17 +2070,22 @@ export class BluefinClient {
    * @returns completed transaction
    * */
 
-  private signAndExecuteSponsoredTx = async (sponsorPayload) => {
+  private signAndExecuteMergeUSDCSponsored = () => {};
+
+  private signAndExecuteSponsoredTx = async (
+    sponsorPayload: ResponseSchema
+  ) => {
     const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
       sponsorPayload.data,
       this.provider
     );
-    // this.contractCalls.onChainCalls.executeTransactionBlock()
+
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
     const { data, ok } = sponsorTxResponse;
     if (ok) {
       const txBytes = fromB64(data.data.txBytes);
       const txBlock = TransactionBlock.from(txBytes);
+
       if (this.uiWallet) {
         try {
           const { transactionBlockBytes, signature } = await (

@@ -205,7 +205,7 @@ export class ContractCalls {
     accountsToRemove?: Array<string>,
     subAccountsMapID?: string,
     gasBudget?: number,
-    sponsorTx?: boolean
+    sponsor?: boolean
   ): Promise<string | TransactionBlock> => {
     const signedTx = await this.onChainCalls.signUpsertSubAccount(
       {
@@ -213,13 +213,13 @@ export class ContractCalls {
         accountsToRemove,
         subAccountsMapID,
         gasBudget,
-        sponsor: true,
+        sponsor,
       },
       this.signer
     );
 
     if (sponsorTx) {
-      return signedTx as TransactionBlock;
+      return signedTx as unknown as TransactionBlock;
     }
 
     // serialize

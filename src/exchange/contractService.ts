@@ -218,7 +218,7 @@ export class ContractCalls {
       this.signer
     );
 
-    if (sponsorTx) {
+    if (sponsor) {
       return signedTx as unknown as TransactionBlock;
     }
 

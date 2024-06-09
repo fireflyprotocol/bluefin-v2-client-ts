@@ -213,6 +213,7 @@ export class ContractCalls {
         accountsToRemove,
         subAccountsMapID,
         gasBudget,
+        sponsor,
       },
       this.signer
     );

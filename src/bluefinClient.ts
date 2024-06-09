@@ -1040,8 +1040,29 @@ export class BluefinClient {
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.subAccountAddress,
-          apiResponse?.data?.expiredSubAccounts ?? []
+          apiResponse?.data?.expiredSubAccounts ?? [],
+          undefined,
+          undefined,
+          sponsorTx
         );
+
+      if (sponsorTx) {
+        const sponsorPayload = signedTx as TransactionBlock;
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx({
+          data: sponsorPayload,
+          ok: true,
+          code: 200,
+          message: "",
+        });
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            message: "Success",
+            data: "",
+          };
+        }
+      }
 
       const request: SignedSubAccountRequest = {
         subAccountAddress: params.subAccountAddress,

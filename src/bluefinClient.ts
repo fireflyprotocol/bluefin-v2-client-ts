@@ -289,7 +289,6 @@ export class BluefinClient {
       this.isZkLogin = false;
       this.is_wallet_extension = true;
     } catch (err) {
-      console.log(err);
       throw Error("Failed to initialize through UI");
     }
   };
@@ -992,18 +991,25 @@ export class BluefinClient {
             params.leverage,
             params.symbol,
             params.parentAddress,
-            true
+            params.sponsorTx
           );
-        if (sponsorPayload.ok) {
-          this.signAndExecuteSponsoredTx(sponsorPayload);
-        }
-      } else {
-        return await this.contractCalls.adjustLeverageContractCall(
-          params.leverage,
-          params.symbol,
-          params.parentAddress
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsorPayload
         );
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            message: "Leverage Updated",
+            data: "",
+          };
+        }
       }
+      return await this.contractCalls.adjustLeverageContractCall(
+        params.leverage,
+        params.symbol,
+        params.parentAddress
+      );
     }
     const {
       ok,
@@ -1026,20 +1032,42 @@ export class BluefinClient {
    * @returns ResponseSchema
    */
   upsertSubAccount = async (
-    params: SubAccountRequest
+    params: SubAccountRequest,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     try {
       const apiResponse = await this.getExpiredAccountsFor1CT();
       const signedTx =
         await this.contractCalls.upsertSubAccountContractCallRawTransaction(
           params.subAccountAddress,
-          apiResponse?.data?.expiredSubAccounts ?? []
+          apiResponse?.data?.expiredSubAccounts ?? [],
+          undefined,
+          undefined,
+          sponsorTx
         );
+
+      if (sponsorTx) {
+        const sponsorPayload = signedTx as TransactionBlock;
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx({
+          data: sponsorPayload,
+          ok: true,
+          code: 200,
+          message: "",
+        });
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            message: "Success",
+            data: "",
+          };
+        }
+      }
 
       const request: SignedSubAccountRequest = {
         subAccountAddress: params.subAccountAddress,
         accountsToRemove: params.accountsToRemove,
-        signedTransaction: signedTx,
+        signedTransaction: signedTx as string,
       };
 
       const {
@@ -1108,12 +1136,15 @@ export class BluefinClient {
         true
       );
       const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
-      return {
-        ok: true,
-        code: 200,
-        data: res,
-        message: "Deposit Successful",
-      };
+      if ((res as ResponseSchema)?.ok) {
+        return {
+          ok: true,
+          code: 200,
+          data: res,
+          message: "Deposit Successful",
+        };
+      }
+      return res as ResponseSchema;
     }
     return this.depositToMarginBankSponsored(amount, coinID, false);
   };
@@ -1135,7 +1166,16 @@ export class BluefinClient {
             this.getPublicAddress,
             sponsorTx
           );
-        this.signAndExecuteSponsoredTx(contractCall.data);
+        try {
+          this.signAndExecuteSponsoredTx(contractCall.data);
+        } catch (e) {
+          return {
+            ok: false,
+            message: e.message || "deposit failed",
+            data: "",
+            code: 400,
+          };
+        }
       } else {
         const contractCall = this.contractCalls.depositToMarginBankContractCall(
           amount,
@@ -1158,7 +1198,7 @@ export class BluefinClient {
       )
     )?.coinObjectId;
     if (coinHavingBalance) {
-      return this.contractCalls.depositToMarginBankContractCall(
+      return await this.contractCalls.depositToMarginBankContractCall(
         amount,
         coinHavingBalance,
         this.getPublicAddress,
@@ -1172,11 +1212,30 @@ export class BluefinClient {
       this.signer
     );
     if (usdcCoins.data.length > 1) {
-      await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
-        this.contractCalls.onChainCalls.getCoinType(),
-        this.signer,
-        this.walletAddress
-      );
+      if (sponsorTx) {
+        try {
+          const sponsorPayload =
+            await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+              this.contractCalls.onChainCalls.getCoinType(),
+              this.signer,
+              this.walletAddress,
+              sponsorTx
+            );
+          this.signAndExecuteSponsoredTx({
+            ok: true,
+            data: sponsorPayload,
+            message: "",
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      } else {
+        await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+          this.contractCalls.onChainCalls.getCoinType(),
+          this.signer,
+          this.walletAddress
+        );
+      }
 
       let coinHavingBalanceAfterMerge;
       let retries = 5;
@@ -1220,21 +1279,30 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
     if (sponsorTx) {
       if (amount) {
-        const sponsorTxPayload =
-          await this.contractCalls.withdrawFromMarginBankContractCall(
-            amount,
-            true
-          );
         try {
+          const sponsorTxPayload =
+            await this.contractCalls.withdrawFromMarginBankContractCall(
+              amount,
+              true
+            );
+
           const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
-          return {
-            ok: true,
-            code: 200,
-            data: res,
-            message: "Withdraw Successful",
-          };
+          if (res?.ok) {
+            return {
+              ok: true,
+              code: 200,
+              data: res,
+              message: "Withdraw Successful",
+            };
+          }
+          throw new Error(res.message || "Error completing withdraw");
         } catch (e) {
-          console.log(e);
+          return {
+            ok: false,
+            code: "Withdraw unsuccessful",
+            data: "",
+            message: e.message,
+          };
         }
       } else {
         return this.contractCalls.withdrawAllFromMarginBankContractCall();
@@ -1268,9 +1336,22 @@ export class BluefinClient {
    */
   setSubAccount = async (
     publicAddress: string,
-    status: boolean
+    status: boolean,
+    sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
-    return this.contractCalls.setSubAccount(publicAddress, status);
+    if (sponsorTx) {
+      const sponsorPayload = await this.contractCalls.setSubAccount(
+        publicAddress,
+        status,
+        true
+      );
+      if (sponsorPayload?.ok) {
+        const sponsorTxResponse =
+          this.signAndExecuteSponsoredTx(sponsorPayload);
+      }
+    } else {
+      return this.contractCalls.setSubAccount(publicAddress, status, true);
+    }
   };
 
   /**
@@ -2010,30 +2091,46 @@ export class BluefinClient {
    * @returns completed transaction
    * */
 
-  private signAndExecuteSponsoredTx = async (sponsorPayload) => {
+  private signAndExecuteMergeUSDCSponsored = () => {};
+
+  private signAndExecuteSponsoredTx = async (
+    sponsorPayload: ResponseSchema
+  ) => {
     const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
       sponsorPayload.data,
       this.provider
     );
+
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
     const { data, ok } = sponsorTxResponse;
     if (ok) {
       const txBytes = fromB64(data.data.txBytes);
       const txBlock = TransactionBlock.from(txBytes);
+
       if (this.uiWallet) {
-        const { transactionBlockBytes, signature } = await (
-          this.signer as unknown as ExtendedWalletContextState
-        ).signTransactionBlock({
-          transactionBlock: txBlock,
-        });
-        const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-          transactionBlockBytes,
-          signature,
-          data.data.signature,
-          this.provider
-        );
-        return executedResponse;
+        try {
+          const { transactionBlockBytes, signature } = await (
+            this.signer as unknown as ExtendedWalletContextState
+          ).signTransactionBlock({
+            transactionBlock: txBlock,
+          });
+          const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+            transactionBlockBytes,
+            signature,
+            data.data.signature,
+            this.provider
+          );
+          return { code: "Success", ok: true, data: executedResponse };
+        } catch (e) {
+          return {
+            ok: false,
+            message: e.message || "Something Went Wrong",
+            data: "",
+            code: 400,
+          };
+        }
       }
+
       const { signature } = await this.signer.signTransactionBlock(txBytes);
       SuiBlocks.executeSponsoredTxBlock(
         data.data.txBytes,
@@ -2042,7 +2139,8 @@ export class BluefinClient {
         this.provider
       );
     } else {
-      return data;
+      // @ts-ignore
+      throw new Error(sponsorTxResponse.data?.error?.message);
     }
   };
 

@@ -2,11 +2,13 @@ import {
   address,
   ADJUST_MARGIN,
   OnChainCalls,
+  SignatureWithBytes,
   SuiClient,
   SuiTransactionBlockResponse,
   toBaseNumber,
   toBigNumberStr,
   Transaction,
+  TransactionBlock,
   TRANSFERABLE_COINS,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
@@ -202,21 +204,29 @@ export class ContractCalls {
     account: string,
     accountsToRemove?: Array<string>,
     subAccountsMapID?: string,
-    gasBudget?: number
-  ): Promise<string> => {
+    gasBudget?: number,
+    sponsor?: boolean
+  ): Promise<string | TransactionBlock> => {
     const signedTx = await this.onChainCalls.signUpsertSubAccount(
       {
         account,
         accountsToRemove,
         subAccountsMapID,
         gasBudget,
+        sponsor,
       },
       this.signer
     );
 
+    if (sponsor) {
+      return signedTx as unknown as TransactionBlock;
+    }
+
     // serialize
     const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
-    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
+    const combinedData = `${
+      (signedTx as SignatureWithBytes).bytes
+    }${separator}${(signedTx as SignatureWithBytes).signature}`;
 
     // Encode to hex for transmission
     const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
@@ -232,13 +242,15 @@ export class ContractCalls {
 
   setSubAccount = async (
     publicAddress: address,
-    status: boolean
+    status: boolean,
+    sponsor?: boolean
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.setSubAccount(
         {
           account: publicAddress,
           status,
+          sponsor,
         },
         this.signer
       );

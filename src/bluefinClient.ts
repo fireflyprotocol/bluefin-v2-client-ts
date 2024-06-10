@@ -31,7 +31,8 @@ import {
   usdcToBaseNumber,
   ZkPayload,
   SuiBlocks,
-} from "@firefly-exchange/library-sui";
+  ValidateTx,
+} from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
 import { toB64, fromB64 } from "@mysten/bcs";
@@ -1221,12 +1222,17 @@ export class BluefinClient {
               this.walletAddress,
               sponsorTx
             );
-          this.signAndExecuteSponsoredTx({
+          await this.signAndExecuteSponsoredTx({
             ok: true,
             data: sponsorPayload,
             message: "",
           });
         } catch (e) {
+          await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
+            this.contractCalls.onChainCalls.getCoinType(),
+            this.signer,
+            this.walletAddress
+          );
           console.log(e);
         }
       } else {

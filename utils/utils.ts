@@ -5,6 +5,7 @@ import {
   OnChainCalls,
   Secp256k1Keypair,
   SignatureScheme,
+  SignatureWithBytes,
   toBigNumberStr,
 } from "@firefly-exchange/library-sui";
 import fs from "fs";
@@ -93,6 +94,19 @@ export function createWallet(): { privateKey: string; publicAddress: string } {
     privateKey: Buffer.from(signerKey, "base64").toString("hex"),
     publicAddress,
   };
+}
+
+export function combineAndEncode({
+  bytes,
+  signature,
+}: SignatureWithBytes) {
+  // serialize
+  const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
+  const combinedData = `${bytes}${separator}${signature}`;
+
+  // Encode to hex for transmission
+  const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
+  return encodedData;
 }
 
 // export async function performTrade(

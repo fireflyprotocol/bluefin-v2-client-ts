@@ -493,6 +493,7 @@ export interface SubAccountRequest {
 
 export interface SignedSubAccountRequest extends SubAccountRequest {
   signedTransaction: string;
+  sponsorSignature?: string;
 }
 
 export interface SubAccountResponse {

@@ -46,7 +46,7 @@ import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-schem
 import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import { generateRandomNumber } from "../utils/utils";
+import { combineAndEncode, generateRandomNumber } from "../utils/utils";
 import { Networks, POST_ORDER_BASE, USER_REJECTED_MESSAGE } from "./constants";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
@@ -1053,58 +1053,92 @@ export class BluefinClient {
           undefined,
           sponsorTx
         );
-
       if (sponsorTx) {
-        const sponsorPayload = signedTx as TransactionBlock;
-        const sponsorTxResponse = await this.signAndExecuteSponsoredTx({
-          data: sponsorPayload,
-          ok: true,
-          code: 200,
-          message: "",
-        });
-        // if (sponsorTxResponse?.ok) {
-        //   return {
-        //     ok: true,
-        //     code: 200,
-        //     message: "Success",
-        //     data: "",
-        //   };
-        // }
-        // recursive call if sponsor fails
-        console.log("UPSERTING1", sponsorTxResponse);
-        if (
-          !sponsorTxResponse?.ok &&
-          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-        ) {
-          console.log("UPSERTING2");
-          return this.upsertSubAccount(params, false);
-        }
-        if (!sponsorTxResponse?.ok) {
-          console.log("UPSERTING3");
-          throw new Error(
-            sponsorTxResponse?.message || "Error upserting account."
+        try {
+          const sponsorPayload = signedTx as TransactionBlock;
+          const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+            {
+              data: sponsorPayload,
+              ok: true,
+              code: 200,
+              message: "",
+            },
+            false
           );
+
+          if (sponsorTxResponse?.ok) {
+            const signedTransaction = combineAndEncode(
+              // @ts-ignore
+              sponsorTxResponse?.data?.signedTxb
+            );
+
+            const request: SignedSubAccountRequest = {
+              subAccountAddress: params.subAccountAddress,
+              accountsToRemove: params.accountsToRemove,
+              signedTransaction,
+              sponsorSignature:
+                // @ts-ignore
+                sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
+            };
+
+            const {
+              ok,
+              data,
+              response: { errorCode, message },
+            } = await this.addSubAccountFor1CT(request);
+
+            if (ok) {
+              const response: ResponseSchema = {
+                ok,
+                data,
+                code: errorCode,
+                message,
+              };
+
+              return response;
+            }
+            throw new Error(
+              sponsorTxResponse?.message || "Error upserting account."
+            );
+          }
+
+          // recursive call if sponsor fails
+          if (
+            !sponsorTxResponse?.ok &&
+            sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+          ) {
+            return this.upsertSubAccount(params, false);
+          }
+          if (!sponsorTxResponse?.ok) {
+            throw new Error(
+              sponsorTxResponse?.message || "Error upserting account."
+            );
+          }
+        } catch (e) {
+          if (e?.message !== USER_REJECTED_MESSAGE)
+            return this.upsertSubAccount(params, false);
         }
       }
-
-      console.log("UPSERTING5");
 
       const request: SignedSubAccountRequest = {
         subAccountAddress: params.subAccountAddress,
         accountsToRemove: params.accountsToRemove,
         signedTransaction: signedTx as string,
       };
-      console.log("UPSERTING6");
 
       const {
         ok,
         data,
         response: { errorCode, message },
       } = await this.addSubAccountFor1CT(request);
-      console.log("UPSERTING7", data, message);
 
-      const response: ResponseSchema = { ok, data, code: errorCode, message };
-      console.log("UPSERTING8", response);
+      const response: ResponseSchema = {
+        ok,
+        data,
+        code: errorCode,
+        message,
+      };
+
       return response;
     } catch (error) {
       throw new Error(error.message);
@@ -1220,7 +1254,7 @@ export class BluefinClient {
             sponsorTx
           );
         try {
-          this.signAndExecuteSponsoredTx(contractCall.data);
+          await this.signAndExecuteSponsoredTx(contractCall.data);
         } catch (e) {
           return {
             ok: false,
@@ -1403,8 +1437,10 @@ export class BluefinClient {
         true
       );
       if (sponsorPayload?.ok) {
-        const sponsorTxResponse =
-          this.signAndExecuteSponsoredTx(sponsorPayload);
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsorPayload
+        );
+        return { ok: true, data: sponsorTxResponse, message: "Success" };
       }
     } else {
       return this.contractCalls.setSubAccount(publicAddress, status, true);
@@ -2151,7 +2187,8 @@ export class BluefinClient {
   private signAndExecuteMergeUSDCSponsored = () => {};
 
   private signAndExecuteSponsoredTx = async (
-    sponsorPayload: ResponseSchema
+    sponsorPayload: ResponseSchema,
+    execute: boolean = true
   ) => {
     const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
       sponsorPayload.data,
@@ -2166,18 +2203,43 @@ export class BluefinClient {
 
       if (this.uiWallet) {
         try {
-          const { transactionBlockBytes, signature } = await (
+          const signedTxb = await (
             this.signer as unknown as ExtendedWalletContextState
           ).signTransactionBlock({
             transactionBlock: txBlock,
           });
-          const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-            transactionBlockBytes,
-            signature,
-            data.data.signature,
-            this.provider
-          );
-          return { code: "Success", ok: true, data: executedResponse };
+          const { transactionBlockBytes, signature } = signedTxb;
+          if (execute) {
+            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+              transactionBlockBytes,
+              signature,
+              data.data.signature,
+              this.provider
+            );
+            return {
+              code: "Success",
+              ok: true,
+              data: {
+                ...executedResponse,
+                signedTxb: {
+                  ...signedTxb,
+                  sponsorSignature: data.data.signature,
+                  bytes: signedTxb?.transactionBlockBytes,
+                },
+              },
+            };
+          }
+          return {
+            code: "Success",
+            ok: true,
+            data: {
+              signedTxb: {
+                ...signedTxb,
+                sponsorSignature: data.data.signature,
+                bytes: signedTxb?.transactionBlockBytes,
+              },
+            },
+          };
         } catch (e) {
           return {
             ok: false,
@@ -2187,14 +2249,15 @@ export class BluefinClient {
           };
         }
       }
-
-      const { signature } = await this.signer.signTransactionBlock(txBytes);
-      SuiBlocks.executeSponsoredTxBlock(
-        data.data.txBytes,
-        signature,
-        data.data.signature,
-        this.provider
-      );
+      if (execute) {
+        const { signature } = await this.signer.signTransactionBlock(txBytes);
+        SuiBlocks.executeSponsoredTxBlock(
+          data.data.txBytes,
+          signature,
+          data.data.signature,
+          this.provider
+        );
+      }
     } else {
       // @ts-ignore
       throw new Error(sponsorTxResponse.data?.error?.message);

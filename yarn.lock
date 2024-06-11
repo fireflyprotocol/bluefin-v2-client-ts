@@ -981,10 +981,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.4.24":
-  version "1.4.24"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.4.24.tgz#0d0d641bc493232f33f5e7e9c95f47c4c7869cb3"
-  integrity sha512-2z5j1kEajPeaHIzOds9irzlM03dj+A6KK2raIf/KryPtCcwEmbgS+yhWyNgZZVc8iIDYpX002fk/KAENGeejfg==
+"@firefly-exchange/library-sui@^1.4.26":
+  version "1.4.26"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.4.26.tgz#0d2b66b56008978ced336ead06426fafb318cf2f"
+  integrity sha512-JoLHoQMLwpRZmd/6WasI82oRPM0EdJfPtnoYKIRDBzaq0SZdTO+BswhCo+75fNPJmCKXNvae8cOB2+ZxiaNLkw==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/sui.js" "^0.48.0"
@@ -996,6 +996,7 @@
     asn1.js "^5.4.1"
     avsc "^5.7.6"
     bignumber.js "^9.1.0"
+    bs58 "^5.0.0"
     chai-as-promised "^7.1.1"
     dotenv "^16.0.3"
     dotenv-parse-variables "^2.0.0"
@@ -1004,6 +1005,7 @@
     lodash "^4.17.21"
     socket.io-client "^4.6.2"
     ts-binary-serializer "^2.1.3"
+    tweetnacl "^1.0.3"
     yargs "^17.6.2"
     yarn "^1.22.19"
 

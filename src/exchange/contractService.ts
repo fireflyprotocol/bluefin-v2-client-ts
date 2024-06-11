@@ -70,17 +70,21 @@ export class ContractCalls {
         {
           amount: toBigNumberStr(amount.toString(), 6),
           accountAddress: this.walletAddress,
-          sponsor: true,
+          sponsor,
         },
         this.signer
       );
+
       if (tx && !this.marginBankId) {
         if (sponsor) {
+          // TODO: fix marginBankId if sponsor
           this.marginBankId = Transaction.getBankAccountID(
             tx as SuiTransactionBlockResponse
           );
         } else {
-          this.marginBankId = "";
+          this.marginBankId = Transaction.getBankAccountID(
+            tx as SuiTransactionBlockResponse
+          );
         }
       }
       return tx;

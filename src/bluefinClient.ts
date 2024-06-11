@@ -47,7 +47,7 @@ import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
 import { generateRandomNumber } from "../utils/utils";
-import { Networks, POST_ORDER_BASE } from "./constants";
+import { Networks, POST_ORDER_BASE, USER_REJECTED_MESSAGE } from "./constants";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
 import {
@@ -1005,6 +1005,13 @@ export class BluefinClient {
             data: "",
           };
         }
+        // recursive call if sponsor fails
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        )
+          this.adjustLeverage({ ...params, sponsorTx: false });
+        throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
       }
       return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
@@ -1055,29 +1062,49 @@ export class BluefinClient {
           code: 200,
           message: "",
         });
-        if (sponsorTxResponse?.ok) {
-          return {
-            ok: true,
-            code: 200,
-            message: "Success",
-            data: "",
-          };
+        // if (sponsorTxResponse?.ok) {
+        //   return {
+        //     ok: true,
+        //     code: 200,
+        //     message: "Success",
+        //     data: "",
+        //   };
+        // }
+        // recursive call if sponsor fails
+        console.log("UPSERTING1", sponsorTxResponse);
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          console.log("UPSERTING2");
+          return this.upsertSubAccount(params, false);
+        }
+        if (!sponsorTxResponse?.ok) {
+          console.log("UPSERTING3");
+          throw new Error(
+            sponsorTxResponse?.message || "Error upserting account."
+          );
         }
       }
+
+      console.log("UPSERTING5");
 
       const request: SignedSubAccountRequest = {
         subAccountAddress: params.subAccountAddress,
         accountsToRemove: params.accountsToRemove,
         signedTransaction: signedTx as string,
       };
+      console.log("UPSERTING6");
 
       const {
         ok,
         data,
         response: { errorCode, message },
       } = await this.addSubAccountFor1CT(request);
+      console.log("UPSERTING7", data, message);
 
       const response: ResponseSchema = { ok, data, code: errorCode, message };
+      console.log("UPSERTING8", response);
       return response;
     } catch (error) {
       throw new Error(error.message);
@@ -1106,9 +1133,26 @@ export class BluefinClient {
         amount,
         sponsorTx
       );
-      if (sponsorPayload.ok) {
-        await this.signAndExecuteSponsoredTx(sponsorPayload);
+      const sponsorTxResponse = await this.signAndExecuteSponsoredTx({
+        data: sponsorPayload,
+        ok: true,
+        code: 200,
+        message: "",
+      });
+      if (sponsorTxResponse?.ok) {
+        return {
+          ok: true,
+          code: 200,
+          message: "Success",
+          data: "",
+        };
       }
+      if (
+        !sponsorTxResponse?.ok &&
+        sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+      )
+        this.adjustMargin(symbol, operationType, amount, false);
+      throw new Error(sponsorTxResponse?.message || "Error adjusting margin");
     }
     return this.contractCalls.adjustMarginContractCall(
       symbol,
@@ -1136,16 +1180,24 @@ export class BluefinClient {
         coinID,
         true
       );
-      const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
-      if ((res as ResponseSchema)?.ok) {
+      const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+        sponsorTxPayload
+      );
+      if ((sponsorTxResponse as ResponseSchema)?.ok) {
         return {
           ok: true,
           code: 200,
-          data: res,
+          data: sponsorTxResponse,
           message: "Deposit Successful",
         };
       }
-      return res as ResponseSchema;
+      // recursive call if sponsor fails
+      if (
+        !sponsorTxResponse?.ok &&
+        sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+      )
+        this.depositToMarginBank(amount, coinID, false);
+      throw new Error(sponsorTxResponse?.message || "Error completing deposit");
     }
     return this.depositToMarginBankSponsored(amount, coinID, false);
   };
@@ -1292,16 +1344,28 @@ export class BluefinClient {
               true
             );
 
-          const res = await this.signAndExecuteSponsoredTx(sponsorTxPayload);
-          if (res?.ok) {
+          const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+            sponsorTxPayload
+          );
+          if (sponsorTxResponse?.ok) {
             return {
               ok: true,
               code: 200,
-              data: res,
+              data: sponsorTxResponse,
               message: "Withdraw Successful",
             };
           }
-          throw new Error(res.message || "Error completing withdraw");
+          // recursive call if sponsor fails and not rejected
+
+          if (
+            !sponsorTxResponse?.ok &&
+            sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+          ) {
+            return this.withdrawFromMarginBank(amount);
+          }
+          throw new Error(
+            sponsorTxResponse?.message || "Error completing withdraw"
+          );
         } catch (e) {
           return {
             ok: false,
@@ -1316,19 +1380,6 @@ export class BluefinClient {
     }
     if (amount) {
       return this.contractCalls.withdrawFromMarginBankContractCall(amount);
-    }
-    return this.contractCalls.withdrawAllFromMarginBankContractCall();
-  };
-
-  withdrawFromMarginBankSponsored = async (
-    amount?: number,
-    sponsorTx?: boolean
-  ): Promise<ResponseSchema> => {
-    if (amount) {
-      return this.contractCalls.withdrawFromMarginBankContractCall(
-        amount,
-        sponsorTx
-      );
     }
     return this.contractCalls.withdrawAllFromMarginBankContractCall();
   };

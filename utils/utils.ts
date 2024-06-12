@@ -96,10 +96,7 @@ export function createWallet(): { privateKey: string; publicAddress: string } {
   };
 }
 
-export function combineAndEncode({
-  bytes,
-  signature,
-}: SignatureWithBytes) {
+export function combineAndEncode({ bytes, signature }: SignatureWithBytes) {
   // serialize
   const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
   const combinedData = `${bytes}${separator}${signature}`;

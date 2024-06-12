@@ -1168,7 +1168,20 @@ export class BluefinClient {
         sponsorTx
       );
       if (sponsorPayload.ok) {
-        await this.signAndExecuteSponsoredTx(sponsorPayload);
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsorPayload
+        );
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.adjustMargin(symbol, operationType, amount, false);
+        }
+        if (!sponsorTxResponse?.ok) {
+          throw new Error(
+            sponsorTxResponse?.message || "Error adjusting margin"
+          );
+        }
       }
     }
     return this.contractCalls.adjustMarginContractCall(

@@ -1010,7 +1010,7 @@ export class BluefinClient {
           !sponsorTxResponse?.ok &&
           sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
         )
-          this.adjustLeverage({ ...params, sponsorTx: false });
+          return this.adjustLeverage({ ...params, sponsorTx: false });
         throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
       }
       return await this.contractCalls.adjustLeverageContractCall(

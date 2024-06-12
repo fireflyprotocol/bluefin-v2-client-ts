@@ -530,13 +530,15 @@ export class BluefinClient {
     }`;
   };
 
-  createAirDropEligibilitySignature = async (message : string): Promise<SigPK> => {
+   /**
+   * @description
+   * Gets the payload containing key and mesasge to sign
+   * @returns SigPK
+   * */
 
-    const signaturePayload = {
-      message : message
-    }
+  signAndCreateZkSignature = async (payload : object): Promise<SigPK> => {
     const signature = await OrderSigner.signPayloadUsingZKSignature({
-      payload: signaturePayload,
+      payload: payload,
       signer: this.signer,
       zkPayload: this.getZkPayload(),
     });

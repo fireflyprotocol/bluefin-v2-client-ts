@@ -530,13 +530,13 @@ export class BluefinClient {
     }`;
   };
 
-   /**
+  /**
    * @description
    * Gets the payload containing key and mesasge to sign
    * @returns SigPK
    * */
 
-  signAndCreateZkSignature = async (payload : object): Promise<SigPK> => {
+  signAndCreateZkSignature = async (payload: object): Promise<SigPK> => {
     const signature = await OrderSigner.signPayloadUsingZKSignature({
       payload: payload,
       signer: this.signer,

@@ -529,6 +529,19 @@ export class BluefinClient {
     }`;
   };
 
+  createAirDropEligibilitySignature = async (message : string): Promise<SigPK> => {
+
+    const signaturePayload = {
+      message : message
+    }
+    const signature = await OrderSigner.signPayloadUsingZKSignature({
+      payload: signaturePayload,
+      signer: this.signer,
+      zkPayload: this.getZkPayload(),
+    });
+    return signature;
+  };
+
   /**
    * @description
    * Gets the wallets Public address

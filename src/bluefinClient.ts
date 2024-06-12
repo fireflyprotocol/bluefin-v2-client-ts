@@ -2180,8 +2180,6 @@ export class BluefinClient {
    * @returns completed transaction
    * */
 
-  private signAndExecuteMergeUSDCSponsored = () => {};
-
   private signAndExecuteSponsoredTx = async (
     sponsorPayload: ResponseSchema,
     execute: boolean = true
@@ -2193,12 +2191,12 @@ export class BluefinClient {
 
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
     const { data, ok } = sponsorTxResponse;
-    if (ok) {
-      const txBytes = fromB64(data.data.txBytes);
-      const txBlock = TransactionBlock.from(txBytes);
+    try {
+      if (ok) {
+        const txBytes = fromB64(data.data.txBytes);
+        const txBlock = TransactionBlock.from(txBytes);
 
-      if (this.uiWallet) {
-        try {
+        if (this.uiWallet) {
           const signedTxb = await (
             this.signer as unknown as ExtendedWalletContextState
           ).signTransactionBlock({
@@ -2236,27 +2234,27 @@ export class BluefinClient {
               },
             },
           };
-        } catch (e) {
-          return {
-            ok: false,
-            message: e.message || "Something Went Wrong",
-            data: "",
-            code: 400,
-          };
         }
+        if (execute) {
+          const { signature } = await this.signer.signTransactionBlock(txBytes);
+          SuiBlocks.executeSponsoredTxBlock(
+            data.data.txBytes,
+            signature,
+            data.data.signature,
+            this.provider
+          );
+        }
+      } else {
+        // @ts-ignore
+        throw new Error(sponsorTxResponse.data?.error?.message);
       }
-      if (execute) {
-        const { signature } = await this.signer.signTransactionBlock(txBytes);
-        SuiBlocks.executeSponsoredTxBlock(
-          data.data.txBytes,
-          signature,
-          data.data.signature,
-          this.provider
-        );
-      }
-    } else {
-      // @ts-ignore
-      throw new Error(sponsorTxResponse.data?.error?.message);
+    } catch (e) {
+      return {
+        ok: false,
+        message: e.message || "Something Went Wrong",
+        data: "",
+        code: 400,
+      };
     }
   };
 

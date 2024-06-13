@@ -19,6 +19,7 @@ import {
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
+import { combineAndEncode } from "../../utils/utils";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -70,17 +71,21 @@ export class ContractCalls {
         {
           amount: toBigNumberStr(amount.toString(), 6),
           accountAddress: this.walletAddress,
-          sponsor: true,
+          sponsor,
         },
         this.signer
       );
+
       if (tx && !this.marginBankId) {
         if (sponsor) {
+          // TODO: fix marginBankId if sponsor
           this.marginBankId = Transaction.getBankAccountID(
             tx as SuiTransactionBlockResponse
           );
         } else {
-          this.marginBankId = "";
+          this.marginBankId = Transaction.getBankAccountID(
+            tx as SuiTransactionBlockResponse
+          );
         }
       }
       return tx;
@@ -222,15 +227,7 @@ export class ContractCalls {
       return signedTx as unknown as TransactionBlock;
     }
 
-    // serialize
-    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
-    const combinedData = `${
-      (signedTx as SignatureWithBytes).bytes
-    }${separator}${(signedTx as SignatureWithBytes).signature}`;
-
-    // Encode to hex for transmission
-    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
-    return encodedData;
+    return combineAndEncode(signedTx as SignatureWithBytes);
   };
 
   /**

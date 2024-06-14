@@ -536,7 +536,7 @@ export class BluefinClient {
    * @returns SigPK
    * */
 
-  signPayloadUsingZk = async (payload: object): Promise<string> => {
+  signPayloadUsingZkWallet = async (payload: object): Promise<string> => {
     const signature = await OrderSigner.signPayloadUsingZKSignature({
       payload: payload,
       signer: this.signer,

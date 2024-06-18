@@ -2263,9 +2263,11 @@ export class BluefinClient {
               },
             };
           }
-          const { signature } = await this.signer.signTransactionBlock(txBytes);
+          const { signature, bytes } = await this.signer.signTransactionBlock(
+            txBytes
+          );
           const executedResponse = SuiBlocks.executeSponsoredTxBlock(
-            data.data.txBytes,
+            bytes,
             signature,
             data.data.signature,
             this.provider

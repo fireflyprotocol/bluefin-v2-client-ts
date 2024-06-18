@@ -2236,13 +2236,50 @@ export class BluefinClient {
           };
         }
         if (execute) {
+          if (this.isZkLogin) {
+            const tx = TransactionBlock.from(txBytes);
+            const { bytes, signature: userSignature } = await tx.sign({
+              client: this.provider,
+              signer: this.signer as Keypair,
+            });
+            const zkSignature = createZkSignature({
+              userSignature,
+              zkPayload: this.getZkPayload(),
+            });
+            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+              bytes,
+              zkSignature,
+              data.data.signature,
+              this.provider
+            );
+            return {
+              code: "Success",
+              ok: true,
+              data: {
+                ...executedResponse,
+                signedTxb: {
+                  sponsorSignature: data.data.signature,
+                },
+              },
+            };
+          }
           const { signature } = await this.signer.signTransactionBlock(txBytes);
-          SuiBlocks.executeSponsoredTxBlock(
+          const executedResponse = SuiBlocks.executeSponsoredTxBlock(
             data.data.txBytes,
             signature,
             data.data.signature,
             this.provider
           );
+          return {
+            code: "Success",
+            ok: true,
+            data: {
+              ...executedResponse,
+              signedTxb: {
+                sponsorSignature: data.data.signature,
+              },
+            },
+          };
         }
       } else {
         // @ts-ignore

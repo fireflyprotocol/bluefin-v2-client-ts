@@ -959,33 +959,8 @@ export class BluefinClient {
 
     const position = userPosition.data as any as GetPositionResponse;
 
+    //Open Position case
     if (Object.keys(position).length > 0) {
-      // When not connected via UI
-      if (!this.uiWallet && !this.isZkLogin) {
-        const signedTx =
-          await this.contractCalls.adjustLeverageContractCallRawTransaction(
-            params.leverage,
-            params.symbol,
-            this.getPublicAddress,
-            params.parentAddress
-          );
-
-        const {
-          ok,
-          data,
-          response: { errorCode, message },
-        } = await this.updateLeverage({
-          symbol: params.symbol,
-          leverage: params.leverage,
-          parentAddress: params.parentAddress,
-          signedTransaction: signedTx,
-        });
-        const response: ResponseSchema = { ok, data, code: errorCode, message };
-        // If API is successful return response else make direct contract call to update the leverage
-        if (response.ok) {
-          return response;
-        }
-      }
       if (params.sponsorTx) {
         const sponsorPayload =
           await this.contractCalls.adjustLeverageContractCall(
@@ -1013,23 +988,51 @@ export class BluefinClient {
           return this.adjustLeverage({ ...params, sponsorTx: false });
         throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
       }
+      else {
+        const signedTx =
+          await this.contractCalls.adjustLeverageContractCallRawTransaction(
+            params.leverage,
+            params.symbol,
+            params.parentAddress
+          );
+        const {
+          ok,
+          data,
+          response: { errorCode, message },
+        } = await this.updateLeverage({
+          symbol: params.symbol,
+          leverage: params.leverage,
+          parentAddress: params.parentAddress,
+          signedTransaction: signedTx,
+        });
+        const response: ResponseSchema = { ok, data, code: errorCode, message };
+
+        // If API is successful return response else make direct contract call to update the leverage
+        if (response.ok) {
+          return response;
+        }
+      }
+      //fall back for simple adjust leverage call
       return await this.contractCalls.adjustLeverageContractCall(
         params.leverage,
         params.symbol,
         params.parentAddress
       );
     }
-    const {
-      ok,
-      data,
-      response: { errorCode, message },
-    } = await this.updateLeverage({
-      symbol: params.symbol,
-      leverage: params.leverage,
-      parentAddress: params.parentAddress,
-    });
-    const response: ResponseSchema = { ok, data, code: errorCode, message };
-    return response;
+    //NO position case
+    else {
+      const {
+        ok,
+        data,
+        response: { errorCode, message },
+      } = await this.updateLeverage({
+        symbol: params.symbol,
+        leverage: params.leverage,
+        parentAddress: params.parentAddress,
+      });
+      const response: ResponseSchema = { ok, data, code: errorCode, message };
+      return response;
+    }
   };
 
   /**

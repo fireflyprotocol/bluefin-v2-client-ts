@@ -148,7 +148,6 @@ export class ContractCalls {
    * @param symbol the position's market symbol
    * @returns ResponseSchema
    * */
-
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
@@ -173,7 +172,6 @@ export class ContractCalls {
   adjustLeverageContractCallRawTransaction = async (
     leverage: number,
     symbol: string,
-    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<string> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -181,7 +179,7 @@ export class ContractCalls {
       {
         leverage,
         perpID: perpId,
-        account: parentAddress || getPublicAddress(),
+        account: parentAddress || this.walletAddress,
         market: symbol,
       },
       this.signer

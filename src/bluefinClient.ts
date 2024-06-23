@@ -1040,7 +1040,17 @@ export class BluefinClient {
           return this.adjustLeverage({ ...params, sponsorTx: false });
         throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
       } else {
-        console.log("======== WALLETS & normal call =========");
+        console.log("======== normal call unsponsored calls =========");
+
+        //TODO: fix zk login call also via dapi later, leaving for now as we have moved to sponsored calls above
+        if(this.isZkLogin){
+          return await this.contractCalls.adjustLeverageContractCall(
+            params.leverage,
+            params.symbol,
+            params.parentAddress
+          );
+        }
+
         //sign the transaction only
         const signedTx =
           await this.contractCalls.adjustLeverageContractCallRawTransaction(
@@ -1062,10 +1072,15 @@ export class BluefinClient {
         });
         const response: ResponseSchema = { ok, data, code: errorCode, message };
 
+        console.log("DAPI response: ", response)
+
         // If API is successful return response else make direct contract call to update the leverage
         if (response.ok) {
           return response;
         }
+
+        console.log("DAPI failed, calling fallback method: ")
+
         //fall back for simple adjust leverage call
         return await this.contractCalls.adjustLeverageContractCall(
           params.leverage,

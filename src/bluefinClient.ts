@@ -31,7 +31,7 @@ import {
   usdcToBaseNumber,
   ZkPayload,
   SuiBlocks,
-  ValidateTx,
+  SuiTransactionBlockResponse,
 } from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
@@ -141,6 +141,7 @@ import {
   VaultDetail,
   verifyDepositResponse,
 } from "./interfaces/routes";
+import { number } from "yargs";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -962,39 +963,93 @@ export class BluefinClient {
     //Open Position case
     if (Object.keys(position).length > 0) {
       if (params.sponsorTx) {
+        //create sponsored adjust leverage call
+        let errorMsg = "";
+        console.log("====== SPONSORED TX =======");
         const sponsorPayload =
           await this.contractCalls.adjustLeverageContractCall(
             params.leverage,
             params.symbol,
             params.parentAddress,
-            params.sponsorTx
+            true
           );
-        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+        //only sign the sponsored tx
+        const sponsorTxResponse =
+          await this.signAndExecuteAdjustLeverageSponsoredTx(
+            sponsorPayload,
+            false //execute
+          );
+        console.log(
+          "====== SPONSORED TX signAndExecuteAdjustLeverageSponsoredTx =======",
           sponsorPayload
         );
+
+        errorMsg = sponsorTxResponse?.message;
         if (sponsorTxResponse?.ok) {
-          return {
-            ok: true,
-            code: 200,
-            message: "Leverage Updated",
-            data: "",
+          //make dapi call
+          // Encode to hex for transmission
+          const encodedSignature = combineAndEncode({
+            bytes: sponsorTxResponse.data.signedTxb.bytes,
+            signature: sponsorTxResponse.data.signedTxb.signature,
+          });
+
+          const {
+            ok,
+            data,
+            response: { errorCode, message },
+          } = await this.updateLeverage({
+            symbol: params.symbol,
+            leverage: params.leverage,
+            parentAddress: params.parentAddress,
+            signedTransaction: encodedSignature,
+            sponsorSignature: sponsorTxResponse.data.signedTxb.sponsorSignature,
+          });
+          const response: ResponseSchema = {
+            ok,
+            data,
+            code: errorCode,
+            message,
           };
+          console.log("====== SPONSORED TX DAPI RESPONSE =======", response);
+          // If API is successful return response else make direct contract call to update the leverage
+          if (response.ok) {
+            return response;
+          }
+
+          console.log("====== SPONSORED TX fallback =======");
+          //fallback to make old sponsored call
+          const sponsorTxResponseFallback =
+            await this.signAndExecuteSponsoredTx(sponsorPayload);
+          if (sponsorTxResponseFallback?.ok) {
+            return {
+              ok: true,
+              code: 200,
+              message: "Leverage Updated",
+              data: "",
+            };
+          }
+          console.log(
+            "====== SPONSORED TX fallback response =======",
+            sponsorTxResponseFallback
+          );
+          errorMsg = sponsorTxResponseFallback?.message;
         }
+
         // recursive call if sponsor fails
-        if (
-          !sponsorTxResponse?.ok &&
-          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-        )
+        if (errorMsg && errorMsg !== USER_REJECTED_MESSAGE)
           return this.adjustLeverage({ ...params, sponsorTx: false });
         throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
-      }
-      else {
+      } else {
+        console.log("======== WALLETS & normal call =========");
+        //sign the transaction only
         const signedTx =
           await this.contractCalls.adjustLeverageContractCallRawTransaction(
             params.leverage,
             params.symbol,
             params.parentAddress
           );
+
+        //execute on dapi
         const {
           ok,
           data,
@@ -1011,13 +1066,13 @@ export class BluefinClient {
         if (response.ok) {
           return response;
         }
+        //fall back for simple adjust leverage call
+        return await this.contractCalls.adjustLeverageContractCall(
+          params.leverage,
+          params.symbol,
+          params.parentAddress
+        );
       }
-      //fall back for simple adjust leverage call
-      return await this.contractCalls.adjustLeverageContractCall(
-        params.leverage,
-        params.symbol,
-        params.parentAddress
-      );
     }
     //NO position case
     else {
@@ -2182,7 +2237,6 @@ export class BluefinClient {
    *  @param sponsorPayload payload from library-sui
    * @returns completed transaction
    * */
-
   private signAndExecuteSponsoredTx = async (
     sponsorPayload: ResponseSchema,
     execute: boolean = true
@@ -2299,6 +2353,183 @@ export class BluefinClient {
       };
     }
   };
+  private signAndExecuteAdjustLeverageSponsoredTx = async (
+    sponsorPayload: ResponseSchema,
+    execute: boolean = true
+  ): Promise<{
+    code: string;
+    ok: boolean;
+    message: string;
+    data: {
+      sponsoredExecutedCallResponse?: SuiTransactionBlockResponse;
+      signedTxb: {
+        bytes: string;
+        signature: string;
+        sponsorSignature: string;
+      };
+    };
+  }> => {
+    const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
+      sponsorPayload.data,
+      this.provider
+    );
+
+    const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
+
+    const { data, ok } = sponsorTxResponse;
+    try {
+      if (ok) {
+        const txBytes = fromB64(data.data.txBytes);
+        const txBlock = TransactionBlock.from(txBytes);
+
+        if (this.uiWallet) {
+          const signedTxb = await (
+            this.signer as unknown as ExtendedWalletContextState
+          ).signTransactionBlock({
+            transactionBlock: txBlock,
+          });
+          const { transactionBlockBytes, signature } = signedTxb;
+          if (execute) {
+            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+              transactionBlockBytes,
+              signature,
+              data.data.signature,
+              this.provider
+            );
+            return {
+              code: "Success",
+              ok: true,
+              message: "",
+              data: {
+                sponsoredExecutedCallResponse: { ...executedResponse },
+                signedTxb: {
+                  bytes: signedTxb?.transactionBlockBytes,
+                  signature: signedTxb?.signature,
+                  sponsorSignature: data.data.signature,
+                },
+              },
+            };
+          }
+          return {
+            code: "Success",
+            ok: true,
+            message: "",
+            data: {
+              signedTxb: {
+                bytes: signedTxb?.transactionBlockBytes,
+                signature: signedTxb?.signature,
+                sponsorSignature: data.data.signature,
+              },
+            },
+          };
+        }
+
+        if (this.isZkLogin) {
+          const tx = TransactionBlock.from(txBytes);
+
+          const signedTxb = await tx.sign({
+            client: this.provider,
+            signer: this.signer as Keypair,
+          });
+
+          const { bytes, signature: userSignature } = signedTxb;
+
+          const zkSignature = createZkSignature({
+            userSignature,
+            zkPayload: this.getZkPayload(),
+          });
+
+          if (execute) {
+            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+              bytes,
+              zkSignature,
+              data.data.signature,
+              this.provider
+            );
+            return {
+              code: "Success",
+              ok: true,
+              message: "",
+              data: {
+                sponsoredExecutedCallResponse: { ...executedResponse },
+                signedTxb: {
+                  sponsorSignature: data.data.signature,
+                  bytes: bytes,
+                  signature: zkSignature,
+                },
+              },
+            };
+          }
+          return {
+            code: "Success",
+            ok: true,
+            message: "",
+            data: {
+              signedTxb: {
+                sponsorSignature: data.data.signature,
+                bytes: bytes,
+                signature: zkSignature,
+              },
+            },
+          };
+        }
+
+        //any other case
+        const signedTxb = await this.signer.signTransactionBlock(txBytes);
+        if (execute) {
+          const { signature, bytes } = signedTxb;
+          const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
+            bytes,
+            signature,
+            data.data.signature,
+            this.provider
+          );
+          return {
+            code: "Success",
+            ok: true,
+            message: "",
+            data: {
+              sponsoredExecutedCallResponse: { ...executedResponse },
+              signedTxb: {
+                sponsorSignature: data.data.signature,
+                bytes: signedTxb?.bytes,
+                signature: signedTxb?.signature,
+              },
+            },
+          };
+        }
+
+        return {
+          code: "Success",
+          ok: true,
+          message: "",
+          data: {
+            signedTxb: {
+              bytes: signedTxb?.bytes,
+              signature: signedTxb?.signature,
+              sponsorSignature: data.data.signature,
+            },
+          },
+        };
+      } else {
+        // @ts-ignore
+        throw new Error(sponsorTxResponse.data?.error?.message);
+      }
+    } catch (e) {
+      return {
+        code: "Failed",
+        ok: false,
+        message: e.message || "Something Went Wrong",
+        data: {
+          signedTxb: {
+            signature: "",
+            bytes: "",
+            sponsorSignature: "",
+          },
+        },
+      };
+    }
+  };
 
   /**
    * Function to create order payload that is to be signed on-chain
@@ -2372,6 +2603,7 @@ export class BluefinClient {
         leverage: toBigNumberStr(params.leverage),
         marginType: MARGIN_TYPE.ISOLATED,
         signedTransaction: params.signedTransaction,
+        sponsorSignature: params.sponsorSignature,
       },
       { isAuthenticationRequired: true }
     );

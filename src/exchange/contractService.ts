@@ -155,18 +155,22 @@ export class ContractCalls {
     sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
-    return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.adjustLeverage(
-        {
-          leverage,
-          perpID: perpId,
-          account: parentAddress || this.walletAddress,
-          market: symbol,
-          sponsor: sponsorTx,
-        },
-        this.signer
-      );
-    }, interpolate(SuccessMessages.adjustLeverage, { leverage }));
+    return TransformToResponseSchema(
+      async () => {
+        return await this.onChainCalls.adjustLeverage(
+          {
+            leverage,
+            perpID: perpId,
+            account: parentAddress || this.walletAddress,
+            market: symbol,
+            sponsor: sponsorTx,
+          },
+          this.signer
+        );
+      },
+      interpolate(SuccessMessages.adjustLeverage, { leverage }),
+      sponsorTx
+    );
   };
 
   adjustLeverageContractCallRawTransaction = async (
@@ -185,14 +189,10 @@ export class ContractCalls {
       this.signer
     );
 
-    // serialize
-    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
-    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
-
-    // Encode to hex for transmission
-    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
-
-    return encodedData;
+    return combineAndEncode({
+      bytes: signedTx.bytes,
+      signature: signedTx.signature,
+    });
   };
 
   /**

@@ -476,6 +476,7 @@ export interface adjustLeverageRequest {
   leverage: number;
   parentAddress?: string;
   signedTransaction?: string;
+  sponsorSignature?: string;
   sponsorTx?: boolean;
 }
 export interface AdjustLeverageResponse {

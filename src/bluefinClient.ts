@@ -2402,7 +2402,6 @@ export class BluefinClient {
     const { data, ok } = sponsorTxResponse;
     try {
       if (ok && data && data.data) { //dapi returning ok even when there's error
-        debugger;
         const txBytes = fromB64(data.data.txBytes);
         const txBlock = TransactionBlock.from(txBytes);
 

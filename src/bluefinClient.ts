@@ -141,7 +141,6 @@ import {
   VaultDetail,
   verifyDepositResponse,
 } from "./interfaces/routes";
-import { number } from "yargs";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;

@@ -1,9 +1,9 @@
-name: PR Checks
+name: Publish pre-release
 
 on:
   push:
-    branches:
-      - "prerelease/**"
+    tags:
+      - "pre-release-*"
 
 jobs:
   code-format:

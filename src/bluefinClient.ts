@@ -983,7 +983,7 @@ export class BluefinClient {
           sponsorPayload
         );
 
-        console.log("[debug] OK call = ", sponsorTxResponse.ok)
+        console.log("[debug] OK call = ", sponsorTxResponse.ok);
 
         errorMsg = sponsorTxResponse?.message;
         if (sponsorTxResponse && sponsorTxResponse.ok) {
@@ -1011,7 +1011,10 @@ export class BluefinClient {
             code: errorCode,
             message,
           };
-          console.log("[debug]====== SPONSORED TX DAPI RESPONSE =======", response);
+          console.log(
+            "[debug]====== SPONSORED TX DAPI RESPONSE =======",
+            response
+          );
           // If API is successful return response else make direct contract call to update the leverage
           if (response.ok) {
             return response;
@@ -1036,8 +1039,7 @@ export class BluefinClient {
           errorMsg = sponsorTxResponseFallback?.message;
         }
 
-
-        console.log("[debug] errorMsg: ", errorMsg)
+        console.log("[debug] errorMsg: ", errorMsg);
         // recursive call if sponsor fails
         if (errorMsg && errorMsg !== USER_REJECTED_MESSAGE)
           return this.adjustLeverage({ ...params, sponsorTx: false });
@@ -1046,7 +1048,7 @@ export class BluefinClient {
         console.log("[debug]======== normal call unsponsored calls =========");
 
         //TODO: fix zk login call also via dapi later, leaving for now as we have moved to sponsored calls above
-        if(this.isZkLogin){
+        if (this.isZkLogin) {
           return await this.contractCalls.adjustLeverageContractCall(
             params.leverage,
             params.symbol,
@@ -1075,14 +1077,14 @@ export class BluefinClient {
         });
         const response: ResponseSchema = { ok, data, code: errorCode, message };
 
-        console.log("[debug] DAPI response: ", response)
+        console.log("[debug] DAPI response: ", response);
 
         // If API is successful return response else make direct contract call to update the leverage
         if (response.ok) {
           return response;
         }
 
-        console.log("[debug] DAPI failed, calling fallback method: ")
+        console.log("[debug] DAPI failed, calling fallback method: ");
 
         //fall back for simple adjust leverage call
         return await this.contractCalls.adjustLeverageContractCall(
@@ -2392,20 +2394,24 @@ export class BluefinClient {
       this.provider
     );
 
-    console.log("[debug] built gas less tx")
+    console.log("[debug] built gas less tx");
 
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
 
-    console.log("[debug] got sponsored tx response from dapi: ", sponsorTxResponse)
+    console.log(
+      "[debug] got sponsored tx response from dapi: ",
+      sponsorTxResponse
+    );
 
     const { data, ok } = sponsorTxResponse;
     try {
-      if (ok && data && data.data) { //dapi returning ok even when there's error
+      if (ok && data && data.data) {
+        //dapi returning ok even when there's error
         const txBytes = fromB64(data.data.txBytes);
         const txBlock = TransactionBlock.from(txBytes);
 
         if (this.uiWallet) {
-          console.log("[debug] uiWallet: ")
+          console.log("[debug] uiWallet: ");
           const signedTxb = await (
             this.signer as unknown as ExtendedWalletContextState
           ).signTransactionBlock({
@@ -2448,7 +2454,7 @@ export class BluefinClient {
         }
 
         if (this.isZkLogin) {
-          console.log("[debug] isZKLogin: ")
+          console.log("[debug] isZKLogin: ");
           const tx = TransactionBlock.from(txBytes);
 
           const signedTxb = await tx.sign({
@@ -2485,7 +2491,7 @@ export class BluefinClient {
             };
           }
 
-          console.log("[debug] zkSignature: ", zkSignature)
+          console.log("[debug] zkSignature: ", zkSignature);
           return {
             code: "Success",
             ok: true,
@@ -2501,7 +2507,7 @@ export class BluefinClient {
         }
 
         //any other case
-        console.log("[debug] any other case")
+        console.log("[debug] any other case");
         const signedTxb = await this.signer.signTransactionBlock(txBytes);
         if (execute) {
           const { signature, bytes } = signedTxb;
@@ -2539,12 +2545,12 @@ export class BluefinClient {
           },
         };
       } else {
-        console.log("[debug] error in dapi response: ", data)
+        console.log("[debug] error in dapi response: ", data);
         // @ts-ignore
         throw new Error(sponsorTxResponse.data?.error?.message);
       }
     } catch (e) {
-      console.log("[debug] error in catch: ", e)
+      console.log("[debug] error in catch: ", e);
       return {
         code: "Failed",
         ok: false,

@@ -947,6 +947,9 @@ export interface UserVaultDetailSummary {
   userWithdrawAmountRequested: string;
   claimableAmount: string;
   vaultId: string;
+  rewardsPool?: string;
+  communityData: any[];
+  withdrawPaused?: boolean;
 }
 
 export interface VaultConfig {

@@ -598,7 +598,6 @@ export class BluefinClient {
         zkPayload: this.getZkPayload(),
       });
     } else if (this.orderSigner.signOrder)
-
       signature = await this.orderSigner.signOrder(orderToSign);
     else
       throw Error(
@@ -621,7 +620,7 @@ export class BluefinClient {
       throw Error("Order Signer not initialized");
     }
     const orderToSign: Order = this.createOrderToSign(order, parentAddress);
-    console.log("orderToSign: ", orderToSign)
+    console.log("orderToSign: ", orderToSign);
     let signature: SigPK;
     try {
       signature = await this.signOrder(orderToSign);
@@ -1006,7 +1005,7 @@ export class BluefinClient {
             code: errorCode,
             message,
           };
-          
+
           // If API is successful return response else make direct contract call to update the leverage
           if (response.ok) {
             return response;
@@ -1047,7 +1046,7 @@ export class BluefinClient {
             params.symbol,
             params.parentAddress
           );
-        
+
         //execute on dapi
         const {
           ok,

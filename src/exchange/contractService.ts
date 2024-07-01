@@ -148,7 +148,6 @@ export class ContractCalls {
    * @param symbol the position's market symbol
    * @returns ResponseSchema
    * */
-
   adjustLeverageContractCall = async (
     leverage: number,
     symbol: string,
@@ -156,24 +155,27 @@ export class ContractCalls {
     sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
-    return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.adjustLeverage(
-        {
-          leverage,
-          perpID: perpId,
-          account: parentAddress || this.walletAddress,
-          market: symbol,
-          sponsor: sponsorTx,
-        },
-        this.signer
-      );
-    }, interpolate(SuccessMessages.adjustLeverage, { leverage }));
+    return TransformToResponseSchema(
+      async () => {
+        return await this.onChainCalls.adjustLeverage(
+          {
+            leverage,
+            perpID: perpId,
+            account: parentAddress || this.walletAddress,
+            market: symbol,
+            sponsor: sponsorTx,
+          },
+          this.signer
+        );
+      },
+      interpolate(SuccessMessages.adjustLeverage, { leverage }),
+      sponsorTx
+    );
   };
 
   adjustLeverageContractCallRawTransaction = async (
     leverage: number,
     symbol: string,
-    getPublicAddress: () => address,
     parentAddress?: string
   ): Promise<string> => {
     const perpId = this.onChainCalls.getPerpetualID(symbol);
@@ -181,20 +183,16 @@ export class ContractCalls {
       {
         leverage,
         perpID: perpId,
-        account: parentAddress || getPublicAddress(),
+        account: parentAddress || this.walletAddress,
         market: symbol,
       },
       this.signer
     );
 
-    // serialize
-    const separator = "||||"; // Choose a separator that won't appear in txBytes or signature
-    const combinedData = `${signedTx.bytes}${separator}${signedTx.signature}`;
-
-    // Encode to hex for transmission
-    const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
-
-    return encodedData;
+    return combineAndEncode({
+      bytes: signedTx.bytes,
+      signature: signedTx.signature,
+    });
   };
 
   /**

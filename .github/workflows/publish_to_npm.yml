@@ -1,6 +1,7 @@
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "release-*"
 name: Publish to NPM
 jobs:
   publish:

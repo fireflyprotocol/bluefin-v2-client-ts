@@ -620,7 +620,6 @@ export class BluefinClient {
       throw Error("Order Signer not initialized");
     }
     const orderToSign: Order = this.createOrderToSign(order, parentAddress);
-    console.log("orderToSign: ", orderToSign);
     let signature: SigPK;
     try {
       signature = await this.signOrder(orderToSign);

@@ -5,6 +5,7 @@ import {
   ZkPayload,
   bnToBaseStr,
   toBaseNumber,
+  Transaction,
 } from "@firefly-exchange/library-sui";
 import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 import interpolate from "interpolate";
@@ -113,6 +114,32 @@ export class InteractorCalls {
         signature
       );
 
+      return tx;
+    }, interpolate(SuccessMessages.claimFundsFromVault, {}));
+  };
+
+
+  // /**
+  //  * @param signaturePayload payload with claim data
+  //  * @param signature signature for claim data
+  //  * @returns ResponseSchema
+  //  * @description
+  //  * Withdraws tokens from reward pools
+  //  * */
+  claimRewardsFromRewardPoolContractCall = async (batch: {
+    payload: SignaturePayload,
+    signature: string
+  }[]
+  ): Promise<ResponseSchema> => {
+    return TransformToResponseSchema(async () => {
+      /////////////////UPDATE THIS TO BATCH CALL////////////////////
+      const tx = await this.InteractorCalls.claimRewards("SUI",
+        batch[0].payload, batch[0].signature
+      );
+      //post call to growth
+      const events = Transaction.getEvents(tx, "RewardsClaimedEvent");
+
+      
       return tx;
     }, interpolate(SuccessMessages.claimFundsFromVault, {}));
   };

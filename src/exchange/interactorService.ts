@@ -132,16 +132,13 @@ export class InteractorCalls {
   }[]
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      /////////////////UPDATE THIS TO BATCH CALL////////////////////
-      const tx = await this.InteractorCalls.claimRewards("SUI",
-        batch[0].payload, batch[0].signature
+      const tx = await this.InteractorCalls.claimRewardsBatch(batch
       );
       //post call to growth
-      const events = Transaction.getEvents(tx, "RewardsClaimedEvent");
+      // const events = Transaction.getEvents(tx, "RewardsClaimedEvent");
 
-      
       return tx;
-    }, interpolate(SuccessMessages.claimFundsFromVault, {}));
+    }, interpolate(SuccessMessages.claimRewardsFromRewardPool, {}));
   };
 
   // /**

@@ -106,7 +106,7 @@ export enum SuccessMessages {
   adjustMarginRemove = "{amount} USDC margin Removed from position.",
   withdrawMargin = "{amount} USDC withdrawn.",
   claimFundsFromVault = "{amount} USDC claimed from vault.",
-  claimRewardsFromRewardPool = "{amount} rewards claimed from reward pool.",
+  claimRewardsFromRewardPool = "Rewards claimed from reward pool.",
   withdrawFundsFromVault = "{amount} USDC withdraw request sent to vault.",
   approveUSDC = "{amount} USDC approved.",
   depositToBank = "{amount} USDC deposited to Margin Bank.",

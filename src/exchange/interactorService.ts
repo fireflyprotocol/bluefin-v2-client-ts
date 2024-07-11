@@ -110,7 +110,7 @@ export class InteractorCalls {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFunds(
         vaultName,
-        signaturePayload,
+        { ...signaturePayload, expiry: 0 },
         signature
       );
 

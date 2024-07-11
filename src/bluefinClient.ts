@@ -153,6 +153,8 @@ export class BluefinClient {
 
   public webSockets: WebSockets | undefined;
 
+  public vaultConfig: any;
+
   public marketSymbols: string[] = []; // to save array market symbols [DOT-PERP, SOL-PERP]
 
   private walletAddress = ""; // to save user's public address when connecting from UI
@@ -263,10 +265,10 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : (this.signer as any as ExtendedWalletContextState).getAddress
-            ? (this.signer as any as ExtendedWalletContextState).getAddress()
-            : this.walletAddress;
+        ? this.signer.toSuiAddress()
+        : (this.signer as any as ExtendedWalletContextState).getAddress
+        ? (this.signer as any as ExtendedWalletContextState).getAddress()
+        : this.walletAddress;
 
       // onboard user if not onboarded
       if (userOnboarding) {
@@ -392,7 +394,7 @@ export class BluefinClient {
       throw Error("Signer not Initialized");
     }
     const _deployment = await this.getVaultConfigsForInteractor();
-
+    this.vaultConfig = _deployment;
     this.interactorCalls = new InteractorCalls(
       this.getSigner(),
       _deployment,
@@ -525,8 +527,9 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-      }`;
+    return `${signature?.signature}${
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+    }`;
   };
 
   /**
@@ -537,7 +540,7 @@ export class BluefinClient {
 
   signPayloadUsingZkWallet = async (payload: object): Promise<SigPK> => {
     const signature = await OrderSigner.signPayloadUsingZKSignature({
-      payload: payload,
+      payload,
       signer: this.signer,
       zkPayload: this.getZkPayload(),
     });
@@ -650,7 +653,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.STOP_LIMIT
+        order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -660,10 +663,11 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${signature?.publicAddress
+      orderSignature: `${signature?.signature}${
+        signature?.publicAddress
           ? signature?.publicAddress
           : signature?.publicKey
-        }`,
+      }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -776,10 +780,11 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${signature?.publicAddress
+      return `${signature?.signature}${
+        signature?.publicAddress
           ? signature?.publicAddress
           : signature?.publicKey
-        }`;
+      }`;
     } catch {
       throw Error("Signing cancelled by user");
     }
@@ -972,10 +977,10 @@ export class BluefinClient {
 
     const position = userPosition.data as any as GetPositionResponse;
 
-    //Open Position case
+    // Open Position case
     if (Object.keys(position).length > 0) {
       if (params.sponsorTx) {
-        //create sponsored adjust leverage call
+        // create sponsored adjust leverage call
         let errorMsg = "";
         const sponsorPayload =
           await this.contractCalls.adjustLeverageContractCall(
@@ -984,16 +989,16 @@ export class BluefinClient {
             params.parentAddress,
             true
           );
-        //only sign the sponsored tx
+        // only sign the sponsored tx
         const sponsorTxResponse =
           await this.signAndExecuteAdjustLeverageSponsoredTx(
             sponsorPayload,
-            false //execute
+            false // execute
           );
 
         errorMsg = sponsorTxResponse?.message;
         if (sponsorTxResponse && sponsorTxResponse.ok) {
-          //make dapi call
+          // make dapi call
           // Encode to hex for transmission
           const encodedSignature = combineAndEncode({
             bytes: sponsorTxResponse.data.signedTxb.bytes,
@@ -1023,7 +1028,7 @@ export class BluefinClient {
             return response;
           }
 
-          //fallback to make old sponsored call
+          // fallback to make old sponsored call
           const sponsorTxResponseFallback =
             await this.signAndExecuteSponsoredTx(sponsorPayload);
           if (sponsorTxResponseFallback?.ok) {
@@ -1042,7 +1047,7 @@ export class BluefinClient {
           return this.adjustLeverage({ ...params, sponsorTx: false });
         throw new Error(sponsorTxResponse?.message || "Error Adjust Leverage");
       } else {
-        //TODO: fix zk login call also via dapi later, leaving for now as we have moved to sponsored calls above
+        // TODO: fix zk login call also via dapi later, leaving for now as we have moved to sponsored calls above
         if (this.isZkLogin) {
           return await this.contractCalls.adjustLeverageContractCall(
             params.leverage,
@@ -1051,7 +1056,7 @@ export class BluefinClient {
           );
         }
 
-        //sign the transaction only
+        // sign the transaction only
         const signedTx =
           await this.contractCalls.adjustLeverageContractCallRawTransaction(
             params.leverage,
@@ -1059,7 +1064,7 @@ export class BluefinClient {
             params.parentAddress
           );
 
-        //execute on dapi
+        // execute on dapi
         const {
           ok,
           data,
@@ -1077,7 +1082,7 @@ export class BluefinClient {
           return response;
         }
 
-        //fall back for simple adjust leverage call
+        // fall back for simple adjust leverage call
         return await this.contractCalls.adjustLeverageContractCall(
           params.leverage,
           params.symbol,
@@ -1085,7 +1090,7 @@ export class BluefinClient {
         );
       }
     }
-    //NO position case
+    // NO position case
     else {
       const {
         ok,
@@ -2364,6 +2369,7 @@ export class BluefinClient {
       };
     }
   };
+
   private signAndExecuteAdjustLeverageSponsoredTx = async (
     sponsorPayload: ResponseSchema,
     execute: boolean = true
@@ -2390,7 +2396,7 @@ export class BluefinClient {
     const { data, ok } = sponsorTxResponse;
     try {
       if (ok && data && data.data) {
-        //dapi returning ok even when there's error
+        // dapi returning ok even when there's error
         const txBytes = fromB64(data.data.txBytes);
         const txBlock = TransactionBlock.from(txBytes);
 
@@ -2466,7 +2472,7 @@ export class BluefinClient {
                 sponsoredExecutedCallResponse: { ...executedResponse },
                 signedTxb: {
                   sponsorSignature: data.data.signature,
-                  bytes: bytes,
+                  bytes,
                   signature: zkSignature,
                 },
               },
@@ -2480,14 +2486,14 @@ export class BluefinClient {
             data: {
               signedTxb: {
                 sponsorSignature: data.data.signature,
-                bytes: bytes,
+                bytes,
                 signature: zkSignature,
               },
             },
           };
         }
 
-        //any other case
+        // any other case
         const signedTxb = await this.signer.signTransactionBlock(txBytes);
         if (execute) {
           const { signature, bytes } = signedTxb;
@@ -2524,10 +2530,9 @@ export class BluefinClient {
             },
           },
         };
-      } else {
-        // @ts-ignore
-        throw new Error(sponsorTxResponse.data?.error?.message);
       }
+      // @ts-ignore
+      throw new Error(sponsorTxResponse.data?.error?.message);
     } catch (e) {
       return {
         code: "Failed",
@@ -3054,20 +3059,18 @@ export class BluefinClient {
   };
 
   /**
-  * @description
-  * claim rewards from reward pool
-  * @returns ResponseSchema
-  */
-  claimRewards = async (batch: {
-    payload: SignaturePayload,
-    signature: string
-  }[]
+   * @description
+   * claim rewards from reward pool
+   * @returns ResponseSchema
+   */
+  claimRewards = async (
+    batch: {
+      payload: SignaturePayload;
+      signature: string;
+    }[]
   ): Promise<ResponseSchema> => {
-    return this.interactorCalls.claimRewardsFromRewardPoolContractCall(
-      batch
-    );
+    return this.interactorCalls.claimRewardsFromRewardPoolContractCall(batch);
   };
-
 
   /**
    * @description

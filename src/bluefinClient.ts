@@ -263,10 +263,10 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : (this.signer as any as ExtendedWalletContextState).getAddress
-        ? (this.signer as any as ExtendedWalletContextState).getAddress()
-        : this.walletAddress;
+          ? this.signer.toSuiAddress()
+          : (this.signer as any as ExtendedWalletContextState).getAddress
+            ? (this.signer as any as ExtendedWalletContextState).getAddress()
+            : this.walletAddress;
 
       // onboard user if not onboarded
       if (userOnboarding) {
@@ -525,9 +525,8 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${
-      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-    }`;
+    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+      }`;
   };
 
   /**
@@ -651,7 +650,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.STOP_LIMIT
+          order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -661,11 +660,10 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${
-        signature?.publicAddress
+      orderSignature: `${signature?.signature}${signature?.publicAddress
           ? signature?.publicAddress
           : signature?.publicKey
-      }`,
+        }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -778,11 +776,10 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${
-        signature?.publicAddress
+      return `${signature?.signature}${signature?.publicAddress
           ? signature?.publicAddress
           : signature?.publicKey
-      }`;
+        }`;
     } catch {
       throw Error("Signing cancelled by user");
     }
@@ -3055,6 +3052,22 @@ export class BluefinClient {
       signature
     );
   };
+
+  /**
+  * @description
+  * claim rewards from reward pool
+  * @returns ResponseSchema
+  */
+  claimRewards = async (batch: {
+    payload: SignaturePayload,
+    signature: string
+  }[]
+  ): Promise<ResponseSchema> => {
+    return this.interactorCalls.claimRewardsFromRewardPoolContractCall(
+      batch
+    );
+  };
+
 
   /**
    * @description

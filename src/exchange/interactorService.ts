@@ -133,10 +133,7 @@ export class InteractorCalls {
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimRewardsBatch(batch
-      );
-      //post call to growth
-      // const events = Transaction.getEvents(tx, "RewardsClaimedEvent");
-
+      );     
       return tx;
     }, interpolate(SuccessMessages.claimRewardsFromRewardPool, {}));
   };

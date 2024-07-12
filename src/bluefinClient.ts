@@ -35,7 +35,7 @@ import {
 } from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
-import { toB64, fromB64 } from "@mysten/bcs";
+import { toB64, fromB64, toHEX } from "@mysten/bcs";
 import {
   Keypair,
   parseSerializedSignature,
@@ -661,8 +661,8 @@ export class BluefinClient {
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
       orderSignature: `${signature?.signature}${signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
+        ? signature?.publicAddress
+        : signature?.publicKey
         }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
@@ -777,8 +777,8 @@ export class BluefinClient {
       }
 
       return `${signature?.signature}${signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
+        ? signature?.publicAddress
+        : signature?.publicKey
         }`;
     } catch {
       throw Error("Signing cancelled by user");
@@ -3063,9 +3063,22 @@ export class BluefinClient {
     signature: string
   }[]
   ): Promise<ResponseSchema> => {
-    return this.interactorCalls.claimRewardsFromRewardPoolContractCall(
+    const response = await this.interactorCalls.claimRewardsFromRewardPoolContractCall(
       batch
     );
+
+    const events = Transaction.getEvents(response.data, "RewardsClaimedEvent");
+    const transformedArray = this.transformPoolId(events);
+
+    await this.apiService.post<string>(
+      SERVICE_URLS.GROWTH.MARK_STATUS_CLAIMED,
+      {
+        markClaimableEvent: transformedArray,
+        txDigest: response.data
+      },
+      { isAuthenticationRequired: true }
+    );
+    return response;
   };
 
 
@@ -3099,5 +3112,21 @@ export class BluefinClient {
         throw new Error(`An error occurred: ${error}`);
       }
     }
+  };
+
+  private transformPoolId = (arr: { [key: string]: any }[]): { [key: string]: any }[] => {
+    return arr.map(obj => {
+      // Create a new object to avoid mutating the original object
+      const newObj = { ...obj };
+
+      // Check if the property exists in the object
+      if (newObj.pool_id !== undefined) {
+        // Rename the property
+        newObj.poolID = newObj.pool_id;
+        delete newObj.pool_id; // Optionally remove the old property
+      }
+
+      return newObj;
+    });
   };
 }

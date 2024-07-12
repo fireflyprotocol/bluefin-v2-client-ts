@@ -265,10 +265,10 @@ export class BluefinClient {
       this.walletAddress = this.isZkLogin
         ? this.walletAddress
         : this.signer.toSuiAddress
-          ? this.signer.toSuiAddress()
-          : (this.signer as any as ExtendedWalletContextState).getAddress
-            ? (this.signer as any as ExtendedWalletContextState).getAddress()
-            : this.walletAddress;
+        ? this.signer.toSuiAddress()
+        : (this.signer as any as ExtendedWalletContextState).getAddress
+        ? (this.signer as any as ExtendedWalletContextState).getAddress()
+        : this.walletAddress;
 
       // onboard user if not onboarded
       if (userOnboarding) {
@@ -527,8 +527,9 @@ export class BluefinClient {
     } else {
       signature = await this.orderSigner.signPayload(onboardingSignature);
     }
-    return `${signature?.signature}${signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
-      }`;
+    return `${signature?.signature}${
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+    }`;
   };
 
   /**
@@ -652,7 +653,7 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-          order.orderType === ORDER_TYPE.STOP_LIMIT
+        order.orderType === ORDER_TYPE.STOP_LIMIT
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,
@@ -662,10 +663,11 @@ export class BluefinClient {
       salt: Number(orderToSign.salt),
       expiration: Number(orderToSign.expiration),
       maker: orderToSign.maker,
-      orderSignature: `${signature?.signature}${signature?.publicAddress
-        ? signature?.publicAddress
-        : signature?.publicKey
-        }`,
+      orderSignature: `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`,
       orderbookOnly: orderToSign.orderbookOnly,
       timeInForce: order.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
     };
@@ -778,10 +780,11 @@ export class BluefinClient {
         });
       }
 
-      return `${signature?.signature}${signature?.publicAddress
-        ? signature?.publicAddress
-        : signature?.publicKey
-        }`;
+      return `${signature?.signature}${
+        signature?.publicAddress
+          ? signature?.publicAddress
+          : signature?.publicKey
+      }`;
     } catch {
       throw Error("Signing cancelled by user");
     }
@@ -3056,35 +3059,6 @@ export class BluefinClient {
   };
 
   /**
-  * @description
-  * claim rewards from reward pool
-  * @returns ResponseSchema
-  */
-  claimRewards = async (batch: {
-    payload: SignaturePayload,
-    signature: string
-  }[]
-  ): Promise<ResponseSchema> => {
-    const response = await this.interactorCalls.claimRewardsFromRewardPoolContractCall(
-      batch
-    );
-
-    const events = Transaction.getEvents(response.data, "RewardsClaimedEvent");
-    const transformedArray = this.transformPoolId(events);
-
-    await this.apiService.post<string>(
-      SERVICE_URLS.GROWTH.MARK_STATUS_CLAIMED,
-      {
-        markClaimableEvent: transformedArray,
-        txDigest: response.data
-      },
-      { isAuthenticationRequired: true }
-    );
-    return response;
-  };
-
-
-  /**
    * @description
    * claim rewards from reward pool
    * @returns ResponseSchema
@@ -3095,7 +3069,21 @@ export class BluefinClient {
       signature: string;
     }[]
   ): Promise<ResponseSchema> => {
-    return this.interactorCalls.claimRewardsFromRewardPoolContractCall(batch);
+    const response =
+      await this.interactorCalls.claimRewardsFromRewardPoolContractCall(batch);
+
+    const events = Transaction.getEvents(response.data, "RewardsClaimedEvent");
+    const transformedArray = this.transformPoolId(events);
+
+    await this.apiService.post<string>(
+      SERVICE_URLS.GROWTH.MARK_STATUS_CLAIMED,
+      {
+        markClaimableEvent: transformedArray,
+        txDigest: response.data,
+      },
+      { isAuthenticationRequired: true }
+    );
+    return response;
   };
 
   /**
@@ -3130,8 +3118,10 @@ export class BluefinClient {
     }
   };
 
-  private transformPoolId = (arr: { [key: string]: any }[]): { [key: string]: any }[] => {
-    return arr.map(obj => {
+  private transformPoolId = (
+    arr: { [key: string]: any }[]
+  ): { [key: string]: any }[] => {
+    return arr.map((obj) => {
       // Create a new object to avoid mutating the original object
       const newObj = { ...obj };
 

@@ -118,26 +118,6 @@ export class InteractorCalls {
     }, interpolate(SuccessMessages.claimFundsFromVault, {}));
   };
 
-
-  // /**
-  //  * @param signaturePayload payload with claim data
-  //  * @param signature signature for claim data
-  //  * @returns ResponseSchema
-  //  * @description
-  //  * Withdraws tokens from reward pools
-  //  * */
-  claimRewardsFromRewardPoolContractCall = async (batch: {
-    payload: SignaturePayload,
-    signature: string
-  }[]
-  ): Promise<ResponseSchema> => {
-    return TransformToResponseSchema(async () => {
-      const tx = await this.InteractorCalls.claimRewardsBatch(batch
-      );
-      return tx;
-    }, interpolate(SuccessMessages.claimRewardsFromRewardPool, {}));
-  };
-
   // /**
   //  * @param signaturePayload payload with claim data
   //  * @param signature signature for claim data
@@ -153,9 +133,6 @@ export class InteractorCalls {
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimRewardsBatch(batch);
-      //post call to growth
-      // const events = Transaction.getEvents(tx, "RewardsClaimedEvent");
-
       return tx;
     }, interpolate(SuccessMessages.claimRewardsFromRewardPool, {}));
   };

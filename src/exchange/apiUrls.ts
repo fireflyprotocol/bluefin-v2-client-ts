@@ -58,7 +58,7 @@ export const SERVICE_URLS = {
     OPEN_REFERRAL_LINK_REFERRED_USER: "growth/openReferral/linkReferee",
     OPEN_REFERRAL_OVERVIEW: "/growth/openReferral/rewardsOverview",
     OPEN_REFERRAL_REFEREES_COUNT: "/growth/refereesCount",
-    MARK_STATUS_CLAIMED: "growth/claims/history/mark-status-claimed",
+    MARK_STATUS_CLAIMED: "/growth/claims/history/mark-status-claimed",
   },
   ORDERS: {
     ORDERS: "/orders",

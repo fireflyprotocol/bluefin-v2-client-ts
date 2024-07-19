@@ -5,6 +5,7 @@ import {
   ZkPayload,
   bnToBaseStr,
   toBaseNumber,
+  Transaction,
 } from "@firefly-exchange/library-sui";
 import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
 import interpolate from "interpolate";
@@ -76,10 +77,18 @@ export class InteractorCalls {
   //  * */
   depositToVaultContractCall = async (
     amount: BigNumberable,
-    vaultName: string
+    vaultName: string,
+    options?: {
+      receiver?: string;
+      coinId?: string;
+    }
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      const tx = await this.InteractorCalls.depositToVault(vaultName, amount);
+      const tx = await this.InteractorCalls.depositToVault(
+        vaultName,
+        amount,
+        options
+      );
 
       return tx;
     }, interpolate(SuccessMessages.depositToVault, { amount }));
@@ -101,12 +110,31 @@ export class InteractorCalls {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFunds(
         vaultName,
-        signaturePayload,
+        { ...signaturePayload, expiry: 0 },
         signature
       );
 
       return tx;
     }, interpolate(SuccessMessages.claimFundsFromVault, {}));
+  };
+
+  // /**
+  //  * @param signaturePayload payload with claim data
+  //  * @param signature signature for claim data
+  //  * @returns ResponseSchema
+  //  * @description
+  //  * Withdraws tokens from reward pools
+  //  * */
+  claimRewardsFromRewardPoolContractCall = async (
+    batch: {
+      payload: SignaturePayload;
+      signature: string;
+    }[]
+  ): Promise<ResponseSchema> => {
+    return TransformToResponseSchema(async () => {
+      const tx = await this.InteractorCalls.claimRewardsBatch(batch);
+      return tx;
+    }, interpolate(SuccessMessages.claimRewardsFromRewardPool, {}));
   };
 
   // /**

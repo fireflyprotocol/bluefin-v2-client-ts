@@ -31,6 +31,7 @@ export const SERVICE_URLS = {
     USER_TRADES_HISTORY: "/userTradesHistory",
     SUBACCOUNT_1CT: "/account/addSubAccountFor1CT",
     EXPIRED_SUBACCOUNT_1CT: "/account/expired1CTAccounts",
+    SPONSOR_TX: "/account/sponsorTx",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",
@@ -57,6 +58,7 @@ export const SERVICE_URLS = {
     OPEN_REFERRAL_LINK_REFERRED_USER: "growth/openReferral/linkReferee",
     OPEN_REFERRAL_OVERVIEW: "/growth/openReferral/rewardsOverview",
     OPEN_REFERRAL_REFEREES_COUNT: "/growth/refereesCount",
+    MARK_STATUS_CLAIMED: "/growth/claims/mark-status-claimed",
   },
   ORDERS: {
     ORDERS: "/orders",

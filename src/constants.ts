@@ -51,3 +51,4 @@ export const Networks = {
 
 export const SUI_NETWROK = "sui";
 export const POST_ORDER_BASE = 18;
+export const USER_REJECTED_MESSAGE = "Rejected from user";

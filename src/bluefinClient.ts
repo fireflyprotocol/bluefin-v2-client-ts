@@ -700,6 +700,11 @@ export class BluefinClient {
    * @returns PlaceOrderResponse
    */
   postOrder = async (params: PostOrderRequest) => {
+    if (params.reduceOnly) {
+      console.warn(
+        "Warning: Reduce Only feature is deprecated until further notice. Reduce Only orders will be rejected from the API."
+      );
+    }
     const signedOrder = await this.createSignedOrder(
       params,
       params.parentAddress

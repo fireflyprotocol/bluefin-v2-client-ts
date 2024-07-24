@@ -1305,8 +1305,7 @@ export class BluefinClient {
         !sponsorTxResponse?.ok &&
         sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
       )
-        this.depositToMarginBank(amount, coinID, false);
-      throw new Error(sponsorTxResponse?.message || "Error completing deposit");
+        return this.depositToMarginBank(amount, coinID, false);
     }
     return this.depositToMarginBankSponsored(amount, coinID, false);
   };

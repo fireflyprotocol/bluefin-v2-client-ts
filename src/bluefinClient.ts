@@ -46,8 +46,17 @@ import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-schem
 import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import { combineAndEncode, generateRandomNumber } from "../utils/utils";
-import { Networks, POST_ORDER_BASE, USER_REJECTED_MESSAGE } from "./constants";
+import {
+  combineAndEncode,
+  generateRandomNumber,
+  throwCustomError,
+} from "../utils/utils";
+import {
+  Errors,
+  Networks,
+  POST_ORDER_BASE,
+  USER_REJECTED_MESSAGE,
+} from "./constants";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
 import {
@@ -514,18 +523,30 @@ export class BluefinClient {
     };
 
     if (this.uiWallet) {
-      signature = await OrderSigner.signPayloadUsingWallet(
-        onboardingSignature,
-        this.uiWallet
-      );
+      try {
+        signature = await OrderSigner.signPayloadUsingWallet(
+          onboardingSignature,
+          this.uiWallet
+        );
+      } catch (error) {
+        throwCustomError(error, Errors.WALLET_SIGNING_FAILED);
+      }
     } else if (this.isZkLogin) {
-      signature = await OrderSigner.signPayloadUsingZKSignature({
-        payload: onboardingSignature,
-        signer: this.signer,
-        zkPayload: this.getZkPayload(),
-      });
+      try {
+        signature = await OrderSigner.signPayloadUsingZKSignature({
+          payload: onboardingSignature,
+          signer: this.signer,
+          zkPayload: this.getZkPayload(),
+        });
+      } catch (error) {
+        throwCustomError(error, Errors.ZK_SIGNING_FAILED);
+      }
     } else {
-      signature = await this.orderSigner.signPayload(onboardingSignature);
+      try {
+        signature = await this.orderSigner.signPayload(onboardingSignature);
+      } catch (error) {
+        throwCustomError(error, Errors.KEYPAIR_SIGNING_FAILED);
+      }
     }
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
@@ -2600,15 +2621,19 @@ export class BluefinClient {
    * @returns GetAuthHashResponse which contains auth hash to be signed
    */
   private authorizeSignedHash = async (signedHash: string) => {
-    const response = await this.apiService.post<AuthorizeHashResponse>(
-      SERVICE_URLS.USER.AUTHORIZE,
-      {
-        signature: signedHash,
-        userAddress: this.getPublicAddress(),
-        isTermAccepted: this.isTermAccepted,
-      }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<AuthorizeHashResponse>(
+        SERVICE_URLS.USER.AUTHORIZE,
+        {
+          signature: signedHash,
+          userAddress: this.getPublicAddress(),
+          isTermAccepted: this.isTermAccepted,
+        }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError(error, Errors.DAPI_ERROR);
+    }
   };
 
   /**

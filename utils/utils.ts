@@ -10,6 +10,8 @@ import {
 } from "@firefly-exchange/library-sui";
 import fs from "fs";
 import deploymentData from "../deployment.json";
+import CustomError from "../src/interfaces";
+import { Errors } from "../src/constants";
 
 /**
  * Generates random number
@@ -104,6 +106,22 @@ export function combineAndEncode({ bytes, signature }: SignatureWithBytes) {
   // Encode to hex for transmission
   const encodedData = Buffer.from(combinedData, "utf-8").toString("hex");
   return encodedData;
+}
+
+/**
+ * Utility function to throw a CustomError.
+ *
+ * @param {Error} error - The original error object.
+ * @param {Errors} code - The error code.
+ * @param {string} [name] - Optional custom name for the error.
+ * @throws {CustomError}
+ */
+export function throwCustomError(
+  error: Error,
+  code: Errors,
+  name?: string
+): never {
+  throw new CustomError(error, code, name);
 }
 
 // export async function performTrade(

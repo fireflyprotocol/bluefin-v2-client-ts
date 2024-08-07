@@ -52,3 +52,10 @@ export const Networks = {
 export const SUI_NETWROK = "sui";
 export const POST_ORDER_BASE = 18;
 export const USER_REJECTED_MESSAGE = "Rejected from user";
+
+export enum Errors {
+  WALLET_SIGNING_FAILED = "WALLET_SIGNING_FAILED",
+  ZK_SIGNING_FAILED = "ZK_SIGNING_FAILED",
+  KEYPAIR_SIGNING_FAILED = "KEYPAIR_SIGNING_FAILED",
+  DAPI_ERROR = "DAPI_ERROR",
+}

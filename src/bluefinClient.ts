@@ -2412,17 +2412,17 @@ export class BluefinClient {
             },
           },
         };
-      }
-      if (execute) {
-        if (this.isZkLogin) {
-          const { bytes, signature: userSignature } =
-            await this.signTransactionUsingZK(txBlock);
+      } else if (this.isZkLogin) {
+        const signedTxb = await this.signTransactionUsingZK(txBlock);
 
-          const zkSignature = createZkSignature({
-            userSignature,
-            zkPayload: this.getZkPayload(),
-          });
+        const { bytes, signature: userSignature } = signedTxb;
 
+        const zkSignature = createZkSignature({
+          userSignature,
+          zkPayload: this.getZkPayload(),
+        });
+
+        if (execute) {
           const executedResponse = await this.executeSponseredTransactionBlock(
             bytes,
             zkSignature,
@@ -2439,6 +2439,18 @@ export class BluefinClient {
             },
           };
         }
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            signedTxb: {
+              ...signedTxb,
+              sponsorSignature: data.data.signature,
+              bytes: signedTxb?.bytes,
+            },
+          },
+        };
+      } else {
         const { signature, bytes } = await this.signTransactionUsingKeypair(
           txBytes
         );

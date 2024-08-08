@@ -1156,69 +1156,56 @@ export class BluefinClient {
         sponsorTx
       );
     if (sponsorTx) {
-      try {
-        const sponsorPayload = signedTx as TransactionBlock;
-        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
-          {
-            data: sponsorPayload,
-            ok: true,
-            code: 200,
-            message: "",
-          },
-          false
+      const sponsorPayload = signedTx as TransactionBlock;
+      const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+        {
+          data: sponsorPayload,
+          ok: true,
+          code: 200,
+          message: "",
+        },
+        false
+      );
+
+      if (sponsorTxResponse?.ok) {
+        const signedTransaction = combineAndEncode(
+          // @ts-ignore
+          sponsorTxResponse?.data?.signedTxb
         );
 
-        if (sponsorTxResponse?.ok) {
-          const signedTransaction = combineAndEncode(
+        const request: SignedSubAccountRequest = {
+          subAccountAddress: params.subAccountAddress,
+          accountsToRemove: params.accountsToRemove,
+          signedTransaction,
+          sponsorSignature:
             // @ts-ignore
-            sponsorTxResponse?.data?.signedTxb
-          );
+            sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
+        };
 
-          const request: SignedSubAccountRequest = {
-            subAccountAddress: params.subAccountAddress,
-            accountsToRemove: params.accountsToRemove,
-            signedTransaction,
-            sponsorSignature:
-              // @ts-ignore
-              sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
-          };
+        const {
+          ok,
+          data,
+          response: { errorCode, message },
+        } = await this.addSubAccountFor1CT(request);
 
-          const {
+        if (ok) {
+          const response: ResponseSchema = {
             ok,
             data,
-            response: { errorCode, message },
-          } = await this.addSubAccountFor1CT(request);
+            code: errorCode,
+            message,
+          };
 
-          if (ok) {
-            const response: ResponseSchema = {
-              ok,
-              data,
-              code: errorCode,
-              message,
-            };
+          return response;
+        }
+      }
 
-            return response;
-          }
-          throw new Error(
-            sponsorTxResponse?.message || "Error upserting account."
-          );
-        }
-
-        // recursive call if sponsor fails
-        if (
-          !sponsorTxResponse?.ok &&
-          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-        ) {
-          return this.upsertSubAccount(params, false);
-        }
-        if (!sponsorTxResponse?.ok) {
-          throw new Error(
-            sponsorTxResponse?.message || "Error upserting account."
-          );
-        }
-      } catch (e) {
-        if (e?.message !== USER_REJECTED_MESSAGE)
-          return this.upsertSubAccount(params, false);
+      // recursive call if sponsor fails
+      if (
+        !sponsorTxResponse?.ok &&
+        sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+      ) {
+        return this.upsertSubAccount(params, false);
       }
     }
 
@@ -2388,7 +2375,6 @@ export class BluefinClient {
     const { data, ok } = sponsorTxResponse;
 
     if (ok) {
-      
       const txBytes = fromB64(data.data.txBytes);
       const txBlock = TransactionBlock.from(txBytes);
 

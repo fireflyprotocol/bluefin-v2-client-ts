@@ -529,7 +529,7 @@ export class BluefinClient {
           this.uiWallet
         );
       } catch (error) {
-        throwCustomError({ error, code: Errors.WALLET_SIGNING_FAILED });
+        throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });
       }
     } else if (this.isZkLogin) {
       try {
@@ -539,13 +539,16 @@ export class BluefinClient {
           zkPayload: this.getZkPayload(),
         });
       } catch (error) {
-        throwCustomError({ error, code: Errors.ZK_SIGNING_FAILED });
+        throwCustomError({ error, code: Errors.ZK_PAYLOAD_SIGNING_FAILED });
       }
     } else {
       try {
         signature = await this.orderSigner.signPayload(onboardingSignature);
       } catch (error) {
-        throwCustomError({ error, code: Errors.KEYPAIR_SIGNING_FAILED });
+        throwCustomError({
+          error,
+          code: Errors.KEYPAIR_PAYLOAD_SIGNING_FAILED,
+        });
       }
     }
     return `${signature?.signature}${
@@ -2270,6 +2273,88 @@ export class BluefinClient {
 
   /**
    * @description
+   * sign transaction using wallet
+   * @param tx transcation block
+   * @param signer signer object
+   * @returns deployment json
+   * */
+  private signTransactionUsingWallet = async (
+    tx: TransactionBlock,
+    signer: ExtendedWalletContextState
+  ) => {
+    try {
+      return signer.signTransactionBlock({
+        transactionBlock: tx,
+      });
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.WALLET_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * sign transcation using keypair
+   * @param tx transcation block
+   * @returns deployment json
+   * */
+
+  private signTransactionUsingZK = async (tx: TransactionBlock) => {
+    try {
+      return await tx.sign({
+        client: this.provider,
+        signer: this.signer as Keypair,
+      });
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.ZK_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * sign transcation using keypair
+   * @param tx transcation block
+   * @returns deployment json
+   * */
+
+  private signTransactionUsingKeypair = async (tx: Uint8Array) => {
+    try {
+      return await this.signer.signTransactionBlock(tx);
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.KEYPAIR_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  private executeSponseredTransactionBlock = async (
+    txBytes: string,
+    signature: string,
+    sponsorerSignature: string
+  ) => {
+    try {
+      return await SuiBlocks.executeSponsoredTxBlock(
+        txBytes,
+        signature,
+        sponsorerSignature,
+        this.provider
+      );
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.EXECUTE_SPONSORED_TRANSACTION_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
    * prompts user to sign the transaction and executes
    *  @param sponsorPayload payload from library-sui
    * @returns completed transaction
@@ -2285,25 +2370,26 @@ export class BluefinClient {
 
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
     const { data, ok } = sponsorTxResponse;
-    try {
-      if (ok) {
-        const txBytes = fromB64(data.data.txBytes);
-        const txBlock = TransactionBlock.from(txBytes);
+    if (ok) {
+      const txBytes = fromB64(data.data.txBytes);
+      const txBlock = TransactionBlock.from(txBytes);
 
-        if (this.uiWallet) {
-          const signedTxb = await (
-            this.signer as unknown as ExtendedWalletContextState
-          ).signTransactionBlock({
-            transactionBlock: txBlock,
-          });
-          const { transactionBlockBytes, signature } = signedTxb;
-          if (execute) {
-            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-              transactionBlockBytes,
-              signature,
-              data.data.signature,
-              this.provider
-            );
+      if (this.uiWallet) {
+        const signedTxb = await this.signTransactionUsingWallet(
+          txBlock,
+          this.signer as unknown as ExtendedWalletContextState
+        );
+
+        const { transactionBlockBytes, signature } = signedTxb;
+
+        if (execute) {
+          try {
+            const executedResponse =
+              await this.executeSponseredTransactionBlock(
+                transactionBlockBytes,
+                signature,
+                data.data.signature
+              );
             return {
               code: "Success",
               ok: true,
@@ -2316,55 +2402,39 @@ export class BluefinClient {
                 },
               },
             };
+          } catch (error) {
+            throwCustomError({
+              error,
+              code: Errors.EXECUTE_TRANSACTION_FAILED,
+            });
           }
-          return {
-            code: "Success",
-            ok: true,
-            data: {
-              signedTxb: {
-                ...signedTxb,
-                sponsorSignature: data.data.signature,
-                bytes: signedTxb?.transactionBlockBytes,
-              },
-            },
-          };
         }
-        if (execute) {
-          if (this.isZkLogin) {
-            const tx = TransactionBlock.from(txBytes);
-            const { bytes, signature: userSignature } = await tx.sign({
-              client: this.provider,
-              signer: this.signer as Keypair,
-            });
-            const zkSignature = createZkSignature({
-              userSignature,
-              zkPayload: this.getZkPayload(),
-            });
-            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-              bytes,
-              zkSignature,
-              data.data.signature,
-              this.provider
-            );
-            return {
-              code: "Success",
-              ok: true,
-              data: {
-                ...executedResponse,
-                signedTxb: {
-                  sponsorSignature: data.data.signature,
-                },
-              },
-            };
-          }
-          const { signature, bytes } = await this.signer.signTransactionBlock(
-            txBytes
-          );
-          const executedResponse = SuiBlocks.executeSponsoredTxBlock(
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            signedTxb: {
+              ...signedTxb,
+              sponsorSignature: data.data.signature,
+              bytes: signedTxb?.transactionBlockBytes,
+            },
+          },
+        };
+      }
+      if (execute) {
+        if (this.isZkLogin) {
+          const { bytes, signature: userSignature } =
+            await this.signTransactionUsingZK(txBlock);
+
+          const zkSignature = createZkSignature({
+            userSignature,
+            zkPayload: this.getZkPayload(),
+          });
+
+          const executedResponse = await this.executeSponseredTransactionBlock(
             bytes,
-            signature,
-            data.data.signature,
-            this.provider
+            zkSignature,
+            data.data.signature
           );
           return {
             code: "Success",
@@ -2377,14 +2447,29 @@ export class BluefinClient {
             },
           };
         }
-      } else {
-        // @ts-ignore
-        throw new Error(sponsorTxResponse.data?.error?.message);
+        const { signature, bytes } = await this.signTransactionUsingKeypair(
+          txBytes
+        );
+        const executedResponse = await this.executeSponseredTransactionBlock(
+          bytes,
+          signature,
+          data.data.signature
+        );
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            ...executedResponse,
+            signedTxb: {
+              sponsorSignature: data.data.signature,
+            },
+          },
+        };
       }
-    } catch (e) {
+    } else {
       return {
         ok: false,
-        message: e.message || "Something Went Wrong",
+        message: "Something Went Wrong",
         data: "",
         code: 400,
       };

@@ -529,7 +529,7 @@ export class BluefinClient {
           this.uiWallet
         );
       } catch (error) {
-        throwCustomError(error, Errors.WALLET_SIGNING_FAILED);
+        throwCustomError({ error, code: Errors.WALLET_SIGNING_FAILED });
       }
     } else if (this.isZkLogin) {
       try {
@@ -539,13 +539,13 @@ export class BluefinClient {
           zkPayload: this.getZkPayload(),
         });
       } catch (error) {
-        throwCustomError(error, Errors.ZK_SIGNING_FAILED);
+        throwCustomError({ error, code: Errors.ZK_SIGNING_FAILED });
       }
     } else {
       try {
         signature = await this.orderSigner.signPayload(onboardingSignature);
       } catch (error) {
-        throwCustomError(error, Errors.KEYPAIR_SIGNING_FAILED);
+        throwCustomError({ error, code: Errors.KEYPAIR_SIGNING_FAILED });
       }
     }
     return `${signature?.signature}${
@@ -2632,7 +2632,7 @@ export class BluefinClient {
       );
       return response;
     } catch (error) {
-      throwCustomError(error, Errors.DAPI_ERROR);
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
     }
   };
 

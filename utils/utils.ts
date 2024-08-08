@@ -116,12 +116,17 @@ export function combineAndEncode({ bytes, signature }: SignatureWithBytes) {
  * @param {string} [name] - Optional custom name for the error.
  * @throws {CustomError}
  */
-export function throwCustomError(
-  error: Error,
-  code: Errors,
-  name?: string
-): never {
-  throw new CustomError(error, code, name);
+export function throwCustomError({
+  error,
+  code,
+  extra,
+}: {
+  error: Error | string;
+  code?: Errors;
+  extra?: Record<any, any>;
+}): never {
+  if (typeof error === "string") error = new Error(error);
+  throw new CustomError(error, code, extra);
 }
 
 // export async function performTrade(

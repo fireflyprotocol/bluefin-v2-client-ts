@@ -2263,7 +2263,7 @@ export class BluefinClient {
    * sign transaction using wallet
    * @param tx transcation block
    * @param signer signer object
-   * @returns deployment json
+   * @returns transactionBlockBytes & signature
    * */
   private signTransactionUsingWallet = async (
     tx: TransactionBlock,
@@ -2283,9 +2283,9 @@ export class BluefinClient {
 
   /**
    * @description
-   * sign transcation using keypair
+   * sign transcation using ZK
    * @param tx transcation block
-   * @returns deployment json
+   * @returns SignatureWithBytes
    * */
 
   private signTransactionUsingZK = async (tx: TransactionBlock) => {
@@ -2305,13 +2305,13 @@ export class BluefinClient {
   /**
    * @description
    * sign transcation using keypair
-   * @param tx transcation block
-   * @returns deployment json
+   * @param txBytes transaction bytes
+   * @returns SignatureWithBytes
    * */
 
-  private signTransactionUsingKeypair = async (tx: Uint8Array) => {
+  private signTransactionUsingKeypair = async (txBytes: Uint8Array) => {
     try {
-      return await this.signer.signTransactionBlock(tx);
+      return await this.signer.signTransactionBlock(txBytes);
     } catch (error) {
       throwCustomError({
         error,
@@ -2320,14 +2320,23 @@ export class BluefinClient {
     }
   };
 
+  /**
+   * @description
+   * execute sponsored transaction block
+   * @param blockTxBytes transaction bytes
+   * @param signature signature
+   * @param sponsorerSignature sponserer signature
+   * @returns SuiTransactionBlockResponse
+   * */
+
   private executeSponseredTransactionBlock = async (
-    txBytes: string,
+    blockTxBytes: string,
     signature: string,
     sponsorerSignature: string
   ) => {
     try {
       return await SuiBlocks.executeSponsoredTxBlock(
-        txBytes,
+        blockTxBytes,
         signature,
         sponsorerSignature,
         this.provider
@@ -2342,9 +2351,9 @@ export class BluefinClient {
 
   /**
    * @description
-   * sign transcation using keypair
+   * build gasless transaction payload bytes
    * @param tx transcation block
-   * @returns deployment json
+   * @returns string
    * */
 
   private buildGaslessTxPayloadBytes = async (txb: TransactionBlock) => {

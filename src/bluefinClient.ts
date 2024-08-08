@@ -2355,6 +2355,24 @@ export class BluefinClient {
 
   /**
    * @description
+   * sign transcation using keypair
+   * @param tx transcation block
+   * @returns deployment json
+   * */
+
+  private buildGaslessTxPayloadBytes = async (txb: TransactionBlock) => {
+    try {
+      return await SuiBlocks.buildGaslessTxPayloadBytes(txb, this.provider);
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.BUILD_GASLESS_PAYLOAD_TX_PAYLOAD_BYTES_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
    * prompts user to sign the transaction and executes
    *  @param sponsorPayload payload from library-sui
    * @returns completed transaction
@@ -2363,12 +2381,10 @@ export class BluefinClient {
     sponsorPayload: ResponseSchema,
     execute: boolean = true
   ) => {
-    const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
-      sponsorPayload.data,
-      this.provider
-    );
+    const bytes = await this.buildGaslessTxPayloadBytes(sponsorPayload.data);
 
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
+
     const { data, ok } = sponsorTxResponse;
     if (ok) {
       const txBytes = fromB64(data.data.txBytes);

@@ -2386,7 +2386,9 @@ export class BluefinClient {
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
 
     const { data, ok } = sponsorTxResponse;
+
     if (ok) {
+      
       const txBytes = fromB64(data.data.txBytes);
       const txBlock = TransactionBlock.from(txBytes);
 
@@ -2800,12 +2802,16 @@ export class BluefinClient {
    * @returns SponsorTxResponse
    */
   getSponsoredTxResponse = async (txBytes) => {
-    const response = await this.apiService.post<SponsorTxResponse>(
-      SERVICE_URLS.USER.SPONSOR_TX,
-      { txBytes },
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<SponsorTxResponse>(
+        SERVICE_URLS.USER.SPONSOR_TX,
+        { txBytes },
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**

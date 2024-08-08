@@ -19,7 +19,8 @@ import {
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { combineAndEncode } from "../../utils/utils";
+import { combineAndEncode, throwCustomError } from "../../utils/utils";
+import { Errors } from "../constants";
 
 export class ContractCalls {
   onChainCalls: OnChainCalls;
@@ -210,22 +211,29 @@ export class ContractCalls {
     gasBudget?: number,
     sponsor?: boolean
   ): Promise<string | TransactionBlock> => {
-    const signedTx = await this.onChainCalls.signUpsertSubAccount(
-      {
-        account,
-        accountsToRemove,
-        subAccountsMapID,
-        gasBudget,
-        sponsor,
-      },
-      this.signer
-    );
+    try {
+      const signedTx = await this.onChainCalls.signUpsertSubAccount(
+        {
+          account,
+          accountsToRemove,
+          subAccountsMapID,
+          gasBudget,
+          sponsor,
+        },
+        this.signer
+      );
 
-    if (sponsor) {
-      return signedTx as unknown as TransactionBlock;
+      if (sponsor) {
+        return signedTx as unknown as TransactionBlock;
+      }
+
+      return combineAndEncode(signedTx as SignatureWithBytes);
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.SIGN_UPSERT_SUB_ACCOUNT_CONTRACT_CALLED_FAILED,
+      });
     }
-
-    return combineAndEncode(signedTx as SignatureWithBytes);
   };
 
   /**

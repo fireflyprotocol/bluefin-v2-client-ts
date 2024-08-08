@@ -1143,106 +1143,102 @@ export class BluefinClient {
     params: SubAccountRequest,
     sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
-    try {
-      const apiResponse = await this.getExpiredAccountsFor1CT();
-      const signedTx =
-        await this.contractCalls.upsertSubAccountContractCallRawTransaction(
-          params.subAccountAddress,
-          apiResponse?.data?.expiredSubAccounts ?? [],
-          undefined,
-          undefined,
-          sponsorTx
+    const apiResponse = await this.getExpiredAccountsFor1CT();
+    const signedTx =
+      await this.contractCalls.upsertSubAccountContractCallRawTransaction(
+        params.subAccountAddress,
+        apiResponse?.data?.expiredSubAccounts ?? [],
+        undefined,
+        undefined,
+        sponsorTx
+      );
+    if (sponsorTx) {
+      try {
+        const sponsorPayload = signedTx as TransactionBlock;
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          {
+            data: sponsorPayload,
+            ok: true,
+            code: 200,
+            message: "",
+          },
+          false
         );
-      if (sponsorTx) {
-        try {
-          const sponsorPayload = signedTx as TransactionBlock;
-          const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
-            {
-              data: sponsorPayload,
-              ok: true,
-              code: 200,
-              message: "",
-            },
-            false
+
+        if (sponsorTxResponse?.ok) {
+          const signedTransaction = combineAndEncode(
+            // @ts-ignore
+            sponsorTxResponse?.data?.signedTxb
           );
 
-          if (sponsorTxResponse?.ok) {
-            const signedTransaction = combineAndEncode(
+          const request: SignedSubAccountRequest = {
+            subAccountAddress: params.subAccountAddress,
+            accountsToRemove: params.accountsToRemove,
+            signedTransaction,
+            sponsorSignature:
               // @ts-ignore
-              sponsorTxResponse?.data?.signedTxb
-            );
+              sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
+          };
 
-            const request: SignedSubAccountRequest = {
-              subAccountAddress: params.subAccountAddress,
-              accountsToRemove: params.accountsToRemove,
-              signedTransaction,
-              sponsorSignature:
-                // @ts-ignore
-                sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
-            };
+          const {
+            ok,
+            data,
+            response: { errorCode, message },
+          } = await this.addSubAccountFor1CT(request);
 
-            const {
+          if (ok) {
+            const response: ResponseSchema = {
               ok,
               data,
-              response: { errorCode, message },
-            } = await this.addSubAccountFor1CT(request);
+              code: errorCode,
+              message,
+            };
 
-            if (ok) {
-              const response: ResponseSchema = {
-                ok,
-                data,
-                code: errorCode,
-                message,
-              };
-
-              return response;
-            }
-            throw new Error(
-              sponsorTxResponse?.message || "Error upserting account."
-            );
+            return response;
           }
-
-          // recursive call if sponsor fails
-          if (
-            !sponsorTxResponse?.ok &&
-            sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-          ) {
-            return this.upsertSubAccount(params, false);
-          }
-          if (!sponsorTxResponse?.ok) {
-            throw new Error(
-              sponsorTxResponse?.message || "Error upserting account."
-            );
-          }
-        } catch (e) {
-          if (e?.message !== USER_REJECTED_MESSAGE)
-            return this.upsertSubAccount(params, false);
+          throw new Error(
+            sponsorTxResponse?.message || "Error upserting account."
+          );
         }
+
+        // recursive call if sponsor fails
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.upsertSubAccount(params, false);
+        }
+        if (!sponsorTxResponse?.ok) {
+          throw new Error(
+            sponsorTxResponse?.message || "Error upserting account."
+          );
+        }
+      } catch (e) {
+        if (e?.message !== USER_REJECTED_MESSAGE)
+          return this.upsertSubAccount(params, false);
       }
-
-      const request: SignedSubAccountRequest = {
-        subAccountAddress: params.subAccountAddress,
-        accountsToRemove: params.accountsToRemove,
-        signedTransaction: signedTx as string,
-      };
-
-      const {
-        ok,
-        data,
-        response: { errorCode, message },
-      } = await this.addSubAccountFor1CT(request);
-
-      const response: ResponseSchema = {
-        ok,
-        data,
-        code: errorCode,
-        message,
-      };
-
-      return response;
-    } catch (error) {
-      throw new Error(error.message);
     }
+
+    const request: SignedSubAccountRequest = {
+      subAccountAddress: params.subAccountAddress,
+      accountsToRemove: params.accountsToRemove,
+      signedTransaction: signedTx as string,
+    };
+
+    const {
+      ok,
+      data,
+      response: { errorCode, message },
+    } = await this.addSubAccountFor1CT(request);
+
+    const response: ResponseSchema = {
+      ok,
+      data,
+      code: errorCode,
+      message,
+    };
+
+    return response;
   };
 
   /**
@@ -2663,12 +2659,16 @@ export class BluefinClient {
    * @returns SubAccountResponse containing whitelisted subaccount details
    */
   private addSubAccountFor1CT = async (params: SignedSubAccountRequest) => {
-    const response = await this.apiService.post<SubAccountResponse>(
-      SERVICE_URLS.USER.SUBACCOUNT_1CT,
-      params,
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<SubAccountResponse>(
+        SERVICE_URLS.USER.SUBACCOUNT_1CT,
+        params,
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**
@@ -2677,12 +2677,16 @@ export class BluefinClient {
    * @returns ExpiredSubAccounts1CTResponse
    */
   private getExpiredAccountsFor1CT = async () => {
-    const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
-      SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
-      null,
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
+        SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
+        null,
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**

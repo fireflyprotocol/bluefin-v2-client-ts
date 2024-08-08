@@ -2383,31 +2383,23 @@ export class BluefinClient {
         const { transactionBlockBytes, signature } = signedTxb;
 
         if (execute) {
-          try {
-            const executedResponse =
-              await this.executeSponseredTransactionBlock(
-                transactionBlockBytes,
-                signature,
-                data.data.signature
-              );
-            return {
-              code: "Success",
-              ok: true,
-              data: {
-                ...executedResponse,
-                signedTxb: {
-                  ...signedTxb,
-                  sponsorSignature: data.data.signature,
-                  bytes: signedTxb?.transactionBlockBytes,
-                },
+          const executedResponse = await this.executeSponseredTransactionBlock(
+            transactionBlockBytes,
+            signature,
+            data.data.signature
+          );
+          return {
+            code: "Success",
+            ok: true,
+            data: {
+              ...executedResponse,
+              signedTxb: {
+                ...signedTxb,
+                sponsorSignature: data.data.signature,
+                bytes: signedTxb?.transactionBlockBytes,
               },
-            };
-          } catch (error) {
-            throwCustomError({
-              error,
-              code: Errors.EXECUTE_TRANSACTION_FAILED,
-            });
-          }
+            },
+          };
         }
         return {
           code: "Success",

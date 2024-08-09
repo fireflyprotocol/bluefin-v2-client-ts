@@ -46,8 +46,17 @@ import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-schem
 import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import { combineAndEncode, generateRandomNumber } from "../utils/utils";
-import { Networks, POST_ORDER_BASE, USER_REJECTED_MESSAGE } from "./constants";
+import {
+  combineAndEncode,
+  generateRandomNumber,
+  throwCustomError,
+} from "../utils/utils";
+import {
+  Errors,
+  Networks,
+  POST_ORDER_BASE,
+  USER_REJECTED_MESSAGE,
+} from "./constants";
 import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
 import {
@@ -514,18 +523,33 @@ export class BluefinClient {
     };
 
     if (this.uiWallet) {
-      signature = await OrderSigner.signPayloadUsingWallet(
-        onboardingSignature,
-        this.uiWallet
-      );
+      try {
+        signature = await OrderSigner.signPayloadUsingWallet(
+          onboardingSignature,
+          this.uiWallet
+        );
+      } catch (error) {
+        throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });
+      }
     } else if (this.isZkLogin) {
-      signature = await OrderSigner.signPayloadUsingZKSignature({
-        payload: onboardingSignature,
-        signer: this.signer,
-        zkPayload: this.getZkPayload(),
-      });
+      try {
+        signature = await OrderSigner.signPayloadUsingZKSignature({
+          payload: onboardingSignature,
+          signer: this.signer,
+          zkPayload: this.getZkPayload(),
+        });
+      } catch (error) {
+        throwCustomError({ error, code: Errors.ZK_PAYLOAD_SIGNING_FAILED });
+      }
     } else {
-      signature = await this.orderSigner.signPayload(onboardingSignature);
+      try {
+        signature = await this.orderSigner.signPayload(onboardingSignature);
+      } catch (error) {
+        throwCustomError({
+          error,
+          code: Errors.KEYPAIR_PAYLOAD_SIGNING_FAILED,
+        });
+      }
     }
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
@@ -1122,106 +1146,89 @@ export class BluefinClient {
     params: SubAccountRequest,
     sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
-    try {
-      const apiResponse = await this.getExpiredAccountsFor1CT();
-      const signedTx =
-        await this.contractCalls.upsertSubAccountContractCallRawTransaction(
-          params.subAccountAddress,
-          apiResponse?.data?.expiredSubAccounts ?? [],
-          undefined,
-          undefined,
-          sponsorTx
+    const apiResponse = await this.getExpiredAccountsFor1CT();
+    const signedTx =
+      await this.contractCalls.upsertSubAccountContractCallRawTransaction(
+        params.subAccountAddress,
+        apiResponse?.data?.expiredSubAccounts ?? [],
+        undefined,
+        undefined,
+        sponsorTx
+      );
+    if (sponsorTx) {
+      const sponsorPayload = signedTx as TransactionBlock;
+      const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+        {
+          data: sponsorPayload,
+          ok: true,
+          code: 200,
+          message: "",
+        },
+        false
+      );
+
+      if (sponsorTxResponse?.ok) {
+        const signedTransaction = combineAndEncode(
+          // @ts-ignore
+          sponsorTxResponse?.data?.signedTxb
         );
-      if (sponsorTx) {
-        try {
-          const sponsorPayload = signedTx as TransactionBlock;
-          const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
-            {
-              data: sponsorPayload,
-              ok: true,
-              code: 200,
-              message: "",
-            },
-            false
-          );
 
-          if (sponsorTxResponse?.ok) {
-            const signedTransaction = combineAndEncode(
-              // @ts-ignore
-              sponsorTxResponse?.data?.signedTxb
-            );
+        const request: SignedSubAccountRequest = {
+          subAccountAddress: params.subAccountAddress,
+          accountsToRemove: params.accountsToRemove,
+          signedTransaction,
+          sponsorSignature:
+            // @ts-ignore
+            sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
+        };
 
-            const request: SignedSubAccountRequest = {
-              subAccountAddress: params.subAccountAddress,
-              accountsToRemove: params.accountsToRemove,
-              signedTransaction,
-              sponsorSignature:
-                // @ts-ignore
-                sponsorTxResponse?.data?.signedTxb?.sponsorSignature,
-            };
+        const {
+          ok,
+          data,
+          response: { errorCode, message },
+        } = await this.addSubAccountFor1CT(request);
 
-            const {
-              ok,
-              data,
-              response: { errorCode, message },
-            } = await this.addSubAccountFor1CT(request);
+        if (ok) {
+          const response: ResponseSchema = {
+            ok,
+            data,
+            code: errorCode,
+            message,
+          };
 
-            if (ok) {
-              const response: ResponseSchema = {
-                ok,
-                data,
-                code: errorCode,
-                message,
-              };
-
-              return response;
-            }
-            throw new Error(
-              sponsorTxResponse?.message || "Error upserting account."
-            );
-          }
-
-          // recursive call if sponsor fails
-          if (
-            !sponsorTxResponse?.ok &&
-            sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-          ) {
-            return this.upsertSubAccount(params, false);
-          }
-          if (!sponsorTxResponse?.ok) {
-            throw new Error(
-              sponsorTxResponse?.message || "Error upserting account."
-            );
-          }
-        } catch (e) {
-          if (e?.message !== USER_REJECTED_MESSAGE)
-            return this.upsertSubAccount(params, false);
+          return response;
         }
       }
 
-      const request: SignedSubAccountRequest = {
-        subAccountAddress: params.subAccountAddress,
-        accountsToRemove: params.accountsToRemove,
-        signedTransaction: signedTx as string,
-      };
-
-      const {
-        ok,
-        data,
-        response: { errorCode, message },
-      } = await this.addSubAccountFor1CT(request);
-
-      const response: ResponseSchema = {
-        ok,
-        data,
-        code: errorCode,
-        message,
-      };
-
-      return response;
-    } catch (error) {
-      throw new Error(error.message);
+      // recursive call if sponsor fails
+      if (
+        !sponsorTxResponse?.ok &&
+        sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+      ) {
+        return this.upsertSubAccount(params, false);
+      }
     }
+
+    const request: SignedSubAccountRequest = {
+      subAccountAddress: params.subAccountAddress,
+      accountsToRemove: params.accountsToRemove,
+      signedTransaction: signedTx as string,
+    };
+
+    const {
+      ok,
+      data,
+      response: { errorCode, message },
+    } = await this.addSubAccountFor1CT(request);
+
+    const response: ResponseSchema = {
+      ok,
+      data,
+      code: errorCode,
+      message,
+    };
+
+    return response;
   };
 
   /**
@@ -2253,6 +2260,115 @@ export class BluefinClient {
 
   /**
    * @description
+   * sign transaction using wallet
+   * @param tx transcation block
+   * @param signer signer object
+   * @returns transactionBlockBytes & signature
+   * */
+  private signTransactionUsingWallet = async (
+    tx: TransactionBlock,
+    signer: ExtendedWalletContextState
+  ) => {
+    try {
+      return signer.signTransactionBlock({
+        transactionBlock: tx,
+      });
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.WALLET_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * sign transcation using ZK
+   * @param tx transcation block
+   * @returns SignatureWithBytes
+   * */
+
+  private signTransactionUsingZK = async (tx: TransactionBlock) => {
+    try {
+      return await tx.sign({
+        client: this.provider,
+        signer: this.signer as Keypair,
+      });
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.ZK_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * sign transcation using keypair
+   * @param txBytes transaction bytes
+   * @returns SignatureWithBytes
+   * */
+
+  private signTransactionUsingKeypair = async (txBytes: Uint8Array) => {
+    try {
+      return await this.signer.signTransactionBlock(txBytes);
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.KEYPAIR_TRANSACTION_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * execute sponsored transaction block
+   * @param blockTxBytes transaction bytes
+   * @param signature signature
+   * @param sponsorerSignature sponserer signature
+   * @returns SuiTransactionBlockResponse
+   * */
+
+  private executeSponseredTransactionBlock = async (
+    blockTxBytes: string,
+    signature: string,
+    sponsorerSignature: string
+  ) => {
+    try {
+      return await SuiBlocks.executeSponsoredTxBlock(
+        blockTxBytes,
+        signature,
+        sponsorerSignature,
+        this.provider
+      );
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.EXECUTE_SPONSORED_TRANSACTION_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * build gasless transaction payload bytes
+   * @param tx transcation block
+   * @returns string
+   * */
+
+  private buildGaslessTxPayloadBytes = async (txb: TransactionBlock) => {
+    try {
+      return await SuiBlocks.buildGaslessTxPayloadBytes(txb, this.provider);
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.BUILD_GASLESS_PAYLOAD_TX_PAYLOAD_BYTES_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
    * prompts user to sign the transaction and executes
    *  @param sponsorPayload payload from library-sui
    * @returns completed transaction
@@ -2261,49 +2377,35 @@ export class BluefinClient {
     sponsorPayload: ResponseSchema,
     execute: boolean = true
   ) => {
-    const bytes = await SuiBlocks.buildGaslessTxPayloadBytes(
-      sponsorPayload.data,
-      this.provider
-    );
+    const bytes = await this.buildGaslessTxPayloadBytes(sponsorPayload.data);
 
     const sponsorTxResponse = await this.getSponsoredTxResponse(bytes);
-    const { data, ok } = sponsorTxResponse;
-    try {
-      if (ok) {
-        const txBytes = fromB64(data.data.txBytes);
-        const txBlock = TransactionBlock.from(txBytes);
 
-        if (this.uiWallet) {
-          const signedTxb = await (
-            this.signer as unknown as ExtendedWalletContextState
-          ).signTransactionBlock({
-            transactionBlock: txBlock,
-          });
-          const { transactionBlockBytes, signature } = signedTxb;
-          if (execute) {
-            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-              transactionBlockBytes,
-              signature,
-              data.data.signature,
-              this.provider
-            );
-            return {
-              code: "Success",
-              ok: true,
-              data: {
-                ...executedResponse,
-                signedTxb: {
-                  ...signedTxb,
-                  sponsorSignature: data.data.signature,
-                  bytes: signedTxb?.transactionBlockBytes,
-                },
-              },
-            };
-          }
+    const { data, ok } = sponsorTxResponse;
+
+    if (ok) {
+      const txBytes = fromB64(data.data.txBytes);
+      const txBlock = TransactionBlock.from(txBytes);
+
+      if (this.uiWallet) {
+        const signedTxb = await this.signTransactionUsingWallet(
+          txBlock,
+          this.signer as unknown as ExtendedWalletContextState
+        );
+
+        const { transactionBlockBytes, signature } = signedTxb;
+
+        if (execute) {
+          const executedResponse = await this.executeSponseredTransactionBlock(
+            transactionBlockBytes,
+            signature,
+            data.data.signature
+          );
           return {
             code: "Success",
             ok: true,
             data: {
+              ...executedResponse,
               signedTxb: {
                 ...signedTxb,
                 sponsorSignature: data.data.signature,
@@ -2312,42 +2414,32 @@ export class BluefinClient {
             },
           };
         }
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            signedTxb: {
+              ...signedTxb,
+              sponsorSignature: data.data.signature,
+              bytes: signedTxb?.transactionBlockBytes,
+            },
+          },
+        };
+      } else if (this.isZkLogin) {
+        const signedTxb = await this.signTransactionUsingZK(txBlock);
+
+        const { bytes, signature: userSignature } = signedTxb;
+
+        const zkSignature = createZkSignature({
+          userSignature,
+          zkPayload: this.getZkPayload(),
+        });
+
         if (execute) {
-          if (this.isZkLogin) {
-            const tx = TransactionBlock.from(txBytes);
-            const { bytes, signature: userSignature } = await tx.sign({
-              client: this.provider,
-              signer: this.signer as Keypair,
-            });
-            const zkSignature = createZkSignature({
-              userSignature,
-              zkPayload: this.getZkPayload(),
-            });
-            const executedResponse = await SuiBlocks.executeSponsoredTxBlock(
-              bytes,
-              zkSignature,
-              data.data.signature,
-              this.provider
-            );
-            return {
-              code: "Success",
-              ok: true,
-              data: {
-                ...executedResponse,
-                signedTxb: {
-                  sponsorSignature: data.data.signature,
-                },
-              },
-            };
-          }
-          const { signature, bytes } = await this.signer.signTransactionBlock(
-            txBytes
-          );
-          const executedResponse = SuiBlocks.executeSponsoredTxBlock(
+          const executedResponse = await this.executeSponseredTransactionBlock(
             bytes,
-            signature,
-            data.data.signature,
-            this.provider
+            zkSignature,
+            data.data.signature
           );
           return {
             code: "Success",
@@ -2360,14 +2452,41 @@ export class BluefinClient {
             },
           };
         }
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            signedTxb: {
+              ...signedTxb,
+              sponsorSignature: data.data.signature,
+              bytes: signedTxb?.bytes,
+            },
+          },
+        };
       } else {
-        // @ts-ignore
-        throw new Error(sponsorTxResponse.data?.error?.message);
+        const { signature, bytes } = await this.signTransactionUsingKeypair(
+          txBytes
+        );
+        const executedResponse = await this.executeSponseredTransactionBlock(
+          bytes,
+          signature,
+          data.data.signature
+        );
+        return {
+          code: "Success",
+          ok: true,
+          data: {
+            ...executedResponse,
+            signedTxb: {
+              sponsorSignature: data.data.signature,
+            },
+          },
+        };
       }
-    } catch (e) {
+    } else {
       return {
         ok: false,
-        message: e.message || "Something Went Wrong",
+        message: "Something Went Wrong",
         data: "",
         code: 400,
       };
@@ -2600,15 +2719,19 @@ export class BluefinClient {
    * @returns GetAuthHashResponse which contains auth hash to be signed
    */
   private authorizeSignedHash = async (signedHash: string) => {
-    const response = await this.apiService.post<AuthorizeHashResponse>(
-      SERVICE_URLS.USER.AUTHORIZE,
-      {
-        signature: signedHash,
-        userAddress: this.getPublicAddress(),
-        isTermAccepted: this.isTermAccepted,
-      }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<AuthorizeHashResponse>(
+        SERVICE_URLS.USER.AUTHORIZE,
+        {
+          signature: signedHash,
+          userAddress: this.getPublicAddress(),
+          isTermAccepted: this.isTermAccepted,
+        }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**
@@ -2638,12 +2761,16 @@ export class BluefinClient {
    * @returns SubAccountResponse containing whitelisted subaccount details
    */
   private addSubAccountFor1CT = async (params: SignedSubAccountRequest) => {
-    const response = await this.apiService.post<SubAccountResponse>(
-      SERVICE_URLS.USER.SUBACCOUNT_1CT,
-      params,
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<SubAccountResponse>(
+        SERVICE_URLS.USER.SUBACCOUNT_1CT,
+        params,
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**
@@ -2652,12 +2779,16 @@ export class BluefinClient {
    * @returns ExpiredSubAccounts1CTResponse
    */
   private getExpiredAccountsFor1CT = async () => {
-    const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
-      SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
-      null,
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.get<Expired1CTSubAccountsResponse>(
+        SERVICE_URLS.USER.EXPIRED_SUBACCOUNT_1CT,
+        null,
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**
@@ -2666,12 +2797,16 @@ export class BluefinClient {
    * @returns SponsorTxResponse
    */
   getSponsoredTxResponse = async (txBytes) => {
-    const response = await this.apiService.post<SponsorTxResponse>(
-      SERVICE_URLS.USER.SPONSOR_TX,
-      { txBytes },
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.post<SponsorTxResponse>(
+        SERVICE_URLS.USER.SPONSOR_TX,
+        { txBytes },
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
   };
 
   /**

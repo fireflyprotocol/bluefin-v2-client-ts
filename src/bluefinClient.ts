@@ -1322,7 +1322,9 @@ export class BluefinClient {
     coinID?: string,
     sponsorTx?: boolean
   ) => {
-    if (!amount) throw Error(`No amount specified for deposit`);
+    if (!amount) throwCustomError({ error: "No amount specified for deposit" });
+
+    //if coin id provided
 
     const contractCall =
       await this.contractCalls.depositToMarginBankContractCall(
@@ -1340,6 +1342,8 @@ export class BluefinClient {
         return contractCall;
       }
     }
+
+    //if no coin id provided
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -1393,7 +1397,9 @@ export class BluefinClient {
       }
     }
 
-    throw Error(`User has no coin with amount ${amount} to deposit`);
+    throwCustomError({
+      error: `User has no coin with amount ${amount} to deposit`,
+    });
   };
 
   /**

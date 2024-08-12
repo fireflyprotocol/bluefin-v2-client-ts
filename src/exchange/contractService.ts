@@ -167,7 +167,7 @@ export class ContractCalls {
     } catch (error) {
       throwCustomError({
         error,
-        code: Errors.FAILED_TO_FETCH_USDC_HAVING_BALANCE,
+        code: Errors.FAILED_TO_FETCH_USDC_COIN_HAVING_BALANCE,
       });
     }
   };

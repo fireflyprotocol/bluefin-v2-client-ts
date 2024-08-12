@@ -1324,47 +1324,28 @@ export class BluefinClient {
   ) => {
     if (!amount) throw Error(`No amount specified for deposit`);
 
+    const contractCall =
+      await this.contractCalls.depositToMarginBankContractCall(
+        amount,
+        coinID,
+        this.getPublicAddress,
+        sponsorTx
+      );
+
     // if CoinID provided
     if (coinID) {
       if (sponsorTx) {
-        const contractCall =
-          await this.contractCalls.depositToMarginBankContractCall(
-            amount,
-            coinID,
-            this.getPublicAddress,
-            sponsorTx
-          );
-        try {
-          await this.signAndExecuteSponsoredTx(contractCall.data);
-        } catch (e) {
-          return {
-            ok: false,
-            message: e.message || "deposit failed",
-            data: "",
-            code: 400,
-          };
-        }
+        await this.signAndExecuteSponsoredTx(contractCall.data);
       } else {
-        const contractCall = this.contractCalls.depositToMarginBankContractCall(
-          amount,
-          coinID,
-          this.getPublicAddress,
-          sponsorTx
-        );
         return contractCall;
       }
     }
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
-      await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-        {
-          amount,
-          address: this.walletAddress,
-        },
-        this.signer
-      )
+      await this.contractCalls.getUSDCHavingBalance(amount)
     )?.coinObjectId;
+
     if (coinHavingBalance) {
       return await this.contractCalls.depositToMarginBankContractCall(
         amount,
@@ -1375,39 +1356,20 @@ export class BluefinClient {
     }
 
     // Try merging users' coins if they have more than one coins
-    const usdcCoins = await this.contractCalls.onChainCalls.getUSDCCoins(
-      { address: this.walletAddress },
-      this.signer
-    );
+    const usdcCoins = await this.contractCalls.getUSDCCoins(this.walletAddress);
+
     if (usdcCoins.data.length > 1) {
       if (sponsorTx) {
-        try {
-          const sponsorPayload =
-            await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
-              this.contractCalls.onChainCalls.getCoinType(),
-              this.signer,
-              this.walletAddress,
-              sponsorTx
-            );
-          await this.signAndExecuteSponsoredTx({
-            ok: true,
-            data: sponsorPayload,
-            message: "",
-          });
-        } catch (e) {
-          await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
-            this.contractCalls.onChainCalls.getCoinType(),
-            this.signer,
-            this.walletAddress
-          );
-          console.log(e);
-        }
-      } else {
-        await this.contractCalls.onChainCalls.mergeAllUsdcCoins(
-          this.contractCalls.onChainCalls.getCoinType(),
-          this.signer,
-          this.walletAddress
+        const sponsorPayload = await this.contractCalls.mergeAllUSDCCOins(
+          sponsorTx
         );
+        await this.signAndExecuteSponsoredTx({
+          ok: true,
+          data: sponsorPayload,
+          message: "",
+        });
+      } else {
+        await this.contractCalls.mergeAllUSDCCOins(sponsorTx);
       }
 
       let coinHavingBalanceAfterMerge;
@@ -1417,13 +1379,7 @@ export class BluefinClient {
         // sleep for 1 second to merge the coins
         await new Promise((resolve) => setTimeout(resolve, 1000));
         coinHavingBalanceAfterMerge = (
-          await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
-            {
-              amount,
-              address: this.walletAddress,
-            },
-            this.signer
-          )
+          await this.contractCalls.getUSDCHavingBalance(amount)
         )?.coinObjectId;
       }
 

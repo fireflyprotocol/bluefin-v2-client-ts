@@ -119,28 +119,97 @@ export class ContractCalls {
     getPublicAddress: () => address,
     sponsor?: boolean
   ): Promise<ResponseSchema> => {
-    return TransformToResponseSchema(async () => {
-      const tx = await this.onChainCalls.depositToBank(
+    try {
+      return TransformToResponseSchema(async () => {
+        const tx = await this.onChainCalls.depositToBank(
+          {
+            amount: toBigNumberStr(amount.toString(), 6),
+            coinID,
+            bankID: this.onChainCalls.getBankID(),
+            accountAddress: this.walletAddress || getPublicAddress(),
+            sponsor,
+          },
+          this.signer
+        );
+        if (tx && !this.marginBankId) {
+          if (sponsor) {
+            this.marginBankId = Transaction.getBankAccountID(
+              tx as SuiTransactionBlockResponse
+            );
+          } else {
+            this.marginBankId = "";
+          }
+        }
+        return tx;
+      }, interpolate(SuccessMessages.depositToBank, { amount }));
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.DEPOSIT_TO_BANK_CONTRACT_CALL_FAILED,
+      });
+    }
+  };
+
+  /**
+   * Deposits funds to the margin bank contract
+   * @param amount the amount to deposit
+   * @returns ResponseSchema
+   * */
+  getUSDCHavingBalance = async (amount: number) => {
+    try {
+      return await this.onChainCalls.getUSDCoinHavingBalance(
         {
-          amount: toBigNumberStr(amount.toString(), 6),
-          coinID,
-          bankID: this.onChainCalls.getBankID(),
-          accountAddress: this.walletAddress || getPublicAddress(),
-          sponsor,
+          amount,
+          address: this.walletAddress,
         },
         this.signer
       );
-      if (tx && !this.marginBankId) {
-        if (sponsor) {
-          this.marginBankId = Transaction.getBankAccountID(
-            tx as SuiTransactionBlockResponse
-          );
-        } else {
-          this.marginBankId = "";
-        }
-      }
-      return tx;
-    }, interpolate(SuccessMessages.depositToBank, { amount }));
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.FAILED_TO_FETCH_USDC_HAVING_BALANCE,
+      });
+    }
+  };
+
+  /**
+   * Deposits funds to the margin bank contract
+   * @param walletAddress user wallet address
+   * @returns ResponseSchema
+   * */
+  getUSDCCoins = async (walletAddress: string) => {
+    try {
+      return await this.onChainCalls.getUSDCCoins(
+        { address: walletAddress },
+        this.signer
+      );
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.FAILED_TO_FETCH_USDC_COINS,
+      });
+    }
+  };
+
+  /**
+   * Deposits funds to the margin bank contract
+   * @param sponsor is the tx sponsored or not
+   * @returns ResponseSchema
+   * */
+  mergeAllUSDCCOins = async (sponsor?: boolean) => {
+    try {
+      return await this.onChainCalls.mergeAllUsdcCoins(
+        this.onChainCalls.getCoinType(),
+        this.signer,
+        this.walletAddress,
+        sponsor
+      );
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.FAILED_TO_MERGE_USDC_COINS,
+      });
+    }
   };
 
   /**

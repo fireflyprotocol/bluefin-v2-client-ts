@@ -1324,8 +1324,6 @@ export class BluefinClient {
   ) => {
     if (!amount) throwCustomError({ error: "No amount specified for deposit" });
 
-    //if coin id provided
-
     // if CoinID provided
     if (coinID) {
       const contractCall =

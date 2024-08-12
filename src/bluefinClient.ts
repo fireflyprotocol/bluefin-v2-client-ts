@@ -1326,16 +1326,15 @@ export class BluefinClient {
 
     //if coin id provided
 
-    const contractCall =
-      await this.contractCalls.depositToMarginBankContractCall(
-        amount,
-        coinID,
-        this.getPublicAddress,
-        sponsorTx
-      );
-
     // if CoinID provided
     if (coinID) {
+      const contractCall =
+        await this.contractCalls.depositToMarginBankContractCall(
+          amount,
+          coinID,
+          this.getPublicAddress,
+          sponsorTx
+        );
       if (sponsorTx) {
         await this.signAndExecuteSponsoredTx(contractCall.data);
       } else {

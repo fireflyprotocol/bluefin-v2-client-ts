@@ -10,7 +10,6 @@ export class CustomError extends Error {
     this.error = error;
     this.code = code || Errors.UNKNOWN;
     this.extra = extra || {};
-    Error.captureStackTrace(this, this.constructor); // Captures the stack trace
   }
 }
 

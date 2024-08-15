@@ -524,6 +524,7 @@ export class BluefinClient {
 
     if (this.uiWallet) {
       try {
+        throw new Error("signPayloadUsingWallet failed");
         signature = await OrderSigner.signPayloadUsingWallet(
           onboardingSignature,
           this.uiWallet

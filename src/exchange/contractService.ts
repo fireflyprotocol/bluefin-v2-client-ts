@@ -212,7 +212,6 @@ export class ContractCalls {
     sponsor?: boolean
   ): Promise<string | TransactionBlock> => {
     try {
-      throw new Error("upsertSubAccountContractCallRawTransaction");
       const signedTx = await this.onChainCalls.signUpsertSubAccount(
         {
           account,
@@ -230,6 +229,7 @@ export class ContractCalls {
 
       return combineAndEncode(signedTx as SignatureWithBytes);
     } catch (error) {
+      console.log(error, "original error from bluefin-client");
       throwCustomError({
         error,
         code: Errors.SIGN_UPSERT_SUB_ACCOUNT_CONTRACT_CALLED_FAILED,

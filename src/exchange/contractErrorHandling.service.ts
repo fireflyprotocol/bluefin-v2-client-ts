@@ -56,47 +56,35 @@ export const TransformToResponseSchema = async (
   isSponsored?: boolean
 ): Promise<ResponseSchema> => {
   for (let retryNo = 0; retryNo < lockErrorMaxRetries; retryNo++) {
-    try {
-      if (!isSponsored) {
-        const tx =
-          await (contactCall() as Promise<SuiTransactionBlockResponse>);
-        if (Transaction.getStatus(tx) === "success") {
-          return handleResponse(
-            {
-              data: tx,
-              message: successMessage,
-              code: 200,
-            },
-            true
-          );
-        }
+    if (!isSponsored) {
+      const tx = await (contactCall() as Promise<SuiTransactionBlockResponse>);
+      if (Transaction.getStatus(tx) === "success") {
         return handleResponse(
           {
             data: tx,
-            message: Transaction.getError(tx),
-            code: 400,
+            message: successMessage,
+            code: 200,
           },
-          false
+          true
         );
       }
-      const res = await (contactCall() as unknown as TransactionBlock);
-      const obj = {
-        data: res,
-        code: 200,
-        message: "",
-        ok: true,
-      };
-      return obj;
-    } catch (error: any) {
-      if (error.toString().indexOf(LOCKED_ERROR_MESSAGE) >= 0) {
-        console.log("Retrying on sui lock error %o", error);
-        await new Promise((resolve) =>
-          setTimeout(resolve, lockErrorRetryDelayMS)
-        );
-      } else {
-        return handleResponse({ ...serializeError(error) }, false);
-      }
+      return handleResponse(
+        {
+          data: tx,
+          message: Transaction.getError(tx),
+          code: 400,
+        },
+        false
+      );
     }
+    const res = await (contactCall() as unknown as TransactionBlock);
+    const obj = {
+      data: res,
+      code: 200,
+      message: "",
+      ok: true,
+    };
+    return obj;
   }
 };
 

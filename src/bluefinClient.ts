@@ -258,35 +258,42 @@ export class BluefinClient {
     deployment: any = null,
     apiToken = ""
   ) => {
-    if (apiToken) {
-      this.apiService.setApiToken(apiToken);
-      // for socket
-      this.sockets.setApiToken(apiToken);
-      this.webSockets?.setApiToken(apiToken);
-    } else {
-      if (!this.signer) {
-        throw Error("Signer not initialized");
+    try {
+      if (apiToken) {
+        this.apiService.setApiToken(apiToken);
+        // for socket
+        this.sockets.setApiToken(apiToken);
+        this.webSockets?.setApiToken(apiToken);
+      } else {
+        if (!this.signer) {
+          throw Error("Signer not initialized");
+        }
+        await this.initContractCalls(deployment);
+        // for BLV contract calls
+        await this.initInteractorCalls();
+
+        this.walletAddress = this.isZkLogin
+          ? this.walletAddress
+          : this.signer.toSuiAddress
+          ? this.signer.toSuiAddress()
+          : (this.signer as any as ExtendedWalletContextState).getAddress
+          ? (this.signer as any as ExtendedWalletContextState).getAddress()
+          : this.walletAddress;
+
+        // onboard user if not onboarded
+        if (userOnboarding) {
+          await this.userOnBoarding();
+        }
       }
-      await this.initContractCalls(deployment);
-      // for BLV contract calls
-      await this.initInteractorCalls();
 
-      this.walletAddress = this.isZkLogin
-        ? this.walletAddress
-        : this.signer.toSuiAddress
-        ? this.signer.toSuiAddress()
-        : (this.signer as any as ExtendedWalletContextState).getAddress
-        ? (this.signer as any as ExtendedWalletContextState).getAddress()
-        : this.walletAddress;
-
-      // onboard user if not onboarded
-      if (userOnboarding) {
-        await this.userOnBoarding();
+      if (this.network.UUID) {
+        this.setUUID(this.network.UUID);
       }
-    }
-
-    if (this.network.UUID) {
-      this.setUUID(this.network.UUID);
+    } catch (error) {
+      throw throwCustomError({
+        error,
+        code: Errors.FAILED_TO_INITIALIZE_CLIENT,
+      });
     }
   };
 
@@ -300,8 +307,11 @@ export class BluefinClient {
       this.walletAddress = walletAddress;
       this.isZkLogin = false;
       this.is_wallet_extension = true;
-    } catch (err) {
-      throw Error("Failed to initialize through UI");
+    } catch (error) {
+      throw throwCustomError({
+        error,
+        code: Errors.FAILED_TO_INITIALIZE_CLIENT_FOR_UI_WALLET,
+      });
     }
   };
 
@@ -320,15 +330,22 @@ export class BluefinClient {
     proof: PartialZkLoginSignature;
     decodedJWT: DecodeJWT;
   }) => {
-    const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
-    this.signer = keyPair;
-    this.walletAddress = walletAddress;
-    this.maxEpoch = maxEpoch;
-    this.decodedJWT = decodedJWT;
-    this.proof = proof;
-    this.salt = salt;
-    this.isZkLogin = true;
-    this.is_wallet_extension = false;
+    try {
+      const keyPair = getKeyPairFromPvtKey(_account, "ZkLogin");
+      this.signer = keyPair;
+      this.walletAddress = walletAddress;
+      this.maxEpoch = maxEpoch;
+      this.decodedJWT = decodedJWT;
+      this.proof = proof;
+      this.salt = salt;
+      this.isZkLogin = true;
+      this.is_wallet_extension = false;
+    } catch (error) {
+      throw throwCustomError({
+        error,
+        code: Errors.FAILED_TO_INITIALIZE_CLIENT_FOR_ZK_ACCOUNT,
+      });
+    }
   };
 
   /** *

@@ -67,30 +67,37 @@ export class ContractCalls {
     amount: Number,
     sponsor?: boolean
   ): Promise<ResponseSchema> => {
-    return TransformToResponseSchema(async () => {
-      const tx = await this.onChainCalls.withdrawFromBank(
-        {
-          amount: toBigNumberStr(amount.toString(), 6),
-          accountAddress: this.walletAddress,
-          sponsor,
-        },
-        this.signer
-      );
+    try {
+      return TransformToResponseSchema(async () => {
+        const tx = await this.onChainCalls.withdrawFromBank(
+          {
+            amount: toBigNumberStr(amount.toString(), 6),
+            accountAddress: this.walletAddress,
+            sponsor,
+          },
+          this.signer
+        );
 
-      if (tx && !this.marginBankId) {
-        if (sponsor) {
-          // TODO: fix marginBankId if sponsor
-          this.marginBankId = Transaction.getBankAccountID(
-            tx as SuiTransactionBlockResponse
-          );
-        } else {
-          this.marginBankId = Transaction.getBankAccountID(
-            tx as SuiTransactionBlockResponse
-          );
+        if (tx && !this.marginBankId) {
+          if (sponsor) {
+            // TODO: fix marginBankId if sponsor
+            this.marginBankId = Transaction.getBankAccountID(
+              tx as SuiTransactionBlockResponse
+            );
+          } else {
+            this.marginBankId = Transaction.getBankAccountID(
+              tx as SuiTransactionBlockResponse
+            );
+          }
         }
-      }
-      return tx;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+        return tx;
+      }, interpolate(SuccessMessages.withdrawMargin, { amount }));
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.WITHDRAW_FROM_MARGIN_BANK_CONTRACT_CALL_FAILED,
+      });
+    }
   };
 
   /**
@@ -98,13 +105,20 @@ export class ContractCalls {
    * @returns ResponseSchema
    * */
   withdrawAllFromMarginBankContractCall = async (): Promise<ResponseSchema> => {
-    return TransformToResponseSchema(async () => {
-      const r = await this.onChainCalls.withdrawAllMarginFromBank(
-        this.signer,
-        this.walletAddress
-      );
-      return r;
-    }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
+    try {
+      return TransformToResponseSchema(async () => {
+        const r = await this.onChainCalls.withdrawAllMarginFromBank(
+          this.signer,
+          this.walletAddress
+        );
+        return r;
+      }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.WITHDRAW_ALL_FROM_MARGIN_BANK_CONTRACT_CALL_FAILED,
+      });
+    }
   };
 
   /**

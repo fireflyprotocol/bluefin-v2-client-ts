@@ -1384,43 +1384,32 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
     if (sponsorTx) {
       if (amount) {
-        try {
-          const sponsorTxPayload =
-            await this.contractCalls.withdrawFromMarginBankContractCall(
-              amount,
-              true
-            );
-
-          const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
-            sponsorTxPayload
+        const sponsorTxPayload =
+          await this.contractCalls.withdrawFromMarginBankContractCall(
+            amount,
+            true
           );
-          if (sponsorTxResponse?.ok) {
-            return {
-              ok: true,
-              code: 200,
-              data: sponsorTxResponse,
-              message: "Withdraw Successful",
-            };
-          }
-          // recursive call if sponsor fails and not rejected
 
-          if (
-            !sponsorTxResponse?.ok &&
-            sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
-          ) {
-            return this.withdrawFromMarginBank(amount);
-          }
-          throw new Error(
-            sponsorTxResponse?.message || "Error completing withdraw"
-          );
-        } catch (e) {
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsorTxPayload
+        );
+        if (sponsorTxResponse?.ok) {
           return {
-            ok: false,
-            code: "Withdraw unsuccessful",
-            data: "",
-            message: e.message,
+            ok: true,
+            code: 200,
+            data: sponsorTxResponse,
+            message: "Withdraw Successful",
           };
         }
+        // recursive call if sponsor fails and not rejected
+
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.withdrawFromMarginBank(amount);
+        }
+        throwCustomError({ error: "Error completing withdraw" });
       } else {
         return this.contractCalls.withdrawAllFromMarginBankContractCall();
       }

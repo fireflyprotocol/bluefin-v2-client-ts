@@ -540,53 +540,15 @@ export class BluefinClient {
     };
 
     if (this.uiWallet) {
-      try {
-        signature = await OrderSigner.signPayloadUsingWallet(
-          onboardingSignature,
-          this.uiWallet
-        );
-      } catch (error) {
-        throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });
-      }
+      signature = await this.signPayloadUsingWallet(onboardingSignature);
     } else if (this.isZkLogin) {
-      try {
-        signature = await OrderSigner.signPayloadUsingZKSignature({
-          payload: onboardingSignature,
-          signer: this.signer,
-          zkPayload: this.getZkPayload(),
-        });
-      } catch (error) {
-        throwCustomError({ error, code: Errors.ZK_PAYLOAD_SIGNING_FAILED });
-      }
+      signature = await this.signPayloadUsingZkWallet(onboardingSignature);
     } else {
-      try {
-        signature = await this.orderSigner.signPayload(onboardingSignature);
-      } catch (error) {
-        throwCustomError({
-          error,
-          code: Errors.KEYPAIR_PAYLOAD_SIGNING_FAILED,
-        });
-      }
+      signature = await this.signPayloadUsingKeypair(onboardingSignature);
     }
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
-  };
-
-  /**
-   * @description
-   * Gets the payload containing key and mesasge to sign
-   * @returns SigPK
-   * */
-
-  signPayloadUsingZkWallet = async (payload: object): Promise<SigPK> => {
-    const signature = await OrderSigner.signPayloadUsingZKSignature({
-      payload,
-      signer: this.signer,
-      zkPayload: this.getZkPayload(),
-    });
-
-    return signature;
   };
 
   /**
@@ -644,25 +606,23 @@ export class BluefinClient {
   };
 
   signOrder = async (orderToSign: Order): Promise<SigPK> => {
-    let signature: SigPK;
-    if (this.uiWallet) {
-      signature = await OrderSigner.signOrderUsingWallet(
-        orderToSign,
-        this.uiWallet
-      );
-    } else if (this.isZkLogin) {
-      signature = await OrderSigner.signOrderUsingZkSignature({
-        order: orderToSign,
-        signer: this.signer,
-        zkPayload: this.getZkPayload(),
-      });
-    } else if (this.orderSigner.signOrder)
-      signature = await this.orderSigner.signOrder(orderToSign);
-    else
-      throw Error(
-        "On of OrderSigner or uiWallet needs to be initialized before signing order "
-      );
-    return signature;
+    try {
+      let signature: SigPK;
+      if (this.uiWallet) {
+        signature = await this.signOrderUsingWallet(orderToSign);
+      } else if (this.isZkLogin) {
+        signature = await this.signOrderUsingZkWallet(orderToSign);
+      } else if (this.orderSigner.signOrder)
+        signature = await this.signOrderUsingKeypair(orderToSign);
+      else
+        throwCustomError({
+          error:
+            "On of OrderSigner or uiWallet needs to be initialized before signing order ",
+        });
+      return signature;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.FAILED_TO_SIGN_ORDER });
+    }
   };
 
   /**
@@ -676,16 +636,11 @@ export class BluefinClient {
     parentAddress?: string
   ): Promise<OrderSignatureResponse> => {
     if (!this.orderSigner && !this.uiWallet && !this.isZkLogin) {
-      throw Error("Order Signer not initialized");
+      throwCustomError({ error: "Order Signer not initialized" });
     }
     const orderToSign: Order = this.createOrderToSign(order, parentAddress);
     let signature: SigPK;
-    try {
-      signature = await this.signOrder(orderToSign);
-    } catch (e) {
-      throw Error("Failed to Sign Order: User Rejected Signature");
-    }
-
+    signature = await this.signOrder(orderToSign);
     const signedOrder: OrderSignatureResponse = {
       symbol: order.symbol,
       price: order.price,
@@ -722,36 +677,44 @@ export class BluefinClient {
    * @returns PlaceOrderResponse containing status and data. If status is not 201, order placement failed.
    */
   placeSignedOrder = async (params: PlaceOrderRequest) => {
-    const response = await this.apiService.post<PlaceOrderResponse>(
-      SERVICE_URLS.ORDERS.ORDERS,
-      {
-        symbol: params.symbol,
-        userAddress: params.maker,
-        orderType: params.orderType,
-        price: toBigNumberStr(params.price),
-        triggerPrice: toBigNumberStr(
-          params.triggerPrice || "0",
-          POST_ORDER_BASE
-        ),
-        quantity: toBigNumberStr(params.quantity),
-        leverage: toBigNumberStr(params.leverage),
-        side: params.side,
-        reduceOnly: params.reduceOnly,
-        salt: params.salt,
-        expiration: params.expiration,
-        orderSignature: params.orderSignature,
-        timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
-        orderbookOnly: true,
-        postOnly: params.postOnly == true,
-        cancelOnRevert: params.cancelOnRevert == true,
-        clientId: params.clientId
-          ? `bluefin-client: ${params.clientId}`
-          : "bluefin-client",
-      },
-      { isAuthenticationRequired: true }
-    );
+    try {
+      const response = await this.apiService.post<PlaceOrderResponse>(
+        SERVICE_URLS.ORDERS.ORDERS,
+        {
+          symbol: params.symbol,
+          userAddress: params.maker,
+          orderType: params.orderType,
+          price: toBigNumberStr(params.price),
+          triggerPrice: toBigNumberStr(
+            params.triggerPrice || "0",
+            POST_ORDER_BASE
+          ),
+          quantity: toBigNumberStr(params.quantity),
+          leverage: toBigNumberStr(params.leverage),
+          side: params.side,
+          reduceOnly: params.reduceOnly,
+          salt: params.salt,
+          expiration: params.expiration,
+          orderSignature: params.orderSignature,
+          timeInForce: params.timeInForce || TIME_IN_FORCE.GOOD_TILL_TIME,
+          orderbookOnly: true,
+          postOnly: params.postOnly == true,
+          cancelOnRevert: params.cancelOnRevert == true,
+          clientId: params.clientId
+            ? `bluefin-client: ${params.clientId}`
+            : "bluefin-client",
+        },
+        { isAuthenticationRequired: true }
+      );
 
-    return response;
+      return response;
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.DAPI_ERROR,
+        extra: { url: SERVICE_URLS.ORDERS.ORDERS },
+      });
+    }
   };
 
   /**
@@ -794,46 +757,31 @@ export class BluefinClient {
     // TODO: serialize correctly, this is the default method from suiet wallet docs
     // const serialized = new TextEncoder().encode(JSON.stringify(params));
     // return this.signer.signData(serialized);
-    try {
-      let signature: SigPK;
+    let signature: SigPK;
 
-      // taking the hash of list of hashes of cancel signature
-      const hashOfHash = Buffer.from(
-        sha256(JSON.stringify(params.hashes))
-      ).toString("hex");
-      const payloadValue: string[] = [];
-      payloadValue.push(hashOfHash);
-      if (this.uiWallet) {
-        // connected via UI
-        signature = await OrderSigner.signPayloadUsingWallet(
-          { orderHashes: payloadValue },
-          this.uiWallet
-        );
-      } else if (this.isZkLogin) {
-        signature = await OrderSigner.signPayloadUsingZKSignature({
-          payload: { orderHashes: payloadValue },
-          signer: this.signer,
-          zkPayload: {
-            decodedJWT: this.decodedJWT,
-            proof: this.proof,
-            salt: this.salt,
-            maxEpoch: this.maxEpoch,
-          },
-        });
-      } else {
-        signature = await this.orderSigner.signPayload({
-          orderHashes: payloadValue,
-        });
-      }
-
-      return `${signature?.signature}${
-        signature?.publicAddress
-          ? signature?.publicAddress
-          : signature?.publicKey
-      }`;
-    } catch {
-      throw Error("Signing cancelled by user");
+    // taking the hash of list of hashes of cancel signature
+    const hashOfHash = Buffer.from(
+      sha256(JSON.stringify(params.hashes))
+    ).toString("hex");
+    const payloadValue: string[] = [];
+    payloadValue.push(hashOfHash);
+    if (this.uiWallet) {
+      // connected via UI
+      signature = await this.signPayloadUsingWallet({
+        orderHashes: payloadValue,
+      });
+    } else if (this.isZkLogin) {
+      signature = await this.signPayloadUsingZkWallet({
+        orderHashes: payloadValue,
+      });
+    } else {
+      signature = await this.signPayloadUsingKeypair({
+        orderHashes: payloadValue,
+      });
     }
+    return `${signature?.signature}${
+      signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
+    }`;
   };
 
   /**
@@ -843,18 +791,26 @@ export class BluefinClient {
    * @returns response from exchange server
    */
   placeCancelOrder = async (params: OrderCancellationRequest) => {
-    const response = await this.apiService.delete<CancelOrderResponse>(
-      SERVICE_URLS.ORDERS.ORDERS_HASH_V2,
-      {
-        symbol: params.symbol,
-        orderHashes: params.hashes,
-        cancelSignature: params.signature,
-        parentAddress: params.parentAddress,
-        fromUI: true,
-      },
-      { isAuthenticationRequired: true }
-    );
-    return response;
+    try {
+      const response = await this.apiService.delete<CancelOrderResponse>(
+        SERVICE_URLS.ORDERS.ORDERS_HASH_V2,
+        {
+          symbol: params.symbol,
+          orderHashes: params.hashes,
+          cancelSignature: params.signature,
+          parentAddress: params.parentAddress,
+          fromUI: true,
+        },
+        { isAuthenticationRequired: true }
+      );
+      return response;
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.DAPI_ERROR,
+        extra: { url: SERVICE_URLS.ORDERS.ORDERS_HASH_V2 },
+      });
+    }
   };
 
   /**
@@ -865,7 +821,7 @@ export class BluefinClient {
    */
   postCancelOrder = async (params: OrderCancelSignatureRequest) => {
     if (params.hashes.length <= 0) {
-      throw Error(`No orders to cancel`);
+      throwCustomError({ error: `No orders to cancel` });
     }
     const signature = await this.createOrderCancellationSignature(params);
     const response = await this.placeCancelOrder({
@@ -2657,36 +2613,40 @@ export class BluefinClient {
     params: OrderSignatureRequest,
     parentAddress?: string
   ): Order => {
-    const expiration = new Date();
-    // MARKET ORDER - set expiration of 1 minute
-    if (params.orderType === ORDER_TYPE.MARKET) {
-      expiration.setMinutes(expiration.getMinutes() + 1);
+    try {
+      const expiration = new Date();
+      // MARKET ORDER - set expiration of 1 minute
+      if (params.orderType === ORDER_TYPE.MARKET) {
+        expiration.setMinutes(expiration.getMinutes() + 1);
+      }
+      // LIMIT ORDER - set expiration of 1 month
+      else {
+        expiration.setMonth(expiration.getMonth() + 1);
+      }
+      const salt =
+        params.salt && params.salt < this.maxSaltLimit
+          ? bigNumber(params.salt)
+          : bigNumber(generateRandomNumber(1_000));
+      return {
+        market: this.contractCalls.onChainCalls.getPerpetualID(params.symbol),
+        price: toBigNumber(params.price),
+        isBuy: params.side === ORDER_SIDE.BUY,
+        quantity: toBigNumber(params.quantity),
+        leverage: toBigNumber(params.leverage || 1),
+        maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
+        reduceOnly: params.reduceOnly == true,
+        expiration: bigNumber(
+          params.expiration || Math.floor(expiration.getTime())
+        ), // /1000 to convert time in seconds
+        postOnly: params.postOnly == true,
+        cancelOnRevert: params.cancelOnRevert == true,
+        salt,
+        orderbookOnly: params.orderbookOnly || true,
+        ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,
+      };
+    } catch (error) {
+      throwCustomError({ error, code: Errors.FAILED_TO_CREATE_ORDER });
     }
-    // LIMIT ORDER - set expiration of 1 month
-    else {
-      expiration.setMonth(expiration.getMonth() + 1);
-    }
-    const salt =
-      params.salt && params.salt < this.maxSaltLimit
-        ? bigNumber(params.salt)
-        : bigNumber(generateRandomNumber(1_000));
-    return {
-      market: this.contractCalls.onChainCalls.getPerpetualID(params.symbol),
-      price: toBigNumber(params.price),
-      isBuy: params.side === ORDER_SIDE.BUY,
-      quantity: toBigNumber(params.quantity),
-      leverage: toBigNumber(params.leverage || 1),
-      maker: parentAddress || this.getPublicAddress().toLocaleLowerCase(),
-      reduceOnly: params.reduceOnly == true,
-      expiration: bigNumber(
-        params.expiration || Math.floor(expiration.getTime())
-      ), // /1000 to convert time in seconds
-      postOnly: params.postOnly == true,
-      cancelOnRevert: params.cancelOnRevert == true,
-      salt,
-      orderbookOnly: params.orderbookOnly || true,
-      ioc: params.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL || false,
-    };
   };
 
   /**
@@ -3171,6 +3131,114 @@ export class BluefinClient {
       signaturePayload,
       signature
     );
+  };
+
+  /**
+   * @description
+   * sign payload using wallet
+   * @param payload payload to sign
+   * @returns Promise<SigPK>
+   */
+  signPayloadUsingWallet = async (payload: object): Promise<SigPK> => {
+    try {
+      return OrderSigner.signPayloadUsingWallet(payload, this.uiWallet);
+    } catch (error) {
+      throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });
+    }
+  };
+
+  /**
+   * @description
+   * sign payload using zk wallet
+   * @param payload payload to sign
+   * @returns Promise<SigPK>
+   * */
+
+  signPayloadUsingZkWallet = async (payload: object): Promise<SigPK> => {
+    try {
+      const signature = await OrderSigner.signPayloadUsingZKSignature({
+        payload,
+        signer: this.signer,
+        zkPayload: this.getZkPayload(),
+      });
+
+      return signature;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.ZK_PAYLOAD_SIGNING_FAILED });
+    }
+  };
+
+  /**
+   * @description
+   * sign payload using keypair
+   * @param payload payload to sign
+   * @returns Promise<SigPK>
+   * */
+
+  signPayloadUsingKeypair = async (payload: object): Promise<SigPK> => {
+    try {
+      const signature = await this.orderSigner.signPayload(payload);
+      return signature;
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.KEYPAIR_PAYLOAD_SIGNING_FAILED,
+      });
+    }
+  };
+
+  /**
+   * @description
+   * sign order using wallet
+   * @param order order to sign
+   * @returns Promise<SigPK>
+   */
+  signOrderUsingWallet = async (order: Order): Promise<SigPK> => {
+    try {
+      return OrderSigner.signOrderUsingWallet(order, this.uiWallet);
+    } catch (error) {
+      throwCustomError({ error, code: Errors.WALLET_ORDER_SIGNING_FAILED });
+    }
+  };
+
+  /**
+   * @description
+   * sign order using zk wallet
+   * @param order order to sign
+   * @returns Promise<SigPK>
+   * */
+
+  signOrderUsingZkWallet = async (order: Order): Promise<SigPK> => {
+    try {
+      const signature = await OrderSigner.signOrderUsingZkSignature({
+        order,
+        signer: this.signer,
+        zkPayload: this.getZkPayload(),
+      });
+
+      return signature;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.ZK_ORDER_SIGNING_FAILED });
+    }
+  };
+
+  /**
+   * @description
+   * sign order using keypair
+   * @param order order to sign
+   * @returns Promise<SigPK>
+   * */
+
+  signOrderUsingKeypair = async (order: Order): Promise<SigPK> => {
+    try {
+      const signature = await this.orderSigner.signOrder(order);
+      return signature;
+    } catch (error) {
+      throwCustomError({
+        error,
+        code: Errors.KEYPAIR_ORDER_SIGNING_FAILED,
+      });
+    }
   };
 
   /**

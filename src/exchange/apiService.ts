@@ -149,6 +149,9 @@ export class APIService {
 
   // TODO; create interface for response
   private handleResponse<T>(response: AxiosResponse<any>) {
+    if (response.status !== 200) {
+      throw new Error("An error occurred, please try again.");
+    }
     const mutatedResponse = {
       // TODO:needs to be implemented properly (BE have to change response model first )
       ok:

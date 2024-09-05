@@ -149,7 +149,7 @@ export class APIService {
 
   // TODO; create interface for response
   private handleResponse<T>(response: AxiosResponse<any>) {
-    if (response.status !== 200) {
+    if (response.status < 200 || response.status >= 300) {
       throw new Error("An error occurred, please try again.");
     }
     const mutatedResponse = {

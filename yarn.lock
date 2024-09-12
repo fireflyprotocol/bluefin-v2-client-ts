@@ -981,10 +981,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.5.4":
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.5.4.tgz#08e5dfa5fec09e5f4cfd164b9c7e1f642b47591b"
-  integrity sha512-RCHCC2O00hpnu+DnVmcG8r0Djwc/Ff7ECodvcV/4dM6od2PCGBGhDaIkAay4omcvDpc2oCMP4mAMumUPEWqTLA==
+"@firefly-exchange/library-sui@^1.5.8":
+  version "1.5.8"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.5.8.tgz#aa9ef21cb7ec45b65237136309715b9e70c89b18"
+  integrity sha512-7vXfXetFSE3QSWqE7NBLze+uedzP/w0w9d9EITnfcd9ZrygGRzi+5+rlencYLnkegdMSmAyXdXGO9FDw0WwBGQ==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/sui.js" "^0.48.0"
@@ -998,6 +998,7 @@
     bignumber.js "^9.1.0"
     bs58 "^5.0.0"
     chai-as-promised "^7.1.1"
+    decimal.js "^10.4.3"
     dotenv "^16.0.3"
     dotenv-parse-variables "^2.0.0"
     eth-crypto "^2.6.0"
@@ -2894,6 +2895,11 @@ decamelize@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-4.0.0.tgz#aa472d7bf660eb15f3494efd531cab7f2a709837"
   integrity sha512-9iE1PgSik9HeIIw2JO94IidnE3eBoQrFJ3w7sFuzSX4DpmZ3v5sZpUiV5Swcf6mQEF+Y0ru8Neo+p+nyh2J+hQ==
+
+decimal.js@^10.4.3:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.4.3.tgz#1044092884d245d1b7f65725fa4ad4c6f781cc23"
+  integrity sha512-VBBaLc1MgL5XpzgIP7ny5Z6Nx3UrRkIViUkPUdtl9aya5amy3De1gsUUSB1g3+3sExYNjCAsAznmukyxCb1GRA==
 
 deep-eql@^4.1.2:
   version "4.1.3"

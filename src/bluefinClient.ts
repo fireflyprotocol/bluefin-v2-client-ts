@@ -694,7 +694,11 @@ export class BluefinClient {
       orderType: order.orderType,
       triggerPrice:
         order.orderType === ORDER_TYPE.STOP_MARKET ||
-        order.orderType === ORDER_TYPE.STOP_LIMIT
+        order.orderType === ORDER_TYPE.STOP_LIMIT ||
+        order.orderType === ORDER_TYPE.STOP_LOSS_LIMIT ||
+        order.orderType === ORDER_TYPE.TAKE_PROFIT_LIMIT ||
+        order.orderType === ORDER_TYPE.STOP_LOSS_MARKET ||
+        order.orderType === ORDER_TYPE.TAKE_PROFIT_MARKET
           ? order.triggerPrice || 0
           : 0,
       postOnly: orderToSign.postOnly,

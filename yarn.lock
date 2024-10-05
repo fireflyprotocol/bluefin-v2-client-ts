@@ -981,10 +981,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^1.5.9":
-  version "1.5.9"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.5.9.tgz#ff72ff342607911d31c554218cac9624fad53a7c"
-  integrity sha512-3EvqH9yLPJA6PJJS0cCm0KRGL/jGxGG4mrEY8qU6qu8sPrEn3QcgTFL0CX5+3T85lciXmH+OOthNKD6Z7GvHIg==
+"@firefly-exchange/library-sui@^1.5.9-beta":
+  version "1.5.9-beta"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-1.5.9-beta.tgz#7e49b2e49099576ca5be0297de36fc3157c55203"
+  integrity sha512-C1x7k8CtO+w8kJXRb9OtKdwMUCntYldoORRzWnjdUmbbKS1SLg9IVqPml8RtqYdIjiOdwDKejFZtZcdC1QqtdA==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/sui.js" "^0.48.0"

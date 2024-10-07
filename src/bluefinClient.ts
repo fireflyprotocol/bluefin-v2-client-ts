@@ -591,6 +591,24 @@ export class BluefinClient {
 
   /**
    * @description
+   * Gets the payload containing bytes mesasge to sign
+   * @returns SigPK
+   * */
+
+  signBytesPayloadUsingZkWallet = async (
+    payload: Uint8Array
+  ): Promise<SigPK> => {
+    const signature = await OrderSigner.signBytesPayloadUsingZKSignature({
+      payload,
+      signer: this.signer,
+      zkPayload: this.getZkPayload(),
+    });
+
+    return signature;
+  };
+
+  /**
+   * @description
    * Gets the wallets Public address
    * @returns string
    * */

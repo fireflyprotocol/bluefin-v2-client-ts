@@ -59,7 +59,7 @@
   "dependencies": {
     "@firefly-exchange/library-sui": "2.0.0",
     "@mysten/bcs": "^1.0.2",
-    "@mysten/sui.js": "^0.45.0",
+    "@mysten/sui": "1.9.0",
     "@mysten/zklogin": "^0.3.4",
     "@noble/hashes": "^1.2.0",
     "@noble/secp256k1": "^1.7.1",

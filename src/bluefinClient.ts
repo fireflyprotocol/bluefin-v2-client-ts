@@ -39,18 +39,13 @@ import { toB64, fromB64, toHEX } from "@mysten/bcs";
 import {
   Keypair,
   parseSerializedSignature,
-  SerializedSignature,
   Signer,
-} from "@mysten/sui.js/cryptography";
-import { SignatureScheme } from "@mysten/sui.js/src/cryptography/signature-scheme";
-import { publicKeyFromRawBytes } from "@mysten/sui.js/verify";
+} from "@mysten/sui/cryptography";
+import { SignatureScheme } from "@mysten/sui/src/cryptography/signature-scheme";
+import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import {
-  combineAndEncode,
-  generateRandomNumber,
-  throwCustomError,
-} from "../utils/utils";
+import { combineAndEncode, generateRandomNumber } from "../utils/utils";
 import {
   Errors,
   Networks,

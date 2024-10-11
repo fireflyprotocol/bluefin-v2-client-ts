@@ -994,15 +994,16 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.0.0.tgz#5b22d0a8f29312df4b8c9523d33c47c5ffbb379f"
-  integrity sha512-rRPlDnQRhr0+Y8fxtEoQlVkCiw02+VkgSAEtsA5zwCOxl3/ehC6fA3rWlceKa9OTgpTP0EtIWwUnBYcrXEaY4w==
+"@firefly-exchange/library-sui@2.0.3-beta.1":
+  version "2.0.3-beta.1"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.0.3-beta.1.tgz#283d8a939fb702dcdf6a48ac3e27fd29cec5f4d4"
+  integrity sha512-23vNWsCHKi4vB//GPw1dEzap4MESYhj8VExB/5aKDhVn1nD2r2jDY4fkihlR96plpIPt3vN5r16FgmwMGXSKxQ==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
+    "@mysten/bcs" "0.8.1"
     "@mysten/sui" "^1.9.0"
     "@mysten/wallet-standard" "^0.8.10"
-    "@mysten/zklogin" "^0.3.5"
+    "@mysten/zklogin" "^0.7.22"
     "@noble/hashes" "^1.2.0"
     "@noble/secp256k1" "^1.7.1"
     add "^2.0.6"
@@ -1185,22 +1186,6 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@0.46.1":
-  version "0.46.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.46.1.tgz#6bf504163b1fe0dc1eb6911035c8cf269aa356ae"
-  integrity sha512-YSqay1RJbstJt1AILoAcucWhm72ywB//qQrECl1b3CNiuAHG5iYUxlQk7i0a+2+cBnhlVvkOU4PePBMkABqn3w==
-  dependencies:
-    "@mysten/bcs" "0.8.1"
-    "@noble/curves" "^1.1.0"
-    "@noble/hashes" "^1.3.1"
-    "@open-rpc/client-js" "^1.8.1"
-    "@scure/bip32" "^1.3.1"
-    "@scure/bip39" "^1.2.1"
-    "@suchipi/femver" "^1.0.0"
-    events "^3.3.0"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
 "@mysten/sui.js@0.48.0":
   version "0.48.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.48.0.tgz#a119a0b4019082f03168f2bd7bf30b967a97f4ca"
@@ -1215,13 +1200,13 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.9.0.tgz#f37a53d637cf9bbd26e3ba7224efbade6233a729"
-  integrity sha512-AcnwVK7ro8+GWAp/vz0V35naS1/PD1FkYlH6rglupKWvVIpnmEBgjr+XE7U4LvtAyoXPiE4uj/MhXLIx5rZuzw==
+"@mysten/sui@1.12.0", "@mysten/sui@^1.9.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.12.0.tgz#104f318488e54fbe7fc5d7596371a435c39c94d6"
+  integrity sha512-DrSyja04xyGrTGlIQKMwZ6MywxNPkjyIcDLm915Zisoy1/uIgPoHc4cx53JyiG92z/HgowTVGGCCIzH53DIYXA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.0.4"
+    "@mysten/bcs" "1.1.0"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
     "@scure/bip32" "^1.4.0"
@@ -1233,13 +1218,13 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
-"@mysten/sui@^1.9.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.12.0.tgz#104f318488e54fbe7fc5d7596371a435c39c94d6"
-  integrity sha512-DrSyja04xyGrTGlIQKMwZ6MywxNPkjyIcDLm915Zisoy1/uIgPoHc4cx53JyiG92z/HgowTVGGCCIzH53DIYXA==
+"@mysten/sui@1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.9.0.tgz#f37a53d637cf9bbd26e3ba7224efbade6233a729"
+  integrity sha512-AcnwVK7ro8+GWAp/vz0V35naS1/PD1FkYlH6rglupKWvVIpnmEBgjr+XE7U4LvtAyoXPiE4uj/MhXLIx5rZuzw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.1.0"
+    "@mysten/bcs" "1.0.4"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
     "@scure/bip32" "^1.4.0"
@@ -1271,17 +1256,16 @@
     poseidon-lite "^0.2.0"
     tsx "^3.12.7"
 
-"@mysten/zklogin@^0.3.5":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@mysten/zklogin/-/zklogin-0.3.6.tgz#20985fe4e255bb500df7666477756a060c240cd6"
-  integrity sha512-DV+piDGEjNOL8mxipQ9De4NncXJoQmW+KH8tTvaneCpaMeRCsfFbXYp3TKvyG+JLbU1bNBkhBgHGytXnIxg4yg==
+"@mysten/zklogin@^0.7.22":
+  version "0.7.22"
+  resolved "https://registry.yarnpkg.com/@mysten/zklogin/-/zklogin-0.7.22.tgz#6797875ac937e63948879b2c5df3c1d796caab3e"
+  integrity sha512-QggxaLlhYvz56LmFN9ZVpmZ2DkQVmP9N2DlxrlA7YNWCzA9YtZQWwEzBk3QgCzFLmRPyEkva8MRaDbHapLLqXQ==
   dependencies:
-    "@mysten/bcs" "0.8.1"
-    "@mysten/sui.js" "0.46.1"
-    "@noble/hashes" "^1.3.1"
-    jose "^4.14.4"
+    "@mysten/bcs" "1.1.0"
+    "@mysten/sui" "1.12.0"
+    "@noble/hashes" "^1.4.0"
+    jose "^5.6.3"
     poseidon-lite "^0.2.0"
-    tsx "^3.12.7"
 
 "@noble/curves@^1.1.0", "@noble/curves@~1.1.0":
   version "1.1.0"
@@ -4541,6 +4525,11 @@ jose@^4.14.4:
   version "4.15.4"
   resolved "https://registry.yarnpkg.com/jose/-/jose-4.15.4.tgz#02a9a763803e3872cf55f29ecef0dfdcc218cc03"
   integrity sha512-W+oqK4H+r5sITxfxpSU+MMdr/YSWGvgZMQDIsNoBDGGy4i7GBPTtvFKibQzW06n3U3TqHjhvBJsirShsEJ6eeQ==
+
+jose@^5.6.3:
+  version "5.9.4"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-5.9.4.tgz#70cd388f1e651bc23d138533758f287d777ff6ea"
+  integrity sha512-WBBl6au1qg6OHj67yCffCgFR3BADJBXN8MdRvCgJDuMv3driV2nHr7jdGvaKX9IolosAsn+M0XRArqLXUhyJHQ==
 
 js-sha3@0.8.0:
   version "0.8.0"

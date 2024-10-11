@@ -11,7 +11,7 @@ import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interacto
 import interpolate from "interpolate";
 
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
-import { Signer } from "@mysten/sui.js/cryptography";
+import { Signer } from "@mysten/sui/cryptography";
 import {
   ResponseSchema,
   SuccessMessages,

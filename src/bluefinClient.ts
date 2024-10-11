@@ -45,7 +45,11 @@ import { SignatureScheme } from "@mysten/sui/src/cryptography/signature-scheme";
 import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import { combineAndEncode, generateRandomNumber } from "../utils/utils";
+import {
+  combineAndEncode,
+  generateRandomNumber,
+  throwCustomError,
+} from "../utils/utils";
 import {
   Errors,
   Networks,
@@ -506,7 +510,7 @@ export class BluefinClient {
       decodedJWT.aud
     ).toString();
 
-    const zkLoginSignature: SerializedSignature = getZkLoginSignature({
+    const zkLoginSignature: string = getZkLoginSignature({
       inputs: {
         ...proof,
         addressSeed,
@@ -2286,7 +2290,7 @@ export class BluefinClient {
 
   private signTransactionUsingKeypair = async (txBytes: Uint8Array) => {
     try {
-      return await this.signer.signTransactionBlock(txBytes);
+      return await this.signer.signTransaction(txBytes);
     } catch (error) {
       throwCustomError({
         error,
@@ -2592,7 +2596,7 @@ export class BluefinClient {
         }
 
         // any other case
-        const signedTxb = await this.signer.signTransactionBlock(txBytes);
+        const signedTxb = await this.signer.signTransaction(txBytes);
         if (execute) {
           const { signature, bytes } = signedTxb;
           const executedResponse = await SuiBlocks.executeSponsoredTxBlock(

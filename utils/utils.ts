@@ -90,7 +90,7 @@ export async function setupTestAccounts(
  * */
 export function createWallet(): { privateKey: string; publicAddress: string } {
   const wallet = Ed25519Keypair.generate();
-  const signerKey = wallet.export().privateKey;
+  const signerKey = wallet.getSecretKey();
   const publicAddress = wallet.toSuiAddress();
   return {
     privateKey: Buffer.from(signerKey, "base64").toString("hex"),

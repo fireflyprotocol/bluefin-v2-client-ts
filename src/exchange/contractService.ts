@@ -12,7 +12,7 @@ import {
   TRANSFERABLE_COINS,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
-import { Signer } from "@mysten/sui.js/cryptography";
+import { Signer } from "@mysten/sui/cryptography";
 import interpolate from "interpolate";
 import {
   ResponseSchema,

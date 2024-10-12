@@ -884,13 +884,13 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@0.0.0-experimental-20241013013700":
-  version "0.0.0-experimental-20241013013700"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.0.0-experimental-20241013013700.tgz#1f082a0fa6874292acbd4ec0b73b71cfb7471a61"
-  integrity sha512-vonhIxpVWeAPSdvqAvu64EXOeNz1rZJGXyi7cMd2ltc4m6OwUnwLVj//hNXzde9Usv0OsRTer6tpyMInN8DC7w==
+"@firefly-exchange/library-sui@0.0.0-experimental-20241013020000":
+  version "0.0.0-experimental-20241013020000"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.0.0-experimental-20241013020000.tgz#6b0b7271dd2bf52ea7ecdd3ecfa5ab01339d40ec"
+  integrity sha512-oHd9wW3WdlxBiHEd/lAVor57/y/SJLO4fCm8p1gL1/19VWbhvr8zUxWNmS5czmZtDSgWaV+gzr2HmKqkaV/XeQ==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
-    "@mysten/sui" "^1.9.0"
+    "@mysten/sui" "^1.12.0"
     "@mysten/wallet-standard" "^0.8.10"
     "@mysten/zklogin" "^0.7.22"
     "@noble/hashes" "^1.2.0"
@@ -1031,13 +1031,6 @@
   dependencies:
     bs58 "^5.0.0"
 
-"@mysten/bcs@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.0.4.tgz#c8998ee7cb92d9e59e2fae735b69abe49d8037cb"
-  integrity sha512-6JoQi59GN/dVEBCNq8Rj4uOR0niDrJqDx/2gNQWXANwJakHIGH0AMniHrXP41B2dF+mZ3HVmh9Hi3otiEVQTrQ==
-  dependencies:
-    bs58 "^6.0.0"
-
 "@mysten/bcs@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.1.0.tgz#dee28e8e4d1671f694afad471b644020b227102a"
@@ -1059,31 +1052,13 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.12.0", "@mysten/sui@^1.9.0":
+"@mysten/sui@1.12.0", "@mysten/sui@^1.12.0":
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.12.0.tgz#104f318488e54fbe7fc5d7596371a435c39c94d6"
   integrity sha512-DrSyja04xyGrTGlIQKMwZ6MywxNPkjyIcDLm915Zisoy1/uIgPoHc4cx53JyiG92z/HgowTVGGCCIzH53DIYXA==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
     "@mysten/bcs" "1.1.0"
-    "@noble/curves" "^1.4.2"
-    "@noble/hashes" "^1.4.0"
-    "@scure/bip32" "^1.4.0"
-    "@scure/bip39" "^1.3.0"
-    "@suchipi/femver" "^1.0.0"
-    bech32 "^2.0.0"
-    gql.tada "^1.8.2"
-    graphql "^16.9.0"
-    tweetnacl "^1.0.3"
-    valibot "^0.36.0"
-
-"@mysten/sui@1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.9.0.tgz#f37a53d637cf9bbd26e3ba7224efbade6233a729"
-  integrity sha512-AcnwVK7ro8+GWAp/vz0V35naS1/PD1FkYlH6rglupKWvVIpnmEBgjr+XE7U4LvtAyoXPiE4uj/MhXLIx5rZuzw==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.0.4"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
     "@scure/bip32" "^1.4.0"

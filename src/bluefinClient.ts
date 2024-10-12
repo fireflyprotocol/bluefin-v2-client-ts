@@ -35,7 +35,11 @@ import {
 } from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
-import { toB64, fromB64, toHEX } from "@mysten/bcs";
+import {
+  toBase64,
+  fromBase64,
+} from "@firefly-exchange/library-sui/dist/src/blv/utils";
+
 import {
   Keypair,
   parseSerializedSignature,
@@ -614,7 +618,7 @@ export class BluefinClient {
       const { userSignature } = parsedSignature.zkLogin;
 
       // convert user sig to b64
-      const convertedUserSignature = toB64(userSignature as any);
+      const convertedUserSignature = toBase64(userSignature as any);
 
       // reparse b64 converted user sig
       const parsedUserSignature = parseSerializedSignature(
@@ -2363,7 +2367,7 @@ export class BluefinClient {
     const { data, ok } = sponsorTxResponse;
 
     if (ok) {
-      const txBytes = fromB64(data.data.txBytes);
+      const txBytes = fromBase64(data.data.txBytes);
       const txBlock = TransactionBlock.from(txBytes);
 
       if (this.uiWallet) {
@@ -2404,7 +2408,8 @@ export class BluefinClient {
             },
           },
         };
-      } else if (this.isZkLogin) {
+      }
+      if (this.isZkLogin) {
         const signedTxb = await this.signTransactionUsingZK(txBlock);
 
         const { bytes, signature: userSignature } = signedTxb;
@@ -2499,7 +2504,7 @@ export class BluefinClient {
     try {
       if (ok && data && data.data) {
         // dapi returning ok even when there's error
-        const txBytes = fromB64(data.data.txBytes);
+        const txBytes = fromBase64(data.data.txBytes);
         const txBlock = TransactionBlock.from(txBytes);
 
         if (this.uiWallet) {

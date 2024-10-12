@@ -994,13 +994,12 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@2.0.3-beta.2":
-  version "2.0.3-beta.2"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.0.3-beta.2.tgz#df03baa699bf169c35165cf5d93214fb26e18939"
-  integrity sha512-koSAstO1fb1XeB8T4a/tlhfyZ7Y7WaDqVAPu5j9w4OrmMkzDMmRijIkazxml7RL/CP4UliklDK1KDiO39QalMA==
+"@firefly-exchange/library-sui@0.0.0-experimental-20241012125200":
+  version "0.0.0-experimental-20241012125200"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-0.0.0-experimental-20241012125200.tgz#6e32588cb7d0c6669827272b4de1bc1042cf8a3c"
+  integrity sha512-9zrTnXh980yEsYZaPf065iuCf8RFfF2O6v9dDj73yKFMNv1Cs+KhS5Yo+dwUHIDfB73mHO+ijhnCjZDrM8zI3w==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
-    "@mysten/bcs" "0.8.1"
     "@mysten/sui" "^1.9.0"
     "@mysten/wallet-standard" "^0.8.10"
     "@mysten/zklogin" "^0.7.22"
@@ -1162,13 +1161,6 @@
   integrity sha512-yy9/1Y4d0FlRywS1+9ze/T7refCbrvwFwJIOKs9M3QBK1njbcHZp+LkVeLqBvIJA5eZ3ZCzmhQ1Xq4Sed5mEBA==
   dependencies:
     bs58 "^6.0.0"
-
-"@mysten/bcs@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.0.2.tgz#d24b051f1a0652d44f61d0a6d8b94f7351fdae1e"
-  integrity sha512-haHT0km/9yIIe8lwo8gDFxGLnoxfRF4WmEVCz4lDXbEVQRsZkF0zB97kukiwMjDuFBaGVUhrOMCLz6td8tSMaQ==
-  dependencies:
-    bs58 "^5.0.0"
 
 "@mysten/sui.js@0.45.1":
   version "0.45.1"
@@ -3949,9 +3941,9 @@ get-tsconfig@^4.7.2:
     resolve-pkg-maps "^1.0.0"
 
 git-format-staged@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/git-format-staged/-/git-format-staged-3.0.0.tgz#66fe89fcb537f78e8129412dc0b2511b34d49e32"
-  integrity sha512-cdDJxV06qY8ucBsW/uIFR4PYN/kDHl43nG8yg+VPPaDeLAf8hEPhEIJTeJ+yRClxcDSpoTmDPiFZUoxFx1wPCg==
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/git-format-staged/-/git-format-staged-3.1.1.tgz#017862422263579c14cc0a4f46c0a9111ac2e0fd"
+  integrity sha512-P749fkktaiAchFZKR7bgdvruzhvbcIDr1uRBrS9/Wdimb7wH1Twchz9gOixj8tUaHVMuXY/ckDojfOwV6AxgPA==
 
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"

@@ -12,7 +12,7 @@ import {
   TRANSFERABLE_COINS,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
-import { Signer } from "@mysten/sui.js/cryptography";
+import { Signer } from "@mysten/sui/cryptography";
 import interpolate from "interpolate";
 import {
   ResponseSchema,
@@ -45,6 +45,11 @@ export class ContractCalls {
     is_wallet_extension?: boolean
   ) {
     this.signer = signer;
+    this.signer.toSuiAddress = this.signer.toSuiAddress
+      ? this.signer.toSuiAddress
+      : // @ts-ignore
+        () => this.signer.address;
+
     this.walletAddress = walletAddress || signer.toSuiAddress();
     this.is_wallet_extension = is_wallet_extension;
     this.onChainCalls = new OnChainCalls(

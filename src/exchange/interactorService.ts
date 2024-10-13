@@ -11,7 +11,7 @@ import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interacto
 import interpolate from "interpolate";
 
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
-import { Signer } from "@mysten/sui.js/cryptography";
+import { Signer } from "@mysten/sui/cryptography";
 import {
   ResponseSchema,
   SuccessMessages,
@@ -110,7 +110,7 @@ export class InteractorCalls {
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFunds(
         vaultName,
-        { ...signaturePayload, expiry: 0 },
+        { ...signaturePayload, expiry: "0" },
         signature
       );
 

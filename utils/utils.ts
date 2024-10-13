@@ -9,6 +9,8 @@ import {
   toBigNumberStr,
 } from "@firefly-exchange/library-sui";
 import fs from "fs";
+import { toHex } from "@firefly-exchange/library-sui/dist/src";
+import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
 import deploymentData from "../deployment.json";
 import CustomError from "../src/interfaces";
 import { Errors } from "../src/constants";
@@ -90,10 +92,12 @@ export async function setupTestAccounts(
  * */
 export function createWallet(): { privateKey: string; publicAddress: string } {
   const wallet = Ed25519Keypair.generate();
-  const signerKey = wallet.export().privateKey;
+  const signerKey = wallet.getSecretKey();
+  const keyPair = decodeSuiPrivateKey(signerKey);
+
   const publicAddress = wallet.toSuiAddress();
   return {
-    privateKey: Buffer.from(signerKey, "base64").toString("hex"),
+    privateKey: toHex(keyPair.secretKey),
     publicAddress,
   };
 }

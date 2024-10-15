@@ -453,7 +453,7 @@ export class ContractCalls {
    * @param dryRun
    * @returns Response Schema
    * */
-  transferCoinsObject = async (
+  transferCoinObjects = async (
     to: string,
     balance: number,
     coinObject: {
@@ -465,7 +465,7 @@ export class ContractCalls {
     dryRun = false
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
-      return this.onChainCalls.transferCoinsObject(
+      return this.onChainCalls.transferCoinObjects(
         to,
         balance,
         coinObject,

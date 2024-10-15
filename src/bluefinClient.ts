@@ -2912,7 +2912,7 @@ export class BluefinClient {
    * @param dryRun
    * @returns Response Schema
    * */
-  transferCoinsObject = async (
+  transferCoinObjects = async (
     to: string,
     balance: number,
     coinObject: {
@@ -2923,7 +2923,7 @@ export class BluefinClient {
     },
     dryRun = false
   ): Promise<ResponseSchema> => {
-    return this.contractCalls.transferCoinsObject(
+    return this.contractCalls.transferCoinObjects(
       to,
       balance,
       coinObject,

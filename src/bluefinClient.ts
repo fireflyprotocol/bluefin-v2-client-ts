@@ -2903,6 +2903,27 @@ export class BluefinClient {
     return this.contractCalls.transferCoins(to, balance, coin);
   };
 
+
+  /**
+   * transfer coin
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @param coinObject
+   * @returns Response Schema
+   * */
+  transferCoinsObject = async (
+    to: string,
+    balance: number,
+    coinObject: {
+      balance: string;
+      coinObjectIds: string[];
+      coinType: string;
+      decimals: number;
+    }
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferCoinsObject(to, balance, coinObject);
+  };
+
   /**
    * estimate gas for sui token transfer
    * @param to recipient wallet address

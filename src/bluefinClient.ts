@@ -2903,7 +2903,6 @@ export class BluefinClient {
     return this.contractCalls.transferCoins(to, balance, coin);
   };
 
-
   /**
    * transfer coin
    * @param to recipient wallet address

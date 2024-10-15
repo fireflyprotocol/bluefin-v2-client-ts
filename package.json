@@ -10,7 +10,7 @@
     "debug": "ts-node ./scripts/myDebuger.ts",
     "lint": "yarn eslint --fix --cache --max-warnings=-1 .",
     "format-all": "yarn prettier --write .",
-    "format-staged": "git-format-staged -f \"prettier '{}'\" '**/*.js' '**/*.json'  ",
+    "format-staged": "git-format-staged -f \"prettier '{}'\" '**/*.js' '**/*.json' '**/*.ts' ",
     "ci:code-formatting": "yarn prettier --check .",
     "ci:code-style": "yarn eslint .",
     "build:watch": "tsc-watch --onSuccess 'yarn build'",

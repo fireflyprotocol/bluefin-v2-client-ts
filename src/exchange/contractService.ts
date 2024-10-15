@@ -450,6 +450,7 @@ export class ContractCalls {
    * @param to recipient wallet address
    * @param balance amount to transfer
    * @param coinObject
+   * @param dryRun
    * @returns Response Schema
    * */
   transferCoinsObject = async (
@@ -460,14 +461,16 @@ export class ContractCalls {
       coinObjectIds: string[];
       coinType: string;
       decimals: number;
-    }
+    },
+    dryRun = false
   ): Promise<ResponseSchema> => {
     return TransformToResponseSchema(async () => {
       return this.onChainCalls.transferCoinsObject(
         to,
         balance,
         coinObject,
-        this.signer
+        this.signer,
+        dryRun
       );
     }, interpolate(SuccessMessages.transferCoins, { balance, coinObject, walletAddress: to }));
   };

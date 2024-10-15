@@ -2909,6 +2909,7 @@ export class BluefinClient {
    * @param to recipient wallet address
    * @param balance amount to transfer
    * @param coinObject
+   * @param dryRun
    * @returns Response Schema
    * */
   transferCoinsObject = async (
@@ -2919,9 +2920,15 @@ export class BluefinClient {
       coinObjectIds: string[];
       coinType: string;
       decimals: number;
-    }
+    },
+    dryRun = false
   ): Promise<ResponseSchema> => {
-    return this.contractCalls.transferCoinsObject(to, balance, coinObject);
+    return this.contractCalls.transferCoinsObject(
+      to,
+      balance,
+      coinObject,
+      dryRun
+    );
   };
 
   /**

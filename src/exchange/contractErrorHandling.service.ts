@@ -5,6 +5,7 @@ import {
   TransactionBlock,
 } from "@firefly-exchange/library-sui/";
 import { serializeError } from "eth-rpc-errors";
+import { DryRunTransactionBlockResponse } from "@firefly-exchange/library-sui";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;
@@ -51,7 +52,11 @@ export const handleResponse = (
 };
 
 export const TransformToResponseSchema = async (
-  contactCall: () => Promise<SuiTransactionBlockResponse | TransactionBlock>,
+  contactCall: () => Promise<
+    | SuiTransactionBlockResponse
+    | DryRunTransactionBlockResponse
+    | TransactionBlock
+  >,
   successMessage: string,
   isSponsored?: boolean
 ): Promise<ResponseSchema> => {

@@ -896,12 +896,13 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.0.2":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.0.3.tgz#77b41abea417349c6d09f1527d3c86e8f881f7c8"
-  integrity sha512-zZ07p67RPenX6oZ33HKLj3AzcG2lGmJvg0qYVcJGlswBq1A/LhgGOasvCHyHtO11p5EiQa8GU8BnOgzQveTtTA==
+"@firefly-exchange/library-sui@2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.1.3.tgz#7760f73627b6712993ffb246cfbccd64fa8f486a"
+  integrity sha512-top9pMarv3xdSXK/i5P+HfMKqFgP4+MWhEzi5pZKfBBGADYF5XHycxgH5DliPUGYoxpXz8ZdOajZ6jBtzax2hA==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
+    "@mysten/bcs" "^1.1.0"
     "@mysten/dapp-kit" "^0.14.25"
     "@mysten/sui" "^1.12.0"
     "@mysten/wallet-standard" "^0.13.7"
@@ -1064,7 +1065,7 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@mysten/bcs@1.1.0":
+"@mysten/bcs@1.1.0", "@mysten/bcs@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.1.0.tgz#dee28e8e4d1671f694afad471b644020b227102a"
   integrity sha512-yy9/1Y4d0FlRywS1+9ze/T7refCbrvwFwJIOKs9M3QBK1njbcHZp+LkVeLqBvIJA5eZ3ZCzmhQ1Xq4Sed5mEBA==

@@ -446,6 +446,36 @@ export class ContractCalls {
   };
 
   /**
+   * transfer coins
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @param coinObject
+   * @param dryRun
+   * @returns Response Schema
+   * */
+  transferCoinObjects = async (
+    to: string,
+    balance: number,
+    coinObject: {
+      balance: string;
+      coinObjectIds: string[];
+      coinType: string;
+      decimals: number;
+    },
+    dryRun = false
+  ): Promise<ResponseSchema> => {
+    return TransformToResponseSchema(async () => {
+      return this.onChainCalls.transferCoinObjects(
+        to,
+        balance,
+        coinObject,
+        this.signer,
+        dryRun
+      );
+    }, interpolate(SuccessMessages.transferCoins, { balance, coinObject, walletAddress: to }));
+  };
+
+  /**
    * estimate gas for sui token transfer
    * @param to recipient wallet address
    * @param balance SUI amount to transfer

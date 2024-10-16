@@ -2904,6 +2904,33 @@ export class BluefinClient {
   };
 
   /**
+   * transfer coin
+   * @param to recipient wallet address
+   * @param balance amount to transfer
+   * @param coinObject
+   * @param dryRun
+   * @returns Response Schema
+   * */
+  transferCoinObjects = async (
+    to: string,
+    balance: number,
+    coinObject: {
+      balance: string;
+      coinObjectIds: string[];
+      coinType: string;
+      decimals: number;
+    },
+    dryRun = false
+  ): Promise<ResponseSchema> => {
+    return this.contractCalls.transferCoinObjects(
+      to,
+      balance,
+      coinObject,
+      dryRun
+    );
+  };
+
+  /**
    * estimate gas for sui token transfer
    * @param to recipient wallet address
    * @param balance amount to transfer

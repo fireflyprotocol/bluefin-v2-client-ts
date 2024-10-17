@@ -2,7 +2,7 @@ name: Publish pre-release
 
 on:
   push:
-    branches:
+    tags:
       - "pre-release-*"
 
 jobs:

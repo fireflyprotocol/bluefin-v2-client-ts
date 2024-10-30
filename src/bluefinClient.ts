@@ -151,7 +151,7 @@ import {
   UserVaultDetail,
   UserVaultDetailSummary,
   VaultDetail,
-  verifyDepositResponse,
+  VerifyWalletStatusResponse,
 } from "./interfaces/routes";
 
 export class BluefinClient {
@@ -479,7 +479,6 @@ export class BluefinClient {
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature();
       // authorize signature created by dAPI
-
       const authTokenResponse = await this.authorizeSignedHash(signature);
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
@@ -489,6 +488,7 @@ export class BluefinClient {
       }
       userAuthToken = authTokenResponse.data.token;
     }
+
     // for api
     this.apiService.setAuthToken(userAuthToken);
     // this.apiService.setWalletAddress(this.getPublicAddress());
@@ -1332,6 +1332,12 @@ export class BluefinClient {
     coinID?: string,
     sponsorTx?: boolean
   ): Promise<ResponseSchema> => {
+
+    const verifyStatus = await this.verifyWalletStatus(amount);
+    if(verifyStatus.ok && verifyStatus.data && verifyStatus.data.verificationStatus != "Success"){
+      throwCustomError({ error: `Deposit Unavailable: Your account is currently ${verifyStatus.data.verificationStatus} from depositing funds` });
+    }
+    
     if (sponsorTx) {
       const sponsorTxPayload = await this.depositToMarginBankSponsored(
         amount,
@@ -1657,9 +1663,9 @@ export class BluefinClient {
    * @param amount deposit amount
    * @returns verification status of user
    */
-  verifyDeposit = async (amount: number) => {
-    const response = await this.apiService.get<verifyDepositResponse>(
-      SERVICE_URLS.USER.VERIFY_DEPOSIT,
+  verifyWalletStatus = async (amount: number) => {
+    const response = await this.apiService.get<VerifyWalletStatusResponse>(
+      SERVICE_URLS.USER.VERIFY_WALLET_STATUS,
       { depositAmount: amount },
       { isAuthenticationRequired: true }
     );

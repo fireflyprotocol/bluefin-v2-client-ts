@@ -532,7 +532,7 @@ export interface UserSubscriptionAck {
   success: boolean;
   message: string;
 }
-export interface verifyDepositResponse {
+export interface VerifyWalletStatusResponse {
   verificationStatus: string;
 }
 export interface CountDown {

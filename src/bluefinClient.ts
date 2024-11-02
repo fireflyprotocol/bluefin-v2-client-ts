@@ -1336,7 +1336,7 @@ export class BluefinClient {
     if (
       verifyStatus.ok &&
       verifyStatus.data &&
-      verifyStatus.data.verificationStatus == "Success"
+      verifyStatus.data.verificationStatus != "Success"
     ) {
       throwCustomError({
         error: `Deposit Unavailable: Your account is currently ${verifyStatus.data.verificationStatus} from depositing funds`,

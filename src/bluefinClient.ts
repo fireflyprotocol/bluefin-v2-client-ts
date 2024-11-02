@@ -1334,7 +1334,7 @@ export class BluefinClient {
   ): Promise<ResponseSchema> => {
 
     const verifyStatus = await this.verifyWalletStatus(amount);
-    if(verifyStatus.ok && verifyStatus.data && verifyStatus.data.verificationStatus != "Success"){
+    if(verifyStatus.ok && verifyStatus.data && verifyStatus.data.verificationStatus == "Success"){
       throwCustomError({ error: `Deposit Unavailable: Your account is currently ${verifyStatus.data.verificationStatus} from depositing funds` });
     }
     

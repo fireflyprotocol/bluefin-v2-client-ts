@@ -2,9 +2,7 @@ name: Publish pre-release
 
 on:
   push:
-    tags:
-      - "pre-release-*"
-
+        branches: [abdullah/bum-up-library-for-zk-login-support]
 jobs:
   code-format:
     name: Code Format

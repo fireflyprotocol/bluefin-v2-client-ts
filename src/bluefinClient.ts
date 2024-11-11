@@ -474,10 +474,10 @@ export class BluefinClient {
    * Creates message to be signed, creates signature and authorize it from dapi
    * @returns auth token
    */
-  userOnBoarding = async (token?: string) => {
+  userOnBoarding = async (token?: string, useDeprecatedSigningMethod?: boolean) => {
     let userAuthToken = token;
     if (!userAuthToken) {
-      const signature = await this.createOnboardingSignature();
+      const signature = await this.createOnboardingSignature({useDeprecatedSigningMethod});
       // authorize signature created by dAPI
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
@@ -535,7 +535,7 @@ export class BluefinClient {
     };
   };
 
-  createOnboardingSignature = async () => {
+  createOnboardingSignature = async ({useDeprecatedSigningMethod}: {useDeprecatedSigningMethod?: boolean}) => {
     let signature: SigPK;
 
     const onboardingSignature = {
@@ -546,7 +546,8 @@ export class BluefinClient {
       try {
         signature = await OrderSigner.signPayloadUsingWallet(
           onboardingSignature,
-          this.uiWallet
+          this.uiWallet,
+          useDeprecatedSigningMethod
         );
       } catch (error) {
         throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });

@@ -479,12 +479,6 @@ export class BluefinClient {
     token?: string,
     useDeprecatedSigningMethod?: boolean
   ) => {
-    console.log(
-      "====================ONBAORDING====================",
-      token,
-      useDeprecatedSigningMethod
-    );
-
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature({
@@ -552,8 +546,6 @@ export class BluefinClient {
   }: {
     useDeprecatedSigningMethod?: boolean;
   }) => {
-    debugger;
-    console.log("============signature2=============", this.uiWallet);
     let signature: SigPK;
 
     const onboardingSignature = {
@@ -562,22 +554,12 @@ export class BluefinClient {
 
     if (this.uiWallet) {
       try {
-        debugger;
-        console.log(
-          "============signature=============",
-          signature,
-          onboardingSignature,
-          this.uiWallet,
-          useDeprecatedSigningMethod
-        );
         signature = await OrderSigner.signPayloadUsingWallet(
           onboardingSignature,
           this.uiWallet,
           useDeprecatedSigningMethod
         );
       } catch (error) {
-        console.log("===error===", error);
-
         throwCustomError({ error, code: Errors.WALLET_PAYLOAD_SIGNING_FAILED });
       }
     } else if (this.isZkLogin) {

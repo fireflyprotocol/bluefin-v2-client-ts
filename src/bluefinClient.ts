@@ -474,10 +474,15 @@ export class BluefinClient {
    * Creates message to be signed, creates signature and authorize it from dapi
    * @returns auth token
    */
-  userOnBoarding = async (token?: string, useDeprecatedSigningMethod?: boolean) => {
+  userOnBoarding = async (
+    token?: string,
+    useDeprecatedSigningMethod?: boolean
+  ) => {
     let userAuthToken = token;
     if (!userAuthToken) {
-      const signature = await this.createOnboardingSignature({useDeprecatedSigningMethod});
+      const signature = await this.createOnboardingSignature({
+        useDeprecatedSigningMethod,
+      });
       // authorize signature created by dAPI
 
       const authTokenResponse = await this.authorizeSignedHash(signature);
@@ -535,7 +540,11 @@ export class BluefinClient {
     };
   };
 
-  createOnboardingSignature = async ({useDeprecatedSigningMethod}: {useDeprecatedSigningMethod?: boolean}) => {
+  createOnboardingSignature = async ({
+    useDeprecatedSigningMethod,
+  }: {
+    useDeprecatedSigningMethod?: boolean;
+  }) => {
     let signature: SigPK;
 
     const onboardingSignature = {

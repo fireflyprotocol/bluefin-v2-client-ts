@@ -57,7 +57,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@firefly-exchange/library-sui": "2.4.0",
+    "@firefly-exchange/library-sui": "^2.4.3",
     "@mysten/sui": "^1.12.0",
     "@mysten/zklogin": "^0.7.22",
     "@noble/hashes": "^1.2.0",
@@ -101,5 +101,6 @@
     "fs": false,
     "net": false,
     "tls": false
-  }
+  },
+  "packageManager": "yarn@4.5.1"
 }

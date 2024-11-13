@@ -101,6 +101,5 @@
     "fs": false,
     "net": false,
     "tls": false
-  },
-  "packageManager": "yarn@4.5.1"
+  }
 }

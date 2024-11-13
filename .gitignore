@@ -111,3 +111,4 @@ bundles
 .tern-port
 bundles
 /public/build/
+.DS_Store

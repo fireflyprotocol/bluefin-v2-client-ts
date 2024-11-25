@@ -111,3 +111,9 @@ bundles
 .tern-port
 bundles
 /public/build/
+
+# macos DS Store files
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store

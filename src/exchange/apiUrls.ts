@@ -19,7 +19,7 @@ export const SERVICE_URLS = {
     USER_TRADES: "/userTrades",
     ORDERS: "/orders",
     ACCOUNT: "/account",
-    VERIFY_DEPOSIT: "/account/verifyDeposit",
+    VERIFY_WALLET_STATUS: "/account/verifyWalletStatus",
     USER_TRANSACTION_HISTORY: "/userTransactionHistory",
     AUTHORIZE: "/authorize",
     ADJUST_LEVERAGE: "/account/adjustLeverage",

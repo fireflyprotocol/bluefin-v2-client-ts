@@ -88,7 +88,7 @@ describe("BluefinClient", () => {
   });
 
   beforeEach(async () => {
-    client = new BluefinClient(true, network, testAcctKey, "Secp256k1");
+    client = new BluefinClient(true, network, testAcctKey, "ED25519");
     await client.init();
   });
 
@@ -995,7 +995,7 @@ describe("BluefinClient", () => {
   });
 
   it(`should return verification status`, async () => {
-    const response = await client.verifyDeposit(100);
+    const response = await client.verifyWalletStatus(100);
     expect(response.ok).to.be.equal(true);
   });
 

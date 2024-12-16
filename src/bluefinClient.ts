@@ -480,8 +480,9 @@ export class BluefinClient {
     useDeprecatedSigningMethod?: boolean
   ) => {
     let userAuthToken = token;
+    let signature = "";
     if (!userAuthToken) {
-      const signature = await this.createOnboardingSignature({
+      signature = await this.createOnboardingSignature({
         useDeprecatedSigningMethod,
       });
       // authorize signature created by dAPI
@@ -502,7 +503,7 @@ export class BluefinClient {
     this.sockets.setAuthToken(userAuthToken);
     this.webSockets?.setAuthToken(userAuthToken);
     // TODO: remove this when all endpoints on frontend are integrated from client library
-    return userAuthToken;
+    return { userAuthToken, signature };
   };
 
   createZkSignature({

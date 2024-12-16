@@ -480,8 +480,9 @@ export class BluefinClient {
     useDeprecatedSigningMethod?: boolean
   ) => {
     let userAuthToken = token;
+    let signature = "";
     if (!userAuthToken) {
-      const signature = await this.createOnboardingSignature({
+      signature = await this.createOnboardingSignature({
         useDeprecatedSigningMethod,
       });
       // authorize signature created by dAPI
@@ -489,7 +490,7 @@ export class BluefinClient {
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
-          `Authorization error: ${authTokenResponse.response.message}`
+          `Authorization error: ${authTokenResponse.response.message} sig: ${signature}`
         );
       }
       userAuthToken = authTokenResponse.data.token;

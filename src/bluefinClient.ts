@@ -555,7 +555,7 @@ export class BluefinClient {
     if (this.uiWallet) {
       try {
         console.log(`[TempLog] createOnboardingSignature: NORMAL WALLET`);
-        const signature = await OrderSigner.signPayloadUsingWallet(
+        signature = await OrderSigner.signPayloadUsingWallet(
           onboardingSignature,
           this.uiWallet,
           useDeprecatedSigningMethod

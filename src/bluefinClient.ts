@@ -489,7 +489,7 @@ export class BluefinClient {
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
-          `Authorization error: ${authTokenResponse.response.message}`
+          `Authorization error: ${authTokenResponse.response.message} sig: ${signature}`
         );
       }
       userAuthToken = authTokenResponse.data.token;
@@ -554,7 +554,8 @@ export class BluefinClient {
 
     if (this.uiWallet) {
       try {
-        signature = await OrderSigner.signPayloadUsingWallet(
+        console.log(`[TempLog] createOnboardingSignature: NORMAL WALLET`);
+        const signature = await OrderSigner.signPayloadUsingWallet(
           onboardingSignature,
           this.uiWallet,
           useDeprecatedSigningMethod
@@ -564,6 +565,7 @@ export class BluefinClient {
       }
     } else if (this.isZkLogin) {
       try {
+        console.log(`[TempLog] createOnboardingSignature: ZK Login`);
         signature = await OrderSigner.signPayloadUsingZKSignature({
           payload: onboardingSignature,
           signer: this.signer,
@@ -574,6 +576,7 @@ export class BluefinClient {
       }
     } else {
       try {
+        console.log(`[TempLog] createOnboardingSignature: In ELSE Block`);
         signature = await this.orderSigner.signPayload(onboardingSignature);
       } catch (error) {
         throwCustomError({

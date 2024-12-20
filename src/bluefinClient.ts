@@ -2551,7 +2551,7 @@ export class BluefinClient {
         const txBlock = TransactionBlock.from(txBytes);
 
         if (this.uiWallet) {
-          const signedTxb = await(
+          const signedTxb = await (
             this.signer as unknown as ExtendedWalletContextState
           ).signTransactionBlock({
             transactionBlock: txBlock,

@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
 import { getValue, isEmpty } from "@firefly-exchange/library-sui";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
+import { SERVICE_URLS } from "./apiUrls";
 
 export class APIService {
   private apiService: AxiosInstance;
@@ -16,7 +17,9 @@ export class APIService {
 
   private uuid: string = "";
 
-  constructor(url: string) {
+  private isUIWallet: boolean;
+
+  constructor(url: string, isUIWallet?: boolean) {
     this.baseUrl = url;
     this.apiService = axios.create({
       headers: {
@@ -25,6 +28,7 @@ export class APIService {
       },
       validateStatus: () => true,
     });
+    this.isUIWallet = isUIWallet;
   }
 
   async get<T>(
@@ -57,6 +61,8 @@ export class APIService {
       ...config,
       transformRequest: config?.isAuthenticationRequired
         ? this.transformRequest
+        : url == SERVICE_URLS.USER.AUTHORIZE
+        ? this.transformAuthRequest
         : undefined,
     });
     return this.handleResponse<T>(response);
@@ -144,6 +150,14 @@ export class APIService {
     }
 
     headers["x-wallet-address"] = this.walletAddress || "";
+    return JSON.stringify(data);
+  };
+
+  private transformAuthRequest = (data: any, headers?: any) => {
+    headers["x-wallet-address"] = this.walletAddress || "";
+    if (this.isUIWallet) {
+      headers["x-ui-wallet"] = "true";
+    }
     return JSON.stringify(data);
   };
 

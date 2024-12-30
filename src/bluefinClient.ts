@@ -220,7 +220,7 @@ export class BluefinClient {
 
     this.provider = new SuiClient({ url: _network.url });
 
-    this.apiService = new APIService(this.network.apiGateway);
+    this.apiService = new APIService(this.network.apiGateway, _isUI);
 
     this.sockets = new Sockets(this.network.socketURL);
     if (this.network.webSocketURL) {

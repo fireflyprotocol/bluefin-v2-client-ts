@@ -265,12 +265,12 @@ export class BluefinClient {
   ) => {
     try {
       if (apiToken) {
+        this.apiService.setWalletAddress(this.getPublicAddress());
+
         this.apiService.setApiToken(apiToken);
         // for socket
         this.sockets.setApiToken(apiToken);
         this.webSockets?.setApiToken(apiToken);
-
-        this.apiService.setWalletAddress(this.getPublicAddress());
       } else {
         if (!this.signer) {
           throw Error("Signer not initialized");
@@ -482,6 +482,7 @@ export class BluefinClient {
     token?: string,
     useDeprecatedSigningMethod?: boolean
   ) => {
+    this.apiService.setWalletAddress(this.getPublicAddress()); //setting before auth call
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature({
@@ -500,7 +501,6 @@ export class BluefinClient {
 
     // for api
     this.apiService.setAuthToken(userAuthToken);
-    this.apiService.setWalletAddress(this.getPublicAddress());
     // for socket
     this.sockets.setAuthToken(userAuthToken);
     this.webSockets?.setAuthToken(userAuthToken);

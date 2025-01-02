@@ -55,13 +55,15 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
+    const endpoint = url;
     if (!baseUrl) baseUrl = this.baseUrl;
     url = baseUrl + url;
+
     const response = await this.apiService.post(url, data, {
       ...config,
       transformRequest: config?.isAuthenticationRequired
         ? this.transformRequest
-        : url == SERVICE_URLS.USER.AUTHORIZE
+        : endpoint == SERVICE_URLS.USER.AUTHORIZE
         ? this.transformAuthRequest
         : undefined,
     });

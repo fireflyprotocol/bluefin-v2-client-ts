@@ -214,6 +214,7 @@ export class BluefinClient {
     _network: ExtendedNetwork,
     _account?: string | Signer,
     _scheme?: SignatureScheme,
+    _isUI?: boolean,
     _uiWalletType?: string,
     _uiSignerObject?: any
   ) {

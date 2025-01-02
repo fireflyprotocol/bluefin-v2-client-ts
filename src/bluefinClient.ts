@@ -271,7 +271,6 @@ export class BluefinClient {
         this.webSockets?.setApiToken(apiToken);
 
         this.apiService.setWalletAddress(this.getPublicAddress());
-
       } else {
         if (!this.signer) {
           throw Error("Signer not initialized");

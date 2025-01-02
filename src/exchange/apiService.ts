@@ -17,9 +17,9 @@ export class APIService {
 
   private uuid: string = "";
 
-  private isUIWallet: boolean;
+  private uiWalletType: string = "";
 
-  constructor(url: string, isUIWallet?: boolean) {
+  constructor(url: string, uiWalletType?: string) {
     this.baseUrl = url;
     this.apiService = axios.create({
       headers: {
@@ -28,7 +28,7 @@ export class APIService {
       },
       validateStatus: () => true,
     });
-    this.isUIWallet = isUIWallet;
+    this.uiWalletType = uiWalletType;
   }
 
   async get<T>(
@@ -155,8 +155,8 @@ export class APIService {
 
   private transformAuthRequest = (data: any, headers?: any) => {
     headers["x-wallet-address"] = this.walletAddress || "";
-    if (this.isUIWallet) {
-      headers["x-ui-wallet"] = "true";
+    if (this.uiWalletType) {
+      headers["x-ui-wallet-type"] = this.uiWalletType;
     }
     return JSON.stringify(data);
   };

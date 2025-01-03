@@ -207,6 +207,7 @@ export class BluefinClient {
    * @param _network containing network rpc url and chain id
    * @param _account accepts either privateKey or AWS-KMS-SIGNER object if user intend to sign using kms
    * @param _scheme signature scheme to be used
+   * @param _uiWalletType wallet type connected on the UI i.e SUI, Nightly etc
    */
   constructor(
     _isTermAccepted: boolean,
@@ -214,13 +215,14 @@ export class BluefinClient {
     _account?: string | Signer,
     _scheme?: SignatureScheme,
     _isUI?: boolean,
+    _uiWalletType?: string,
     _uiSignerObject?: any
   ) {
     this.network = _network;
 
     this.provider = new SuiClient({ url: _network.url });
 
-    this.apiService = new APIService(this.network.apiGateway);
+    this.apiService = new APIService(this.network.apiGateway, _uiWalletType);
 
     this.sockets = new Sockets(this.network.socketURL);
     if (this.network.webSocketURL) {
@@ -264,6 +266,8 @@ export class BluefinClient {
   ) => {
     try {
       if (apiToken) {
+        this.apiService.setWalletAddress(this.getPublicAddress());
+
         this.apiService.setApiToken(apiToken);
         // for socket
         this.sockets.setApiToken(apiToken);
@@ -479,6 +483,7 @@ export class BluefinClient {
     token?: string,
     useDeprecatedSigningMethod?: boolean
   ) => {
+    this.apiService.setWalletAddress(this.getPublicAddress()); //setting before auth call
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature({
@@ -497,7 +502,6 @@ export class BluefinClient {
 
     // for api
     this.apiService.setAuthToken(userAuthToken);
-    // this.apiService.setWalletAddress(this.getPublicAddress());
     // for socket
     this.sockets.setAuthToken(userAuthToken);
     this.webSockets?.setAuthToken(userAuthToken);

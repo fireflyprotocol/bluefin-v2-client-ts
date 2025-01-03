@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosInstance } from "axios";
 import { getValue, isEmpty } from "@firefly-exchange/library-sui";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
+import { SERVICE_URLS } from "./apiUrls";
 
 export class APIService {
   private apiService: AxiosInstance;
@@ -16,7 +17,9 @@ export class APIService {
 
   private uuid: string = "";
 
-  constructor(url: string) {
+  private uiWalletType: string = "";
+
+  constructor(url: string, uiWalletType?: string) {
     this.baseUrl = url;
     this.apiService = axios.create({
       headers: {
@@ -25,6 +28,7 @@ export class APIService {
       },
       validateStatus: () => true,
     });
+    this.uiWalletType = uiWalletType;
   }
 
   async get<T>(
@@ -51,12 +55,16 @@ export class APIService {
     config?: AxiosRequestConfig & { isAuthenticationRequired?: boolean },
     baseUrl?: string
   ) {
+    const endpoint = url;
     if (!baseUrl) baseUrl = this.baseUrl;
     url = baseUrl + url;
+
     const response = await this.apiService.post(url, data, {
       ...config,
       transformRequest: config?.isAuthenticationRequired
         ? this.transformRequest
+        : endpoint == SERVICE_URLS.USER.AUTHORIZE
+        ? this.transformAuthRequest
         : undefined,
     });
     return this.handleResponse<T>(response);
@@ -144,6 +152,14 @@ export class APIService {
     }
 
     headers["x-wallet-address"] = this.walletAddress || "";
+    return JSON.stringify(data);
+  };
+
+  private transformAuthRequest = (data: any, headers?: any) => {
+    headers["x-wallet-address"] = this.walletAddress || "";
+    if (this.uiWalletType) {
+      headers["x-ui-wallet-type"] = this.uiWalletType;
+    }
     return JSON.stringify(data);
   };
 

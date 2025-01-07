@@ -528,7 +528,7 @@ export interface SponsorTxResponse {
 export interface GetOffchainSettlementUpdatesRequest {
   symbol?: MarketSymbol; // will fetch settlements of provided market
   orderHash?: string; // will fetch settlement updates of provided order hash
-  action?: OffchainOrderUpdateAction[], //if not given provides all "SENT_FOR_SETTLEMENT", "REQUEUING_ORDER", "CANCELLING_ORDER" updates
+  action?: OffchainOrderUpdateAction[]; //if not given provides all "SENT_FOR_SETTLEMENT", "REQUEUING_ORDER", "CANCELLING_ORDER" updates
   pageSize?: number; // will get only provided number of records, default is 100
   pageNumber?: number; // will fetch particular page records. A single page contains 50 records.
   parentAddress?: string;

@@ -10,6 +10,7 @@ import {
   TIME_IN_FORCE,
 } from "@firefly-exchange/library-sui";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import { OffchainOrderUpdateAction } from "../constants";
 
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
@@ -522,6 +523,37 @@ export interface SponsorTxResponse {
     txDigest: string;
     txBytes: string;
   };
+}
+
+export interface GetOffchainSettlementUpdatesRequest {
+  symbol?: MarketSymbol; // will fetch settlements of provided market
+  orderHash?: string; // will fetch settlement updates of provided order hash
+  action?: OffchainOrderUpdateAction[]; //if not given provides all "SENT_FOR_SETTLEMENT", "REQUEUING_ORDER", "CANCELLING_ORDER" updates
+  pageSize?: number; // will get only provided number of records, default is 100
+  pageNumber?: number; // will fetch particular page records. A single page contains 50 records.
+  parentAddress?: string;
+}
+export interface OffchainSettlementUpdatesResponse {
+  id: number;
+  symbol: string;
+  orderHash: string;
+  userAddress: string;
+  quantity: string;
+  actionType: OffchainOrderUpdateAction;
+  fillId: string;
+  isMaker: boolean;
+  avgFillPrice: string;
+  matchedOrders: MatchedOrderData[];
+  createdAt: number;
+  updatedAt: number;
+  createdAtInMs: number;
+  updatedAtInMs: number;
+}
+
+export interface GetOffchainSettlementUpdatesResponse {
+  data: OffchainSettlementUpdatesResponse[];
+  nextCursor: number;
+  isMoreDataAvailable: boolean;
 }
 
 export interface FundGasResponse {

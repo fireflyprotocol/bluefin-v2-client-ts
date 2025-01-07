@@ -98,6 +98,8 @@ import {
   GetMakerRewardsSummaryResponse,
   GetMarketRecentTradesRequest,
   GetMarketRecentTradesResponse,
+  GetOffchainSettlementUpdatesRequest,
+  GetOffchainSettlementUpdatesResponse,
   GetOrderbookRequest,
   GetOrderBookResponse,
   GetOrderRequest,
@@ -2834,6 +2836,27 @@ export class BluefinClient {
         { txBytes },
         { isAuthenticationRequired: true }
       );
+      return response;
+    } catch (error) {
+      throwCustomError({ error, code: Errors.DAPI_ERROR });
+    }
+  };
+
+  /**
+   * @description
+   * Get transcation response for sponsored payload
+   * @returns SponsorTxResponse
+   */
+  getOffchainSettlementUpdates = async (
+    params: GetOffchainSettlementUpdatesRequest
+  ) => {
+    try {
+      const response =
+        await this.apiService.get<GetOffchainSettlementUpdatesResponse>(
+          SERVICE_URLS.USER.OFFCHAIN_SETTLEMENT_UPDATES,
+          { ...params },
+          { isAuthenticationRequired: true }
+        );
       return response;
     } catch (error) {
       throwCustomError({ error, code: Errors.DAPI_ERROR });

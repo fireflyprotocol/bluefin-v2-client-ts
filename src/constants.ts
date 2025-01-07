@@ -74,3 +74,9 @@ export enum Errors {
   FAILED_TO_INITIALIZE_CLIENT_FOR_ZK_ACCOUNT = "FAILED_TO_INITIALIZE_CLIENT_FOR_ZK_ACCOUNT",
   UNKNOWN = "UNKNOWN",
 }
+
+export enum OffchainOrderUpdateAction {
+  sentForSettlement = "SENT_FOR_SETTLEMENT",
+  orderRequeued = "REQUEUING_ORDER",
+  orderCancelledOnReversion = "CANCELLING_ORDER"
+}

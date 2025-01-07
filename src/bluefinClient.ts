@@ -2851,7 +2851,6 @@ export class BluefinClient {
     params: GetOffchainSettlementUpdatesRequest
   ) => {
     try {
-      console.log("params: ", params);
       const response =
         await this.apiService.get<GetOffchainSettlementUpdatesResponse>(
           SERVICE_URLS.USER.OFFCHAIN_SETTLEMENT_UPDATES,

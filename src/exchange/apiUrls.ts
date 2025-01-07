@@ -32,7 +32,7 @@ export const SERVICE_URLS = {
     SUBACCOUNT_1CT: "/account/addSubAccountFor1CT",
     EXPIRED_SUBACCOUNT_1CT: "/account/expired1CTAccounts",
     SPONSOR_TX: "/account/sponsorTx",
-    OFFCHAIN_SETTLEMENT_UPDATES: "/off-chain-settlement-updates"
+    OFFCHAIN_SETTLEMENT_UPDATES: "/off-chain-settlement-updates",
   },
   GROWTH: {
     REFERRER_INFO: "/growth/getReferrerInfo",

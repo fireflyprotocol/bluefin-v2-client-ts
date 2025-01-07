@@ -78,5 +78,5 @@ export enum Errors {
 export enum OffchainOrderUpdateAction {
   sentForSettlement = "SENT_FOR_SETTLEMENT",
   orderRequeued = "REQUEUING_ORDER",
-  orderCancelledOnReversion = "CANCELLING_ORDER"
+  orderCancelledOnReversion = "CANCELLING_ORDER",
 }

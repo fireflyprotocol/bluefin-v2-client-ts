@@ -2847,14 +2847,17 @@ export class BluefinClient {
    * Get transcation response for sponsored payload
    * @returns SponsorTxResponse
    */
-  getOffchainSettlementUpdates = async (params: GetOffchainSettlementUpdatesRequest) => {
+  getOffchainSettlementUpdates = async (
+    params: GetOffchainSettlementUpdatesRequest
+  ) => {
     try {
-      console.log("params: ", params)
-      const response = await this.apiService.get<GetOffchainSettlementUpdatesResponse>(
-        SERVICE_URLS.USER.OFFCHAIN_SETTLEMENT_UPDATES,
-        { ...params },
-        { isAuthenticationRequired: true }
-      );
+      console.log("params: ", params);
+      const response =
+        await this.apiService.get<GetOffchainSettlementUpdatesResponse>(
+          SERVICE_URLS.USER.OFFCHAIN_SETTLEMENT_UPDATES,
+          { ...params },
+          { isAuthenticationRequired: true }
+        );
       return response;
     } catch (error) {
       throwCustomError({ error, code: Errors.DAPI_ERROR });

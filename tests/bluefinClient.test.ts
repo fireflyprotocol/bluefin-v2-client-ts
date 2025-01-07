@@ -921,23 +921,23 @@ describe("BluefinClient", () => {
       expect(response.ok).to.be.equal(true);
     });
 
-    it(("should fetch offchain updates of the user"), async() => {
+    it("should fetch offchain updates of the user", async () => {
       const response = await client.getOffchainSettlementUpdates({});
       expect(response.ok).to.be.equal(true);
     });
-    it((`should only fetch offchain updates of ${symbol}`), async() => {
+    it(`should only fetch offchain updates of ${symbol}`, async () => {
       const response = await client.getOffchainSettlementUpdates({
         symbol: symbol,
-        pageSize: 2
+        pageSize: 2,
       });
       expect(response.ok).to.be.equal(true);
       expect(response.data.data.length).to.be.lte(2);
     });
-    it((`should only fetch offchain updates with action type = SENT_FOR_SETTLEMENT`), async() => {
+    it(`should only fetch offchain updates with action type = SENT_FOR_SETTLEMENT`, async () => {
       const response = await client.getOffchainSettlementUpdates({
         symbol: symbol,
         action: [OffchainOrderUpdateAction.sentForSettlement],
-        pageSize: 2
+        pageSize: 2,
       });
       expect(response.ok).to.be.equal(true);
       expect(response.data.data.length).to.be.lte(2);

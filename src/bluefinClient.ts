@@ -3189,8 +3189,18 @@ export class BluefinClient {
    */
   depositToVault = async (
     vaultName: string,
-    amount?: number
+    amount?: number,
+    coinId?: string
   ): Promise<ResponseSchema> => {
+    if (coinId) {
+      return this.interactorCalls.depositToVaultContractCall(
+        amount,
+        vaultName,
+        {
+          coinId,
+        }
+      );
+    }
     const coinHavingBalance = (
       await this.contractCalls.onChainCalls.getUSDCoinHavingBalance(
         {

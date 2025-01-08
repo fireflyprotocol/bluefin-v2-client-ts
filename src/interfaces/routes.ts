@@ -1008,6 +1008,7 @@ export type OpenReferralDetails = {
 };
 
 export interface BatchClaimPayload {
+  vaultName: string;
   payload: SignaturePayload;
   signature: string;
 }

@@ -11,6 +11,7 @@ import {
 } from "@firefly-exchange/library-sui";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 import { OffchainOrderUpdateAction } from "../constants";
+import { VaultType } from "@firefly-exchange/library-sui/dist/src";
 
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market
@@ -971,6 +972,9 @@ export interface UserVaultTransferRequest {
 
 export interface UserVaultDetailSummary {
   vaultName: string;
+  vaultId: string;
+  coinDecimal: number;
+  vaultType: string;
   APY: string;
   TVL: string;
   vaultTotalVolume: string;
@@ -979,7 +983,11 @@ export interface UserVaultDetailSummary {
   userLockedAmount: string;
   userWithdrawAmountRequested: string;
   claimableAmount: string;
-  vaultId: string;
+  communityData?: any[];
+  rewardsPool?: number;
+  suiRewardPool?: number;
+  blueRewardPool?: number;
+  withdrawPaused: boolean;
 }
 
 export interface VaultConfig {

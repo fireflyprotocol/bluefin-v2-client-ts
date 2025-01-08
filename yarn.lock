@@ -884,15 +884,15 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.4.9":
-  version "2.4.12"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.12.tgz#5ed0acaa1095692f34d0d3688cbf0a417825bce2"
-  integrity sha512-fve+aw0b1Dw0HxhX6enwxjAkVT+ld6YJ2KmVNsnbiwgASVmVQvJFcAvH2ABr0H5YL9UlkVENW6J+ldFA4wtmbg==
+"@firefly-exchange/library-sui@^2.4.20":
+  version "2.4.20"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.20.tgz#2d76e7002a03fb760037ea8cae61dccf31e60b62"
+  integrity sha512-pMbRj5kfI425erx2vBOeYiI8nOBytxeTZaMWItJsu/fuGfSww7m2C5RwRlY+Xqzp0OfrsAjpJioKrVnybegn1A==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/bcs" "^1.1.0"
     "@mysten/dapp-kit" "^0.14.25"
-    "@mysten/sui" "^1.12.0"
+    "@mysten/sui" "^1.17.0"
     "@mysten/wallet-standard" "^0.13.7"
     "@mysten/zklogin" "^0.7.22"
     "@noble/hashes" "^1.2.0"
@@ -1116,6 +1116,26 @@
     jose "^5.6.3"
     poseidon-lite "^0.2.0"
     tweetnacl "^1.0.3"
+    valibot "^0.36.0"
+
+"@mysten/sui@^1.17.0":
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.18.0.tgz#9f7b4a456d0d2530b1eb569b8ebe32313ac7f619"
+  integrity sha512-cFh5LxXZrXb/ZAD1dkKeQxzhgRYFXreyFGmI7w/JQWwdl+/0FrHJBwaWyTmGxJ/6ZC9SlaOPOk63flN7DbUurg==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.2.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@scure/bip32" "^1.4.0"
+    "@scure/bip39" "^1.3.0"
+    "@simplewebauthn/typescript-types" "^7.4.0"
+    "@suchipi/femver" "^1.0.0"
+    bech32 "^2.0.0"
+    gql.tada "^1.8.2"
+    graphql "^16.9.0"
+    jose "^5.6.3"
+    poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 
 "@mysten/wallet-standard@0.13.19", "@mysten/wallet-standard@^0.13.7":

@@ -83,6 +83,8 @@ export class InteractorCalls {
       coinId?: string;
     }
   ): Promise<ResponseSchema> => {
+    const symbol = vaultName.toLowerCase().includes("blue") ? "BLUE" : "USDC";
+
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.depositToVault(
         vaultName,
@@ -91,7 +93,7 @@ export class InteractorCalls {
       );
 
       return tx;
-    }, interpolate(SuccessMessages.depositToVault, { amount }));
+    }, interpolate(SuccessMessages.depositToVault, { amount, symbol }));
   };
 
   // /**

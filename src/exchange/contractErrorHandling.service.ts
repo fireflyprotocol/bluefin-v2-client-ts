@@ -103,7 +103,7 @@ export enum SuccessMessages {
   withdrawFundsFromVault = "{amount} USDC withdraw request sent to pool.",
   approveUSDC = "{amount} USDC approved.",
   depositToBank = "{amount} USDC deposited to Margin Bank.",
-  depositToVault = "{amount} USDC deposited to pool.",
+  depositToVault = "{amount} {symbol} deposited to pool.",
   setSubAccounts = "This {address} is successfully {status} as a subaccount",
   transferCoins = "{balance} {coin} transferred to {walletAddress}",
 }

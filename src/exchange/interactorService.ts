@@ -162,7 +162,7 @@ export class InteractorCalls {
     }, 0);
 
     const usdamountStr = `${bnToBaseStr(amount, 2, 6)} USDC`;
-    const blueAmountStr = `${bnToBaseStr(blueAmount, 2, 6)} BLUE`;
+    const blueAmountStr = `${bnToBaseStr(blueAmount, 2, 9)} BLUE`;
     let amountStr: string;
     if (amount && !(blueAmount > 0)) {
       amountStr = usdamountStr;

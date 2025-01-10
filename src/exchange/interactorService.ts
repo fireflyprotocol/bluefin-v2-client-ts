@@ -151,13 +151,32 @@ export class InteractorCalls {
   claimFundsFromVaultBatchContractCall = async (
     batch: BatchClaimPayload[]
   ): Promise<ResponseSchema> => {
-    const amount = batch.reduce((b, { payload }) => {
-      return b + +payload.amount;
+    const amount = batch.reduce((b, { payload, vaultName }) => {
+      const isBlueVault = vaultName.toLowerCase().includes("blue");
+      return b + +(isBlueVault ? "0" : payload.amount);
     }, 0);
+
+    const blueAmount = batch.reduce((b, { payload, vaultName }) => {
+      const isBlueVault = vaultName.toLowerCase().includes("blue");
+      return b + +(!isBlueVault ? "0" : payload.amount);
+    }, 0);
+
+    const usdamountStr = `${bnToBaseStr(amount, 2, 6)} USDC`;
+    const blueAmountStr = `${bnToBaseStr(blueAmount, 2, 6)} BLUE`;
+    let amountStr: string;
+    if (amount && !(blueAmount > 0)) {
+      amountStr = usdamountStr;
+    }
+    if (blueAmount > 0 && !(amount > 0)) {
+      amountStr = blueAmountStr;
+    }
+    if (blueAmount > 0 && amount > 0) {
+      amountStr = `${usdamountStr} and ${blueAmountStr}`;
+    }
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.claimFundsBatch(batch);
       return tx;
-    }, interpolate(SuccessMessages.claimFundsFromVault, { amount: bnToBaseStr(amount, 2, 6) }));
+    }, interpolate(SuccessMessages.claimFundsFromVault, { amount: amountStr }));
   };
 
   // /**

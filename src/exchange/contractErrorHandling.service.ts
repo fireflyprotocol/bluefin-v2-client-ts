@@ -100,7 +100,7 @@ export enum SuccessMessages {
   withdrawMargin = "{amount} USDC withdrawn.",
   claimFundsFromVault = "{amount} USDC claimed from vault.",
   claimRewardsFromRewardPool = "Rewards claimed from reward pool.",
-  withdrawFundsFromVault = "{amount} USDC withdraw request sent to pool.",
+  withdrawFundsFromVault = "{amount} {symbol} withdraw request sent to pool.",
   approveUSDC = "{amount} USDC approved.",
   depositToBank = "{amount} USDC deposited to Margin Bank.",
   depositToVault = "{amount} {symbol} deposited to pool.",

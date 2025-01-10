@@ -58,6 +58,7 @@ export class InteractorCalls {
     amount: BigNumberable,
     vaultName: string
   ): Promise<ResponseSchema> => {
+    const symbol = vaultName.toLowerCase().includes("blue") ? "BLUE" : "USDC";
     return TransformToResponseSchema(async () => {
       const tx = await this.InteractorCalls.requestWithdrawFromVault(
         vaultName,
@@ -65,7 +66,7 @@ export class InteractorCalls {
       );
 
       return tx;
-    }, interpolate(SuccessMessages.withdrawFundsFromVault, { amount }));
+    }, interpolate(SuccessMessages.withdrawFundsFromVault, { amount, symbol }));
   };
 
   // /**

@@ -885,9 +885,9 @@
     "@ethersproject/strings" "^5.7.0"
 
 "@firefly-exchange/library-sui@^2.4.20":
-  version "2.4.21"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.21.tgz#dd62818c5051c0cdb580043c42e5b535389b812d"
-  integrity sha512-F97FHj8NeCa1PLlZldHYD2mCcpEUbVfEYmQjuG5J+TyqXy0Iow7+xmyQYdx4cgApmp6GzJLhNg25ZX81v/3C8A==
+  version "2.4.20"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.20.tgz#2d76e7002a03fb760037ea8cae61dccf31e60b62"
+  integrity sha512-pMbRj5kfI425erx2vBOeYiI8nOBytxeTZaMWItJsu/fuGfSww7m2C5RwRlY+Xqzp0OfrsAjpJioKrVnybegn1A==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/bcs" "^1.1.0"
@@ -1062,13 +1062,6 @@
   dependencies:
     bs58 "^6.0.0"
 
-"@mysten/bcs@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.2.1.tgz#b84cfedce86586c401eca1cbdf26ffe7f59609c8"
-  integrity sha512-RMSaUsNb8oR0rTRVIOOcyoEVJqQi6DLvMXN+7mvDcki12FJFQ0lF89zQa7AV7cIurWlDQfJ8VIbCuRDyK+955A==
-  dependencies:
-    bs58 "^6.0.0"
-
 "@mysten/dapp-kit@^0.14.25":
   version "0.14.43"
   resolved "https://registry.yarnpkg.com/@mysten/dapp-kit/-/dapp-kit-0.14.43.tgz#a44e00d2b457651901f0ed4e872101ea8f0140de"
@@ -1104,7 +1097,7 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
-"@mysten/sui@1.17.0":
+"@mysten/sui@1.17.0", "@mysten/sui@^1.12.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.17.0.tgz#af0ce6b72380c4e939e4dd72617a35a5d80831b9"
   integrity sha512-vL6QrH3l10dTatimPmz/feqMbYfEjvh8MPf3Xwn5tjuwDwBCS0ha1kdN+4vUpu6t0aCFviK+Df/vanORS8cbGQ==
@@ -1126,12 +1119,12 @@
     valibot "^0.36.0"
 
 "@mysten/sui@^1.17.0":
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.19.0.tgz#b9986648843f8611b8c440ed11b8c18322debdb0"
-  integrity sha512-hjNCArz7upZaGZNNmMeQRKSlQK73eN+p8MlKJvlZpx/6gorK0WWFWWjEcIyJndkIDbLb06nbQbWIWZ8KoI036Q==
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.18.0.tgz#9f7b4a456d0d2530b1eb569b8ebe32313ac7f619"
+  integrity sha512-cFh5LxXZrXb/ZAD1dkKeQxzhgRYFXreyFGmI7w/JQWwdl+/0FrHJBwaWyTmGxJ/6ZC9SlaOPOk63flN7DbUurg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.2.1"
+    "@mysten/bcs" "1.2.0"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
     "@scure/bip32" "^1.4.0"

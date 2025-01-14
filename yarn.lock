@@ -1097,7 +1097,7 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
-"@mysten/sui@1.17.0", "@mysten/sui@^1.12.0":
+"@mysten/sui@1.17.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.17.0.tgz#af0ce6b72380c4e939e4dd72617a35a5d80831b9"
   integrity sha512-vL6QrH3l10dTatimPmz/feqMbYfEjvh8MPf3Xwn5tjuwDwBCS0ha1kdN+4vUpu6t0aCFviK+Df/vanORS8cbGQ==

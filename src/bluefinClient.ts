@@ -209,7 +209,8 @@ export class BluefinClient {
    * @param _network containing network rpc url and chain id
    * @param _account accepts either privateKey or AWS-KMS-SIGNER object if user intend to sign using kms
    * @param _scheme signature scheme to be used
-   * @param _uiWalletType wallet type connected on the UI i.e SUI, Nightly etc
+   * @param _isUI (optional) is initialized from UI
+   * @param _uiWalletType (optional) wallet type connected on the UI i.e SUI, Nightly etc
    */
   constructor(
     _isTermAccepted: boolean,
@@ -224,7 +225,11 @@ export class BluefinClient {
 
     this.provider = new SuiClient({ url: _network.url });
 
-    this.apiService = new APIService(this.network.apiGateway, _uiWalletType);
+    this.apiService = new APIService(
+      this.network.apiGateway,
+      _uiWalletType,
+      _network
+    );
 
     this.sockets = new Sockets(this.network.socketURL);
     if (this.network.webSocketURL) {

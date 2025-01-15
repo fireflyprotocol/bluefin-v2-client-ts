@@ -3,6 +3,7 @@ import { getValue, isEmpty } from "@firefly-exchange/library-sui";
 import { ResponseSchema } from "./contractErrorHandling.service";
 import { version as currentVersion } from "../../package.json";
 import { SERVICE_URLS } from "./apiUrls";
+import { ExtendedNetwork } from "../interfaces/routes";
 
 export class APIService {
   private apiService: AxiosInstance;
@@ -19,7 +20,9 @@ export class APIService {
 
   private uiWalletType: string = "";
 
-  constructor(url: string, uiWalletType?: string) {
+  private network: ExtendedNetwork;
+
+  constructor(url: string, uiWalletType?: string, network?: ExtendedNetwork) {
     this.baseUrl = url;
     this.apiService = axios.create({
       headers: {
@@ -29,6 +32,7 @@ export class APIService {
       validateStatus: () => true,
     });
     this.uiWalletType = uiWalletType;
+    this.network = network;
   }
 
   async get<T>(
@@ -159,6 +163,9 @@ export class APIService {
     headers["x-wallet-address"] = this.walletAddress || "";
     if (this.uiWalletType) {
       headers["x-ui-wallet-type"] = this.uiWalletType;
+    }
+    if (this.network) {
+      headers["x-signed-payload"] = this.network.onboardingUrl;
     }
     return JSON.stringify(data);
   };

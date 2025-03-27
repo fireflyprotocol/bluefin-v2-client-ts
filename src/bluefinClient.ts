@@ -1395,10 +1395,29 @@ export class BluefinClient {
     return this.depositToMarginBankSponsored(amount, coinID, false);
   };
 
+  depositToRecipientMarginBank = async (
+    amount: number,
+    recipient: string,
+    coinID?: string,
+  ) => {
+    
+    const sponsorTxPayload = await this.depositToMarginBankSponsored(
+      amount,
+      coinID,
+      true,
+      recipient
+    );
+    const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+      sponsorTxPayload
+    );
+    return sponsorTxResponse
+  };
+
   depositToMarginBankSponsored = async (
     amount: number,
     coinID?: string,
-    sponsorTx?: boolean
+    sponsorTx?: boolean,
+    recipient?: string
   ) => {
     if (!amount) throwCustomError({ error: "No amount specified for deposit" });
 
@@ -1409,7 +1428,8 @@ export class BluefinClient {
           amount,
           coinID,
           this.getPublicAddress,
-          sponsorTx
+          sponsorTx,
+          recipient
         );
       if (sponsorTx) {
         await this.signAndExecuteSponsoredTx(contractCall.data);
@@ -1430,7 +1450,8 @@ export class BluefinClient {
         amount,
         coinHavingBalance,
         this.getPublicAddress,
-        sponsorTx
+        sponsorTx,
+        recipient
       );
     }
 
@@ -1467,7 +1488,8 @@ export class BluefinClient {
           amount,
           coinHavingBalanceAfterMerge,
           this.getPublicAddress,
-          sponsorTx
+          sponsorTx,
+          recipient
         );
       }
     }

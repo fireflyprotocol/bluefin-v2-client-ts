@@ -122,7 +122,8 @@ export class ContractCalls {
     amount: number,
     coinID: string,
     getPublicAddress: () => address,
-    sponsor?: boolean
+    sponsor?: boolean,
+    recipient?: string,
   ): Promise<ResponseSchema> => {
     try {
       return TransformToResponseSchema(async () => {
@@ -131,7 +132,7 @@ export class ContractCalls {
             amount: toBigNumberStr(amount.toString(), 6),
             coinID,
             bankID: this.onChainCalls.getBankID(),
-            accountAddress: this.walletAddress || getPublicAddress(),
+            accountAddress: recipient ? recipient : this.walletAddress || getPublicAddress(),
             sponsor,
           },
           this.signer

@@ -42,11 +42,11 @@ import {
   fromBase64,
 } from "@firefly-exchange/library-sui/dist/src/blv/utils";
 
-
 import { SignatureScheme } from "@mysten/sui/src/cryptography/signature-scheme";
 import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
+import { parseSerializedSignature } from "@mysten/sui/cryptography";
 import {
   combineAndEncode,
   generateRandomNumber,
@@ -153,7 +153,6 @@ import {
   VaultDetail,
   VerifyWalletStatusResponse,
 } from "./interfaces/routes";
-import { parseSerializedSignature } from "@mysten/sui/dist/cjs/cryptography";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -488,7 +487,7 @@ export class BluefinClient {
     token?: string,
     useDeprecatedSigningMethod?: boolean
   ) => {
-    this.apiService.setWalletAddress(this.getPublicAddress()); //setting before auth call
+    this.apiService.setWalletAddress(this.getPublicAddress()); // setting before auth call
     let userAuthToken = token;
     if (!userAuthToken) {
       const signature = await this.createOnboardingSignature({
@@ -1421,7 +1420,7 @@ export class BluefinClient {
       }
     }
 
-    //if no coin id provided
+    // if no coin id provided
 
     // Check for a single coin containing enough balance
     const coinHavingBalance = (
@@ -2504,34 +2503,32 @@ export class BluefinClient {
             },
           },
         };
-      } else {
-        const { signature, bytes } = await this.signTransactionUsingKeypair(
-          txBytes
-        );
-        const executedResponse = await this.executeSponseredTransactionBlock(
-          bytes,
-          signature,
-          data.data.signature
-        );
-        return {
-          code: "Success",
-          ok: true,
-          data: {
-            ...executedResponse,
-            signedTxb: {
-              sponsorSignature: data.data.signature,
-            },
-          },
-        };
       }
-    } else {
+      const { signature, bytes } = await this.signTransactionUsingKeypair(
+        txBytes
+      );
+      const executedResponse = await this.executeSponseredTransactionBlock(
+        bytes,
+        signature,
+        data.data.signature
+      );
       return {
-        ok: false,
-        message: "Something Went Wrong",
-        data: "",
-        code: 400,
+        code: "Success",
+        ok: true,
+        data: {
+          ...executedResponse,
+          signedTxb: {
+            sponsorSignature: data.data.signature,
+          },
+        },
       };
     }
+    return {
+      ok: false,
+      message: "Something Went Wrong",
+      data: "",
+      code: 400,
+    };
   };
 
   private signAndExecuteAdjustLeverageSponsoredTx = async (

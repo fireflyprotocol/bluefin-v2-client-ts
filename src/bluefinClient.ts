@@ -32,6 +32,8 @@ import {
   ZkPayload,
   SuiBlocks,
   SuiTransactionBlockResponse,
+  Signer,
+  Keypair,
 } from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 
@@ -40,11 +42,7 @@ import {
   fromBase64,
 } from "@firefly-exchange/library-sui/dist/src/blv/utils";
 
-import {
-  Keypair,
-  parseSerializedSignature,
-  Signer,
-} from "@mysten/sui/cryptography";
+
 import { SignatureScheme } from "@mysten/sui/src/cryptography/signature-scheme";
 import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
@@ -155,7 +153,7 @@ import {
   VaultDetail,
   VerifyWalletStatusResponse,
 } from "./interfaces/routes";
-import { debug } from "console";
+import { parseSerializedSignature } from "@mysten/sui/dist/cjs/cryptography";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;

@@ -654,6 +654,11 @@ export class BluefinClient {
   }): SigPK => {
     let data: SigPK;
     const parsedSignature = parseSerializedSignature(signature);
+
+    // this method doesn't support MultiSig signatures because it can't parse the public key
+    if (parsedSignature.signatureScheme === "MultiSig") {
+      throw new Error("Unexpected MultiSig signature in ZkLogin flow");
+    }
     if (isParsingRequired && parsedSignature.signatureScheme === "ZkLogin") {
       // zk login signature
       const { userSignature } = parsedSignature.zkLogin;
@@ -664,7 +669,7 @@ export class BluefinClient {
       // reparse b64 converted user sig
       const parsedUserSignature = parseSerializedSignature(
         convertedUserSignature
-      );
+      ) as { signatureScheme: SignatureScheme; publicKey: Uint8Array };
 
       data = {
         signature: `${Buffer.from(parsedSignature.signature).toString("hex")}3`,

@@ -490,11 +490,23 @@ export class BluefinClient {
     this.apiService.setWalletAddress(this.getPublicAddress()); // setting before auth call
     let userAuthToken = token;
     if (!userAuthToken) {
+      console.log(
+        `[TempLog]2 userOnBoarding: createOnboardingSignature: useDeprecatedSigningMethod`,
+        useDeprecatedSigningMethod
+      );
       const signature = await this.createOnboardingSignature({
         useDeprecatedSigningMethod,
       });
+      console.log(
+        `[TempLog]2 userOnBoarding: createOnboardingSignature: signature`,
+        signature
+      );
       // authorize signature created by dAPI
       const authTokenResponse = await this.authorizeSignedHash(signature);
+      console.log(
+        `[TempLog]2 userOnBoarding: createOnboardingSignature: authTokenResponse`,
+        authTokenResponse
+      );
 
       if (!authTokenResponse.ok || !authTokenResponse.data) {
         throw Error(
@@ -593,6 +605,15 @@ export class BluefinClient {
         });
       }
     }
+    console.log(`[TempLog] createOnboardingSignature: signature`, signature);
+    console.log(
+      `[TempLog] createOnboardingSignature: signature.publicAddress`,
+      signature?.publicAddress
+    );
+    console.log(
+      `[TempLog] createOnboardingSignature: signature.publicKey`,
+      signature?.publicKey
+    );
     return `${signature?.signature}${
       signature?.publicAddress ? signature?.publicAddress : signature?.publicKey
     }`;
@@ -2758,6 +2779,7 @@ export class BluefinClient {
    */
   private authorizeSignedHash = async (signedHash: string) => {
     try {
+      console.log(`[TempLog]3 authorizeSignedHash: signedHash`, signedHash);
       const response = await this.apiService.post<AuthorizeHashResponse>(
         SERVICE_URLS.USER.AUTHORIZE,
         {
@@ -2765,6 +2787,10 @@ export class BluefinClient {
           userAddress: this.getPublicAddress(),
           isTermAccepted: this.isTermAccepted,
         }
+      );
+      console.log(
+        `[TempLog]3 authorizeSignedHash: response`,
+        JSON.stringify(response)
       );
       return response;
     } catch (error) {

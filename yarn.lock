@@ -884,10 +884,10 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.6.5":
-  version "2.6.5"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.6.5.tgz#cc614b82fb3b2868d5858388be138c502cb75298"
-  integrity sha512-X2KZa1VIMLTddHxbv6+BDzlj5VcnPIGrC2PGHBXCLlzk+dk0qMjbkq6VWMacECKLsRAUVSKNiNA/N/AiGxuhaw==
+"@firefly-exchange/library-sui@^2.6.6":
+  version "2.6.6"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.6.6.tgz#c188a51210ff6312f79b47b8dbc3a8fc2940d210"
+  integrity sha512-TmvWdfLyLXSeqk1UXk6t6PKOhawb13JUASpd4WBPrMF9vQWj2vYvM8GittgplQmFxigZvGw4qU7t2S0/oYRQPA==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/bcs" "^1.1.0"
@@ -1126,23 +1126,37 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
-"@mysten/sui@^1.17.0":
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.18.0.tgz#9f7b4a456d0d2530b1eb569b8ebe32313ac7f619"
-  integrity sha512-cFh5LxXZrXb/ZAD1dkKeQxzhgRYFXreyFGmI7w/JQWwdl+/0FrHJBwaWyTmGxJ/6ZC9SlaOPOk63flN7DbUurg==
+"@mysten/sui@^1.21.1":
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.25.0.tgz#bd7c11e0579b86ae112bea5bb705d258918333f2"
+  integrity sha512-oyncm8WKJ6RZPltJTcCOgdQbOIg6+7XYekMMhU5NDVYNnIhstRXX0axaSwZTR+kON17T92qcXntCN4AszEpH8w==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.2.0"
+    "@mysten/bcs" "1.5.0"
     "@noble/curves" "^1.4.2"
     "@noble/hashes" "^1.4.0"
+    "@scure/base" "^1.2.4"
     "@scure/bip32" "^1.4.0"
     "@scure/bip39" "^1.3.0"
-    "@simplewebauthn/typescript-types" "^7.4.0"
-    "@suchipi/femver" "^1.0.0"
-    bech32 "^2.0.0"
     gql.tada "^1.8.2"
     graphql "^16.9.0"
-    jose "^5.6.3"
+    poseidon-lite "^0.2.0"
+    valibot "^0.36.0"
+
+"@mysten/sui@^1.21.1":
+  version "1.24.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.24.0.tgz#22b334e6f8f638d18e13e9b97d11ef2df647bc77"
+  integrity sha512-lmJJLM7eMrxM6Qpr6cdLr07UBXlxCM7SJjfcDO7NGrqZTx7/3TD2QhhRpDx0fS2tODxrNwQxCoHPApLVPjokIA==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.5.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@scure/base" "^1.2.4"
+    "@scure/bip32" "^1.4.0"
+    "@scure/bip39" "^1.3.0"
+    gql.tada "^1.8.2"
+    graphql "^16.9.0"
     poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 

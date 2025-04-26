@@ -167,6 +167,18 @@ export class APIService {
     if (this.network) {
       headers["x-signed-payload"] = this.network.onboardingUrl;
     }
+    console.log(
+      "this.walletAddress",
+      this.walletAddress,
+      "\n",
+      "this.uiWalletType",
+      this.uiWalletType,
+      "\n",
+      "this.network.onboardingUrl",
+      this.network.onboardingUrl,
+      "\n",
+      JSON.stringify(data)
+    );
     return JSON.stringify(data);
   };
 

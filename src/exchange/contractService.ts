@@ -19,9 +19,21 @@ import {
   SuccessMessages,
   TransformToResponseSchema,
 } from "./contractErrorHandling.service";
-import { combineAndEncode, throwCustomError } from "../../utils/utils";
+import {
+  combineAndEncode,
+  getProDeploymentConfig,
+  getSpotDeploymentConfig,
+  isMainnet,
+  throwCustomError,
+} from "../../utils/utils";
 import { Errors } from "../constants";
-
+import { UserCalls as ProUserOnChainCalls } from "@firefly-exchange/library-sui/dist/src/v3/on-chain-calls/user";
+import { IDeployment } from "@firefly-exchange/library-sui/dist/src/v3";
+import {
+  IBluefinSpotContracts,
+  OnChainCalls as OnChainCallsSwap,
+} from "@firefly-exchange/library-sui/dist/src/spot";
+import { ExtendedNetwork } from "../interfaces/routes";
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
@@ -35,15 +47,23 @@ export class ContractCalls {
 
   is_wallet_extension: boolean;
 
+  network: ExtendedNetwork;
+
+  spotOnchain: OnChainCallsSwap;
+
+  proOnchain: ProUserOnChainCalls;
+
   constructor(
     signer: Signer,
     deployment: any,
     provider: SuiClient,
+    network: ExtendedNetwork,
     is_zkLogin: boolean,
     zkPayload?: ZkPayload,
     walletAddress?: string,
     is_wallet_extension?: boolean
   ) {
+    this.suiClient = provider;
     this.signer = signer;
     this.signer.toSuiAddress = this.signer.toSuiAddress
       ? this.signer.toSuiAddress
@@ -60,6 +80,36 @@ export class ContractCalls {
       zkPayload,
       walletAddress,
       is_wallet_extension
+    );
+    this.network = network;
+
+    // setup pro and spot onchain calls
+    const isProd = isMainnet(this.network);
+    const networkName = isProd ? "mainnet" : "testnet";
+    const spotDeploymentConfig: IBluefinSpotContracts = getSpotDeploymentConfig(
+      this.network
+    );
+    const proDeploymentConfig: IDeployment = getProDeploymentConfig(
+      this.network
+    );
+
+    this.spotOnchain = new OnChainCallsSwap(
+      this.suiClient,
+      spotDeploymentConfig,
+      {
+        signer: this.signer,
+        address: this.walletAddress,
+        isUIWallet: this.is_wallet_extension,
+        isZkLogin: is_zkLogin,
+        zkPayload,
+      }
+    );
+    this.proOnchain = new ProUserOnChainCalls(
+      networkName,
+      this.suiClient,
+      proDeploymentConfig,
+      this.signer,
+      this.walletAddress
     );
   }
 
@@ -108,6 +158,7 @@ export class ContractCalls {
         this.signer,
         this.walletAddress
       );
+      console.log("r: ", r);
       return r;
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };
@@ -517,5 +568,72 @@ export class ContractCalls {
 
   getSUIBalance = async (walletAddress?: string): Promise<string> => {
     return await this.onChainCalls.getUserSuiBalance(walletAddress);
+  };
+
+  closeAllPositionsAndWithdrawMarginPTB = async (
+    delistedMarketPositions: string[],
+    args?: {
+      gasBudget?: number;
+      sponsor?: boolean;
+    }
+  ) => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.closeAllPositionsAndWithdrawMarginPTB(
+        delistedMarketPositions,
+        args
+      );
+    }, interpolate(SuccessMessages.closedDelistedPositionsAndWithdrawMargin, { amount: "all" }));
+  };
+  closeAllPositionsdWithdrawSwapAndDepositToProPTB = async (
+    delistedMarketPositions: string[],
+    args?: {
+      gasBudget?: number;
+      sponsor?: boolean;
+      use7k?: boolean;
+      slippage?: number;
+    }
+  ) => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.closeAllPositionsWithdrawSwapAndDepositToProPTB(
+        delistedMarketPositions,
+        this.spotOnchain,
+        this.proOnchain,
+        args
+      );
+    }, interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, { amount: "all" }));
+  };
+
+  withdrawAllSwapAndDepositToProPTB = async (args?: {
+    gasBudget?: number;
+    sponsor?: boolean;
+    use7k?: boolean;
+    slippage?: number;
+  }) => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.withdrawAllSwapAndDepositToProPTB(
+        this.spotOnchain,
+        this.proOnchain,
+        args
+      );
+    }, interpolate(SuccessMessages.swapAndDepositToPro, { amount: "all" }));
+  };
+
+  swapAndDepositToProPTB = async (
+    amount: number,
+    args?: {
+      gasBudget?: number;
+      sponsor?: boolean;
+      use7k?: boolean;
+      slippage?: number;
+    }
+  ) => {
+    return TransformToResponseSchema(async () => {
+      return await this.onChainCalls.swapAndDepositToProPTB(
+        amount,
+        this.spotOnchain,
+        this.proOnchain,
+        args
+      );
+    }, interpolate(SuccessMessages.swapAndDepositToPro, { amount }));
   };
 }

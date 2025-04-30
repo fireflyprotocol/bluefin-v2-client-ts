@@ -106,6 +106,9 @@ export enum SuccessMessages {
   depositToVault = "{amount} {symbol} deposited to pool.",
   setSubAccounts = "This {address} is successfully {status} as a subaccount",
   transferCoins = "{balance} {coin} transferred to {walletAddress}",
+  swapAndDepositToPro = "Successfully swapped and deposited {amount} USDC to Pro.",
+  closedDelistedPositionsSwapAndDepositToPro = "Successfully closed delisted positions, swapped and deposited {amount} USDC to Pro.",
+  closedDelistedPositionsAndWithdrawMargin = "Successfully closed delisted positions and withdrew {amount} margin.",
 }
 
 export enum VerificationStatus {

@@ -12,11 +12,15 @@ import { ExtendedNetwork } from "../src/interfaces/routes";
 import fs from "fs";
 import { toHex } from "@firefly-exchange/library-sui/dist/src";
 import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
-import deploymentData from "../deployment.json";
 import CustomError from "../src/interfaces";
 import { Errors } from "../src/constants";
 import { IBluefinSpotContracts } from "@firefly-exchange/library-sui/dist/src/spot";
 import { IDeployment } from "@firefly-exchange/library-sui/dist/src/v3";
+import path from "path";
+
+// Import the deployment files directly
+import spotDeployment from "../spotDeployment.json";
+import proDeployment from "../proDeployment.json";
 
 /**
  * Generates random number
@@ -46,19 +50,65 @@ export function getSignerFromSeed(seed: string): Keypair {
 }
 
 function readFileServer(filePath: string): any {
-  return fs.existsSync(filePath)
-    ? JSON.parse(fs.readFileSync(filePath).toString())
-    : {};
+  try {
+    // Try to resolve the file path relative to the current working directory
+    const resolvedPath = path.resolve(process.cwd(), filePath);
+    if (fs.existsSync(resolvedPath)) {
+      return JSON.parse(fs.readFileSync(resolvedPath, 'utf-8'));
+    }
+    
+    // If not found, try to resolve relative to the package root
+    const packageRoot = path.resolve(__dirname, '..');
+    const packagePath = path.resolve(packageRoot, filePath);
+    if (fs.existsSync(packagePath)) {
+      return JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
+    }
+
+    // If still not found, try to resolve relative to the src directory
+    const srcPath = path.resolve(__dirname, filePath);
+    if (fs.existsSync(srcPath)) {
+      return JSON.parse(fs.readFileSync(srcPath, 'utf-8'));
+    }
+
+    // If all else fails, return the imported JSON
+    if (filePath === 'spotDeployment.json') {
+      return spotDeployment;
+    }
+    if (filePath === 'proDeployment.json') {
+      return proDeployment;
+    }
+
+    console.warn(`Configuration file not found at any of these paths:
+      - ${resolvedPath}
+      - ${packagePath}
+      - ${srcPath}`);
+    return {};
+  } catch (error) {
+    console.error('Error reading configuration file:', error);
+    return {};
+  }
 }
 
-function readFileBrowser(): any {
-  return deploymentData;
+function readFileBrowser(filePath: string): any {
+  try {
+    if (filePath === 'spotDeployment.json') {
+      return spotDeployment;
+    }
+    if (filePath === 'proDeployment.json') {
+      return proDeployment;
+    }
+    return {};
+  } catch (error) {
+    console.error('Error reading deployment data in browser:', error);
+    return {};
+  }
 }
 
 export function readFile(filePath: string): any {
-  return typeof window === "undefined"
-    ? readFileServer(filePath)
-    : readFileBrowser();
+  if (typeof window === 'undefined') {
+    return readFileServer(filePath);
+  }
+  return readFileBrowser(filePath);
 }
 
 export async function setupTestAccounts(
@@ -182,10 +232,12 @@ export function getSpotDeploymentConfig(
 ): IBluefinSpotContracts {
   try {
     const networkType = isMainnet(network) ? "mainnet" : "testnet";
-    const spotConfig = readFile("./spotDeployment.json");
-    if (!spotConfig[networkType]) {
+    const spotConfig = readFile("spotDeployment.json");
+    
+    if (!spotConfig || !spotConfig[networkType]) {
       throw new Error(`No configuration found for network: ${networkType}`);
     }
+    
     return spotConfig[networkType] as IBluefinSpotContracts;
   } catch (error) {
     console.error("Error reading spot deployment config:", error);
@@ -196,10 +248,12 @@ export function getSpotDeploymentConfig(
 export function getProDeploymentConfig(network: ExtendedNetwork): IDeployment {
   try {
     const networkType = isMainnet(network) ? "mainnet" : "testnet";
-    const proConfig = readFile("./proDeployment.json");
-    if (!proConfig[networkType]) {
+    const proConfig = readFile("proDeployment.json");
+    
+    if (!proConfig || !proConfig[networkType]) {
       throw new Error(`No configuration found for network: ${networkType}`);
     }
+    
     return proConfig[networkType] as IDeployment;
   } catch (error) {
     console.error("Error reading pro deployment config:", error);

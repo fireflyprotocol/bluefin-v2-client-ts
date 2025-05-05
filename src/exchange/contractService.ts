@@ -575,14 +575,22 @@ export class ContractCalls {
     args?: {
       gasBudget?: number;
       sponsor?: boolean;
+      dryRunOnly?: boolean;
     }
   ) => {
-    return TransformToResponseSchema(async () => {
-      return await this.onChainCalls.closeAllPositionsAndWithdrawMarginPTB(
-        delistedMarketPositions,
-        args
-      );
-    }, interpolate(SuccessMessages.closedDelistedPositionsAndWithdrawMargin, { amount: "all" }));
+    return TransformToResponseSchema(
+      async () => {
+        return await this.onChainCalls.closeAllPositionsAndWithdrawMarginPTB(
+          delistedMarketPositions,
+          this.walletAddress || this.signer.toSuiAddress(),
+          args
+        );
+      },
+      interpolate(SuccessMessages.closedDelistedPositionsAndWithdrawMargin, {
+        amount: "all",
+      }),
+      args?.sponsor
+    );
   };
   closeAllPositionsdWithdrawSwapAndDepositToProPTB = async (
     delistedMarketPositions: string[],
@@ -591,6 +599,7 @@ export class ContractCalls {
       sponsor?: boolean;
       use7k?: boolean;
       slippage?: number;
+      dryRunOnly?: boolean;
     }
   ) => {
     return TransformToResponseSchema(async () => {
@@ -598,6 +607,7 @@ export class ContractCalls {
         delistedMarketPositions,
         this.spotOnchain,
         this.proOnchain,
+        this.walletAddress || this.signer.toSuiAddress(),
         args
       );
     }, interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, { amount: "all" }));
@@ -608,11 +618,14 @@ export class ContractCalls {
     sponsor?: boolean;
     use7k?: boolean;
     slippage?: number;
+    dryRunOnly?: boolean;
   }) => {
+    console.log(`withdrawAllSwapAndDepositToProPTB address: ${this.walletAddress}, caller=${this.signer.toSuiAddress()}, pro: ${this.proOnchain.walletAddress}`);
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.withdrawAllSwapAndDepositToProPTB(
         this.spotOnchain,
         this.proOnchain,
+        this.walletAddress || this.signer.toSuiAddress(),
         args
       );
     }, interpolate(SuccessMessages.swapAndDepositToPro, { amount: "all" }));
@@ -625,13 +638,17 @@ export class ContractCalls {
       sponsor?: boolean;
       use7k?: boolean;
       slippage?: number;
+      dryRunOnly?: boolean;
     }
   ) => {
+    console.log(`swapAndDeposit address: ${this.walletAddress}, caller=${this.signer.toSuiAddress()}, pro: ${this.proOnchain.walletAddress}`);
+
     return TransformToResponseSchema(async () => {
       return await this.onChainCalls.swapAndDepositToProPTB(
         amount,
         this.spotOnchain,
         this.proOnchain,
+        this.walletAddress || this.signer.toSuiAddress(),
         args
       );
     }, interpolate(SuccessMessages.swapAndDepositToPro, { amount }));

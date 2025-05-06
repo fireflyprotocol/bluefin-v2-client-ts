@@ -1564,26 +1564,18 @@ export class BluefinClient {
 
       let delistedUserPositionsSymbols: string[] = [];
       //get delisted market positions
+      //if user doesn't have positions in delisted markets, closeAllPositionsAndWithdrawMarginPTB internally handles not adding any close position call to PTB
       if (userPositions.data && userPositions.data.length > 0) {
         delistedUserPositionsSymbols = userPositions.data
           .filter((position) => {
             return delistedMarkets.includes(position.symbol);
           })
           .map((position) => position.symbol);
-      }
-
-      if (delistedUserPositionsSymbols.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted positions",
-        };
-      }
+      }      
 
       // cancel open orders for delisted markets
       await Promise.all(
-        delistedUserPositionsSymbols.map((symbol) =>
+        delistedMarkets.map((symbol) =>
           this.cancelAllOpenOrders(symbol)
         )
       );
@@ -1662,6 +1654,7 @@ export class BluefinClient {
 
       let delistedUserPositionsSymbols: string[] = [];
       //get delisted market positions
+      //if user doesn't have positions in delisted markets, closeAllPositionsdWithdrawSwapAndDepositToProPTB internally handles not adding any close position call to PTB
       if (userPositions.data && userPositions.data.length > 0) {
         delistedUserPositionsSymbols = userPositions.data
           .filter((position) => {
@@ -1670,18 +1663,9 @@ export class BluefinClient {
           .map((position) => position.symbol);
       }
 
-      if (delistedUserPositionsSymbols.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted positions",
-        };
-      }
-
       // cancel open orders for delisted markets
       await Promise.all(
-        delistedUserPositionsSymbols.map((symbol) =>
+        delistedMarkets.map((symbol) =>
           this.cancelAllOpenOrders(symbol)
         )
       );

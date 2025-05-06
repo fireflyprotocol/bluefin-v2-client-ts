@@ -73,10 +73,20 @@ export const TransformToResponseSchema = async (
           true
         );
       }
+      if(Transaction.getError(tx)) {
+        return handleResponse(
+          {
+            data: tx,
+          message: Transaction.getError(tx),
+          code: 400,
+        },
+          false
+        );
+      }
       return handleResponse(
         {
           data: tx,
-          message: Transaction.getError(tx),
+          message: tx as unknown as string,
           code: 400,
         },
         false

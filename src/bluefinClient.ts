@@ -1546,7 +1546,7 @@ export class BluefinClient {
     dryRunOnly?: boolean;
   }) => {
     try {
-      //get exchange info of all markets to read the status
+      // get exchange info of all markets to read the status
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
@@ -1581,6 +1581,14 @@ export class BluefinClient {
         };
       }
 
+      // cancel open orders for delisted markets
+      await Promise.all(
+        delistedUserPositionsSymbols.map(symbol => 
+          this.cancelAllOpenOrders(symbol)
+        )
+      );
+
+      // create PTB and execute
       if (args?.sponsor && args?.sponsor == true) {
         const sponsoredPayload =
           await this.contractCalls.closeAllPositionsAndWithdrawMarginPTB(
@@ -1633,6 +1641,7 @@ export class BluefinClient {
     use7k?: boolean;
     slippage?: number;
     dryRunOnly?: boolean;
+    defaultSlippage?: number;
   }) => {
     try {
       //get exchange info of all markets to read the status
@@ -1669,6 +1678,13 @@ export class BluefinClient {
           message: "No delisted positions",
         };
       }
+
+      // cancel open orders for delisted markets
+      await Promise.all(
+        delistedUserPositionsSymbols.map(symbol => 
+          this.cancelAllOpenOrders(symbol)
+        )
+      );
 
       if (args?.sponsor) {
         const sponsoredPayload =
@@ -1721,6 +1737,7 @@ export class BluefinClient {
     use7k?: boolean;
     slippage?: number;
     dryRunOnly?: boolean;
+    defaultSlippage?: number;
   }) => {
     try {
       if (args?.sponsor) {
@@ -1770,6 +1787,7 @@ export class BluefinClient {
       use7k?: boolean;
       slippage?: number;
       dryRunOnly?: boolean;
+      defaultSlippage?: number;
     }
   ) => {
     try {

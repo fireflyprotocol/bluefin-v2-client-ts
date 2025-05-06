@@ -54,27 +54,27 @@ function readFileServer(filePath: string): any {
     // Try to resolve the file path relative to the current working directory
     const resolvedPath = path.resolve(process.cwd(), filePath);
     if (fs.existsSync(resolvedPath)) {
-      return JSON.parse(fs.readFileSync(resolvedPath, 'utf-8'));
+      return JSON.parse(fs.readFileSync(resolvedPath, "utf-8"));
     }
-    
+
     // If not found, try to resolve relative to the package root
-    const packageRoot = path.resolve(__dirname, '..');
+    const packageRoot = path.resolve(__dirname, "..");
     const packagePath = path.resolve(packageRoot, filePath);
     if (fs.existsSync(packagePath)) {
-      return JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
+      return JSON.parse(fs.readFileSync(packagePath, "utf-8"));
     }
 
     // If still not found, try to resolve relative to the src directory
     const srcPath = path.resolve(__dirname, filePath);
     if (fs.existsSync(srcPath)) {
-      return JSON.parse(fs.readFileSync(srcPath, 'utf-8'));
+      return JSON.parse(fs.readFileSync(srcPath, "utf-8"));
     }
 
     // If all else fails, return the imported JSON
-    if (filePath === 'spotDeployment.json') {
+    if (filePath === "spotDeployment.json") {
       return spotDeployment;
     }
-    if (filePath === 'proDeployment.json') {
+    if (filePath === "proDeployment.json") {
       return proDeployment;
     }
 
@@ -84,28 +84,28 @@ function readFileServer(filePath: string): any {
       - ${srcPath}`);
     return {};
   } catch (error) {
-    console.error('Error reading configuration file:', error);
+    console.error("Error reading configuration file:", error);
     return {};
   }
 }
 
 function readFileBrowser(filePath: string): any {
   try {
-    if (filePath === 'spotDeployment.json') {
+    if (filePath === "spotDeployment.json") {
       return spotDeployment;
     }
-    if (filePath === 'proDeployment.json') {
+    if (filePath === "proDeployment.json") {
       return proDeployment;
     }
     return {};
   } catch (error) {
-    console.error('Error reading deployment data in browser:', error);
+    console.error("Error reading deployment data in browser:", error);
     return {};
   }
 }
 
 export function readFile(filePath: string): any {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return readFileServer(filePath);
   }
   return readFileBrowser(filePath);
@@ -233,11 +233,11 @@ export function getSpotDeploymentConfig(
   try {
     const networkType = isMainnet(network) ? "mainnet" : "testnet";
     const spotConfig = readFile("spotDeployment.json");
-    
+
     if (!spotConfig || !spotConfig[networkType]) {
       throw new Error(`No configuration found for network: ${networkType}`);
     }
-    
+
     return spotConfig[networkType] as IBluefinSpotContracts;
   } catch (error) {
     console.error("Error reading spot deployment config:", error);
@@ -249,11 +249,11 @@ export function getProDeploymentConfig(network: ExtendedNetwork): IDeployment {
   try {
     const networkType = isMainnet(network) ? "mainnet" : "testnet";
     const proConfig = readFile("proDeployment.json");
-    
+
     if (!proConfig || !proConfig[networkType]) {
       throw new Error(`No configuration found for network: ${networkType}`);
     }
-    
+
     return proConfig[networkType] as IDeployment;
   } catch (error) {
     console.error("Error reading pro deployment config:", error);

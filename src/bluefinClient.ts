@@ -1605,7 +1605,7 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: "Closed delisted Positions and Withdraw Margin Successful",
+            message: "Positions closed and margin withdrawn successfully",
           };
         }
 
@@ -1613,7 +1613,7 @@ export class BluefinClient {
           !sponsorTxResponse?.ok &&
           sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
         ) {
-          return this.closeAllDelistedPositionsWithdrawSwapAndDepositToPro({
+          return this.closeAllDelistedPositionsAndWithdrawMargin({
             ...args,
             sponsor: false,
           });
@@ -1702,7 +1702,7 @@ export class BluefinClient {
             code: 200,
             data: sponsorTxResponse,
             message:
-              "Closed delisted Positions, withdrew swap and deposited to Pro Successful",
+              "Positions closed, margin withdrawn, swapped for native USDC, and deposited to Pro successfully",
           };
         }
 

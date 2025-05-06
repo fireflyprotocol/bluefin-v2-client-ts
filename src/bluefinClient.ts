@@ -1583,7 +1583,7 @@ export class BluefinClient {
 
       // cancel open orders for delisted markets
       await Promise.all(
-        delistedUserPositionsSymbols.map(symbol => 
+        delistedUserPositionsSymbols.map((symbol) =>
           this.cancelAllOpenOrders(symbol)
         )
       );
@@ -1681,7 +1681,7 @@ export class BluefinClient {
 
       // cancel open orders for delisted markets
       await Promise.all(
-        delistedUserPositionsSymbols.map(symbol => 
+        delistedUserPositionsSymbols.map((symbol) =>
           this.cancelAllOpenOrders(symbol)
         )
       );

@@ -73,13 +73,13 @@ export const TransformToResponseSchema = async (
           true
         );
       }
-      if(Transaction.getError(tx)) {
+      if (Transaction.getError(tx)) {
         return handleResponse(
           {
             data: tx,
-          message: Transaction.getError(tx),
-          code: 400,
-        },
+            message: Transaction.getError(tx),
+            code: 400,
+          },
           false
         );
       }

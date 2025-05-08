@@ -1574,11 +1574,16 @@ export class BluefinClient {
       }      
 
       // cancel open orders for delisted markets
-      await Promise.all(
-        delistedMarkets.map((symbol) =>
-          this.cancelAllOpenOrders(symbol)
-        )
-      );
+      try {
+        await Promise.all(
+          delistedMarkets.map((symbol) =>
+            this.cancelAllOpenOrders(symbol)
+          )
+        );
+      } catch (error) {
+        // Silently handle "no orders to cancel" error and continue execution
+        console.log("Error during cancellation:", error.message);
+      }
 
       // create PTB and execute
       if (args?.sponsor && args?.sponsor == true) {
@@ -1664,11 +1669,16 @@ export class BluefinClient {
       }
 
       // cancel open orders for delisted markets
-      await Promise.all(
-        delistedMarkets.map((symbol) =>
-          this.cancelAllOpenOrders(symbol)
-        )
-      );
+      try {
+        await Promise.all(
+          delistedMarkets.map((symbol) =>
+            this.cancelAllOpenOrders(symbol)
+          )
+        );
+      } catch (error) {
+        // Silently handle "no orders to cancel" error and continue execution
+        console.log("Error during cancellation:", error.message);
+      }
 
       if (args?.sponsor) {
         const sponsoredPayload =

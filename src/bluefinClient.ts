@@ -1571,14 +1571,12 @@ export class BluefinClient {
             return delistedMarkets.includes(position.symbol);
           })
           .map((position) => position.symbol);
-      }      
+      }
 
       // cancel open orders for delisted markets
       try {
         await Promise.all(
-          delistedMarkets.map((symbol) =>
-            this.cancelAllOpenOrders(symbol)
-          )
+          delistedMarkets.map((symbol) => this.cancelAllOpenOrders(symbol))
         );
       } catch (error) {
         // Silently handle "no orders to cancel" error and continue execution
@@ -1671,9 +1669,7 @@ export class BluefinClient {
       // cancel open orders for delisted markets
       try {
         await Promise.all(
-          delistedMarkets.map((symbol) =>
-            this.cancelAllOpenOrders(symbol)
-          )
+          delistedMarkets.map((symbol) => this.cancelAllOpenOrders(symbol))
         );
       } catch (error) {
         // Silently handle "no orders to cancel" error and continue execution

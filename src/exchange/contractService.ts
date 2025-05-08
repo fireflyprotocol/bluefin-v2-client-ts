@@ -158,7 +158,6 @@ export class ContractCalls {
         this.signer,
         this.walletAddress
       );
-      console.log("r: ", r);
       return r;
     }, interpolate(SuccessMessages.withdrawMargin, { amount: "all" }));
   };

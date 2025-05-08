@@ -1,6 +1,6 @@
 {
   "testnet": {
-    "Package": "0x335e0a2fd9d200cbf6201f9018d1bf44f9f200b871bc9edba1737fe08637bfc7",
+    "Package": "0x290687a5edff3ed17721db9571865a0cb8a321ce29c77af619a7ff4b32cfc27c",
     "TreasuryCap": "0x553bce30a5833421c1dcefa888e0fd95712eb6d1d08919743ebac4560b8f3dbd",
     "InternalDataStore": "0x9685447682fb593fdf77f674b796a2843a5455196bf026129e77bca08bd7ba3f",
     "UpgradeCap": "0x9e8216cd8bd8918d619e1bfa104c90a6db3f7396c5e28f277c53ef19fa01a743",

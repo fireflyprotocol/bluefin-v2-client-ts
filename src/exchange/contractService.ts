@@ -606,19 +606,25 @@ export class ContractCalls {
       defaultSlippage?: number;
     }
   ) => {
-    return TransformToResponseSchema(async () => {
-      try {
-        return await this.onChainCalls.closeAllPositionsWithdrawSwapAndDepositToProPTB(
-          delistedMarketPositions,
-          this.spotOnchain,
-          this.proOnchain,
-          this.walletAddress || this.signer.toSuiAddress(),
-          args
-        );
-      } catch (error) {
-        return error;
-      }
-    }, interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, { amount: "all" }));
+    return TransformToResponseSchema(
+      async () => {
+        try {
+          return await this.onChainCalls.closeAllPositionsWithdrawSwapAndDepositToProPTB(
+            delistedMarketPositions,
+            this.spotOnchain,
+            this.proOnchain,
+            this.walletAddress || this.signer.toSuiAddress(),
+            args
+          );
+        } catch (error) {
+          return error;
+        }
+      },
+      interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, {
+        amount: "all",
+      }),
+      args?.sponsor
+    );
   };
 
   withdrawAllSwapAndDepositToProPTB = async (args?: {
@@ -629,18 +635,22 @@ export class ContractCalls {
     dryRunOnly?: boolean;
     defaultSlippage?: number;
   }) => {
-    return TransformToResponseSchema(async () => {
-      try {
-        return await this.onChainCalls.withdrawAllSwapAndDepositToProPTB(
-          this.spotOnchain,
-          this.proOnchain,
-          this.walletAddress || this.signer.toSuiAddress(),
-          args
-        );
-      } catch (error) {
-        return error;
-      }
-    }, interpolate(SuccessMessages.swapAndDepositToPro, { amount: "all" }));
+    return TransformToResponseSchema(
+      async () => {
+        try {
+          return await this.onChainCalls.withdrawAllSwapAndDepositToProPTB(
+            this.spotOnchain,
+            this.proOnchain,
+            this.walletAddress || this.signer.toSuiAddress(),
+            args
+          );
+        } catch (error) {
+          return error;
+        }
+      },
+      interpolate(SuccessMessages.swapAndDepositToPro, { amount: "all" }),
+      args?.sponsor
+    );
   };
 
   swapAndDepositToProPTB = async (
@@ -654,18 +664,50 @@ export class ContractCalls {
       defaultSlippage?: number;
     }
   ) => {
-    return TransformToResponseSchema(async () => {
-      try {
-        return await this.onChainCalls.swapAndDepositToProPTB(
-          amount,
-          this.spotOnchain,
-          this.proOnchain,
-          this.walletAddress || this.signer.toSuiAddress(),
-          args
-        );
-      } catch (error) {
-        return error;
-      }
-    }, interpolate(SuccessMessages.swapAndDepositToPro, { amount }));
+    return TransformToResponseSchema(
+      async () => {
+        try {
+          return await this.onChainCalls.swapAndDepositToProPTB(
+            amount,
+            this.spotOnchain,
+            this.proOnchain,
+            this.walletAddress || this.signer.toSuiAddress(),
+            args
+          );
+        } catch (error) {
+          return error;
+        }
+      },
+      interpolate(SuccessMessages.swapAndDepositToPro, { amount }),
+      args?.sponsor
+    );
+  };
+  depositToProPTB = async (
+    amount: number,
+    args?: {
+      gasBudget?: number;
+      sponsor?: boolean;
+      use7k?: boolean;
+      slippage?: number;
+      dryRunOnly?: boolean;
+      defaultSlippage?: number;
+    }
+  ) => {
+    return TransformToResponseSchema(
+      async () => {
+        try {
+          return await this.onChainCalls.depositToProPTB(
+            amount,
+            this.proOnchain,
+            this.walletAddress || this.signer.toSuiAddress(),
+            args
+          );
+        } catch (error) {
+          return error;
+        }
+      },
+      interpolate(SuccessMessages.swapAndDepositToPro, { amount }),
+      args?.sponsor
+    );
   };
 }

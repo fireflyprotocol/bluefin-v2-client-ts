@@ -682,32 +682,4 @@ export class ContractCalls {
       args?.sponsor
     );
   };
-  depositToProPTB = async (
-    amount: number,
-    args?: {
-      gasBudget?: number;
-      sponsor?: boolean;
-      use7k?: boolean;
-      slippage?: number;
-      dryRunOnly?: boolean;
-      defaultSlippage?: number;
-    }
-  ) => {
-    return TransformToResponseSchema(
-      async () => {
-        try {
-          return await this.onChainCalls.depositToProPTB(
-            amount,
-            this.proOnchain,
-            this.walletAddress || this.signer.toSuiAddress(),
-            args
-          );
-        } catch (error) {
-          return error;
-        }
-      },
-      interpolate(SuccessMessages.swapAndDepositToPro, { amount }),
-      args?.sponsor
-    );
-  };
 }

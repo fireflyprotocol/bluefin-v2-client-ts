@@ -1683,8 +1683,22 @@ export class BluefinClient {
   getUserAccountData = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetAccountDataResponse>(
       SERVICE_URLS.USER.ACCOUNT,
-      { parentAddress },
-      { isAuthenticationRequired: true }
+      {parentAddress},
+      {isAuthenticationRequired: true}
+    );
+    return response;
+  };
+
+  /**
+   * @description
+   * Gets if user has account value
+   * @returns boolean
+   */
+  hasAccountValue = async (userAddress?: string) => {
+    const response = await this.apiService.get<boolean>(
+      SERVICE_URLS.USER.HAS_ACCOUNT_VALUE,
+      { userAddress },
+      { isAuthenticationRequired: false }
     );
     return response;
   };

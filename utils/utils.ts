@@ -8,12 +8,19 @@ import {
   SignatureWithBytes,
   toBigNumberStr,
 } from "@firefly-exchange/library-sui";
+import { ExtendedNetwork } from "../src/interfaces/routes";
 import fs from "fs";
 import { toHex } from "@firefly-exchange/library-sui/dist/src";
 import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
-import deploymentData from "../deployment.json";
 import CustomError from "../src/interfaces";
 import { Errors } from "../src/constants";
+import { IBluefinSpotContracts } from "@firefly-exchange/library-sui/dist/src/spot";
+import { IDeployment } from "@firefly-exchange/library-sui/dist/src/v3";
+import path from "path";
+
+// Import the deployment files directly
+import spotDeployment from "../spotDeployment.json";
+import proDeployment from "../proDeployment.json";
 
 /**
  * Generates random number
@@ -43,19 +50,65 @@ export function getSignerFromSeed(seed: string): Keypair {
 }
 
 function readFileServer(filePath: string): any {
-  return fs.existsSync(filePath)
-    ? JSON.parse(fs.readFileSync(filePath).toString())
-    : {};
+  try {
+    // Try to resolve the file path relative to the current working directory
+    const resolvedPath = path.resolve(process.cwd(), filePath);
+    if (fs.existsSync(resolvedPath)) {
+      return JSON.parse(fs.readFileSync(resolvedPath, "utf-8"));
+    }
+
+    // If not found, try to resolve relative to the package root
+    const packageRoot = path.resolve(__dirname, "..");
+    const packagePath = path.resolve(packageRoot, filePath);
+    if (fs.existsSync(packagePath)) {
+      return JSON.parse(fs.readFileSync(packagePath, "utf-8"));
+    }
+
+    // If still not found, try to resolve relative to the src directory
+    const srcPath = path.resolve(__dirname, filePath);
+    if (fs.existsSync(srcPath)) {
+      return JSON.parse(fs.readFileSync(srcPath, "utf-8"));
+    }
+
+    // If all else fails, return the imported JSON
+    if (filePath === "spotDeployment.json") {
+      return spotDeployment;
+    }
+    if (filePath === "proDeployment.json") {
+      return proDeployment;
+    }
+
+    console.warn(`Configuration file not found at any of these paths:
+      - ${resolvedPath}
+      - ${packagePath}
+      - ${srcPath}`);
+    return {};
+  } catch (error) {
+    console.error("Error reading configuration file:", error);
+    return {};
+  }
 }
 
-function readFileBrowser(): any {
-  return deploymentData;
+function readFileBrowser(filePath: string): any {
+  try {
+    if (filePath === "spotDeployment.json") {
+      return spotDeployment;
+    }
+    if (filePath === "proDeployment.json") {
+      return proDeployment;
+    }
+    return {};
+  } catch (error) {
+    console.error("Error reading deployment data in browser:", error);
+    return {};
+  }
 }
 
 export function readFile(filePath: string): any {
-  return typeof window === "undefined"
-    ? readFileServer(filePath)
-    : readFileBrowser();
+  if (typeof window === "undefined") {
+    return readFileServer(filePath);
+  }
+  return readFileBrowser(filePath);
 }
 
 export async function setupTestAccounts(
@@ -132,82 +185,78 @@ export function throwCustomError({
   if (typeof error === "string") error = new Error(error);
   throw new CustomError(error, code, extra);
 }
+// Helper function to check if exchangeInfo.data is an object or array
+export function filterDelistedMarkets(exchangeInfo: any): string[] {
+  if (!exchangeInfo?.data) {
+    return [];
+  }
 
-// export async function performTrade(
-//   onChain: OnChainCalls,
-//   deployerSigner: RawSigner,
-//   makerOrder: OrderSignatureResponse,
-//   takerOrder: OrderSignatureResponse,
-//   tradePrice: number
-// ): Promise<[boolean, SuiTransactionBlockResponse]> {
-//   const tx1 = await onChain.createSettlementOperator({
-//     operator: await deployerSigner.getAddress(),
-//     gasBudget: 400000000,
-//   });
-//   const settlementCapID = Transaction.getCreatedObjectIDs(tx1)[0];
-//   // Note: Assuming deployer is already price oracle operator
-//   // make admin of the exchange price oracle operator
-//   const tx2 = await onChain.setPriceOracleOperator({
-//     operator: await deployerSigner.getAddress(),
-//     gasBudget: 400000000,
-//   });
-//   const updateOPCapID = Transaction.getCreatedObjectIDs(tx2)[0];
+  const status = "DELISTED";
 
-//   // set specific price on oracle
-//   const tx3 = await onChain.updateOraclePrice({
-//     price: toBigNumberStr(tradePrice),
-//     updateOPCapID,
-//     perpID: onChain.getPerpetualID(makerOrder.symbol),
-//     gasBudget: 400000000,
-//   });
-//   let status = Transaction.getStatus(tx3);
-//   const makerOnChainOrder: Order = {
-//     market: onChain.getPerpetualID(makerOrder.symbol),
-//     maker: makerOrder.maker,
-//     isBuy: makerOrder.side === ORDER_SIDE.BUY,
-//     reduceOnly: makerOrder.reduceOnly,
-//     postOnly: makerOrder.postOnly,
-//     orderbookOnly: makerOrder.orderbookOnly,
-//     ioc: makerOrder.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
-//     quantity: toBigNumber(makerOrder.quantity),
-//     price: toBigNumber(makerOrder.price),
-//     leverage: toBigNumber(makerOrder.leverage),
-//     expiration: toBigNumber(makerOrder.expiration),
-//     salt: toBigNumber(makerOrder.salt),
-//   };
-//   const TakerOnChainOrder: Order = {
-//     market: onChain.getPerpetualID(makerOrder.symbol),
-//     maker: takerOrder.maker,
-//     isBuy: takerOrder.side === ORDER_SIDE.BUY,
-//     reduceOnly: takerOrder.reduceOnly,
-//     postOnly: takerOrder.postOnly,
-//     orderbookOnly: takerOrder.orderbookOnly,
-//     ioc: takerOrder.timeInForce === TIME_IN_FORCE.IMMEDIATE_OR_CANCEL,
-//     quantity: toBigNumber(takerOrder.quantity),
-//     price: toBigNumber(takerOrder.price),
-//     leverage: toBigNumber(takerOrder.leverage),
-//     expiration: toBigNumber(takerOrder.expiration),
-//     salt: toBigNumber(takerOrder.salt),
-//   };
-//   const tx = await onChain.trade({
-//     makerOrder: makerOnChainOrder,
-//     takerOrder: TakerOnChainOrder,
-//     makerSignature: makerOrder.orderSignature,
-//     takerSignature: takerOrder.orderSignature,
-//     settlementCapID,
-//     gasBudget: 400000000,
-//     perpID: onChain.getPerpetualID(makerOrder.symbol),
-//   });
+  if (Array.isArray(exchangeInfo.data)) {
+    const filtered = exchangeInfo.data
+      .filter((market: any) => {
+        return market.status === status; // Changed == to === for strict comparison
+      })
+      .map((market: any) => market.symbol);
+    return filtered;
+  } else if (typeof exchangeInfo.data === "object") {
+    return exchangeInfo.data.status === status
+      ? [exchangeInfo.data.symbol]
+      : []; // Changed == to === for strict comparison
+  }
 
-//   status = Transaction.getStatus(tx);
-//   if (status === "success") {
-//     console.log("Transaction success");
-//     return [true, tx];
-//   }
-//   if (status === "failure") {
-//     console.log("Error:", Transaction.getError(tx));
-//     return [false, tx];
-//   }
-//   console.log("Transaction status %s", status);
-//   return [false, tx];
-// }
+  return [];
+}
+
+/**
+ * Determines if the network is mainnet based on ExtendedNetwork
+ * @param network ExtendedNetwork
+ * @returns boolean indicating if network is mainnet
+ */
+export function isMainnet(network: ExtendedNetwork): boolean {
+  return (
+    network.name?.toLowerCase().includes("production") ||
+    network.apiGateway?.toLowerCase().includes("sui-prod") ||
+    false
+  );
+}
+
+/**
+ * Reads spot deployment configuration based on network type
+ * @param network ExtendedNetwork
+ * @returns IBluefinSpotContracts configuration
+ */
+export function getSpotDeploymentConfig(
+  network: ExtendedNetwork
+): IBluefinSpotContracts {
+  try {
+    const networkType = isMainnet(network) ? "mainnet" : "testnet";
+    const spotConfig = readFile("spotDeployment.json");
+
+    if (!spotConfig || !spotConfig[networkType]) {
+      throw new Error(`No configuration found for network: ${networkType}`);
+    }
+
+    return spotConfig[networkType] as IBluefinSpotContracts;
+  } catch (error) {
+    console.error("Error reading spot deployment config:", error);
+    throw error;
+  }
+}
+
+export function getProDeploymentConfig(network: ExtendedNetwork): IDeployment {
+  try {
+    const networkType = isMainnet(network) ? "mainnet" : "testnet";
+    const proConfig = readFile("proDeployment.json");
+
+    if (!proConfig || !proConfig[networkType]) {
+      throw new Error(`No configuration found for network: ${networkType}`);
+    }
+
+    return proConfig[networkType] as IDeployment;
+  } catch (error) {
+    console.error("Error reading pro deployment config:", error);
+    throw error;
+  }
+}

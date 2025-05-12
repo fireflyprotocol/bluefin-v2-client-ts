@@ -49,6 +49,7 @@ import { sha256 } from "@noble/hashes/sha256";
 import { parseSerializedSignature } from "@mysten/sui/cryptography";
 import {
   combineAndEncode,
+  filterDelistedMarkets,
   generateRandomNumber,
   throwCustomError,
 } from "../utils/utils";
@@ -415,6 +416,7 @@ export class BluefinClient {
       this.getSigner(),
       _deployment,
       this.provider,
+      this.network,
       this.isZkLogin,
       this.getZkPayload(),
       this.walletAddress,
@@ -1536,6 +1538,288 @@ export class BluefinClient {
       return this.contractCalls.withdrawFromMarginBankContractCall(amount);
     }
     return this.contractCalls.withdrawAllFromMarginBankContractCall();
+  };
+
+  closeAllDelistedPositionsAndWithdrawMargin = async (args?: {
+    gasBudget?: number;
+    sponsor?: boolean;
+    dryRunOnly?: boolean;
+  }) => {
+    try {
+      // get exchange info of all markets to read the status
+      const exchangeInfo = await this.getExchangeInfo();
+      const delistedMarkets = filterDelistedMarkets(exchangeInfo);
+
+      if (delistedMarkets.length <= 0) {
+        return {
+          ok: false,
+          code: 400,
+          data: "",
+          message: "No delisted markets",
+        };
+      }
+
+      //get user positions
+      const userPositions = await this.getUserPosition({});
+
+      let delistedUserPositionsSymbols: string[] = [];
+      //get delisted market positions
+      //if user doesn't have positions in delisted markets, closeAllPositionsAndWithdrawMarginPTB internally handles not adding any close position call to PTB
+      if (userPositions.data && userPositions.data.length > 0) {
+        delistedUserPositionsSymbols = userPositions.data
+          .filter((position) => {
+            return delistedMarkets.includes(position.symbol);
+          })
+          .map((position) => position.symbol);
+      }
+
+      // cancel open orders for delisted markets
+      try {
+        await Promise.all(
+          delistedMarkets.map((symbol) => this.cancelAllOpenOrders(symbol))
+        );
+      } catch (error) {
+        // Silently handle "no orders to cancel" error and continue execution
+        console.log("Error during cancellation:", error.message);
+      }
+
+      // create PTB and execute
+      if (args?.sponsor && args?.sponsor == true) {
+        const sponsoredPayload =
+          await this.contractCalls.closeAllPositionsAndWithdrawMarginPTB(
+            delistedUserPositionsSymbols,
+            args
+          );
+
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsoredPayload
+        );
+
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            data: sponsorTxResponse,
+            message: "Positions closed and margin withdrawn successfully",
+          };
+        }
+
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.closeAllDelistedPositionsAndWithdrawMargin({
+            ...args,
+            sponsor: false,
+          });
+        }
+      }
+
+      //unsponsored call
+      return await this.contractCalls.closeAllPositionsAndWithdrawMarginPTB(
+        delistedUserPositionsSymbols,
+        args
+      );
+    } catch (e) {
+      return {
+        ok: false,
+        code: 400,
+        data: "",
+        message: e.message,
+      };
+    }
+  };
+
+  closeAllDelistedPositionsWithdrawSwapAndDepositToPro = async (args?: {
+    gasBudget?: number;
+    sponsor?: boolean;
+    use7k?: boolean;
+    slippage?: number;
+    dryRunOnly?: boolean;
+    defaultSlippage?: number;
+  }) => {
+    try {
+      //get exchange info of all markets to read the status
+      const exchangeInfo = await this.getExchangeInfo();
+      const delistedMarkets = filterDelistedMarkets(exchangeInfo);
+
+      if (delistedMarkets.length <= 0) {
+        return {
+          ok: false,
+          code: 400,
+          data: "",
+          message: "No delisted markets",
+        };
+      }
+
+      //get user positions
+      const userPositions = await this.getUserPosition({});
+
+      let delistedUserPositionsSymbols: string[] = [];
+      //get delisted market positions
+      //if user doesn't have positions in delisted markets, closeAllPositionsdWithdrawSwapAndDepositToProPTB internally handles not adding any close position call to PTB
+      if (userPositions.data && userPositions.data.length > 0) {
+        delistedUserPositionsSymbols = userPositions.data
+          .filter((position) => {
+            return delistedMarkets.includes(position.symbol);
+          })
+          .map((position) => position.symbol);
+      }
+
+      // cancel open orders for delisted markets
+      try {
+        await Promise.all(
+          delistedMarkets.map((symbol) => this.cancelAllOpenOrders(symbol))
+        );
+      } catch (error) {
+        // Silently handle "no orders to cancel" error and continue execution
+        console.log("Error during cancellation:", error.message);
+      }
+
+      if (args?.sponsor) {
+        const sponsoredPayload =
+          await this.contractCalls.closeAllPositionsdWithdrawSwapAndDepositToProPTB(
+            delistedUserPositionsSymbols,
+            args
+          );
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsoredPayload
+        );
+
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            data: sponsorTxResponse,
+            message:
+              "Positions closed, margin withdrawn, swapped for native USDC, and deposited to Pro successfully",
+          };
+        }
+
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.closeAllDelistedPositionsWithdrawSwapAndDepositToPro({
+            ...args,
+            sponsor: false,
+          });
+        }
+      }
+
+      return await this.contractCalls.closeAllPositionsdWithdrawSwapAndDepositToProPTB(
+        delistedUserPositionsSymbols,
+        args
+      );
+    } catch (e) {
+      return {
+        ok: false,
+        code: 400,
+        data: "",
+        message: e.message,
+      };
+    }
+  };
+
+  withdrawAllWusdcSwapAndDepositToPro = async (args?: {
+    gasBudget?: number;
+    sponsor?: boolean;
+    use7k?: boolean;
+    slippage?: number;
+    dryRunOnly?: boolean;
+    defaultSlippage?: number;
+  }) => {
+    try {
+      if (args?.sponsor) {
+        const sponsoredPayload =
+          await this.contractCalls.withdrawAllSwapAndDepositToProPTB(args);
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsoredPayload
+        );
+
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            data: sponsorTxResponse,
+            message: "Withdraw, Swap and Deposit to Pro Successful",
+          };
+        }
+        // if sponsor fails and not rejected by user, then retry with unsponsored call
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.withdrawAllWusdcSwapAndDepositToPro({
+            ...args,
+            sponsor: false,
+          });
+        }
+      }
+
+      //unsponsored call
+      return await this.contractCalls.withdrawAllSwapAndDepositToProPTB(args);
+    } catch (e) {
+      return {
+        ok: false,
+        code: 400,
+        data: "",
+        message: e.message,
+      };
+    }
+  };
+
+  swapWusdcAndDepositToPro = async (
+    amount: number,
+    args?: {
+      gasBudget?: number;
+      sponsor?: boolean;
+      use7k?: boolean;
+      slippage?: number;
+      dryRunOnly?: boolean;
+      defaultSlippage?: number;
+    }
+  ) => {
+    try {
+      if (args?.sponsor) {
+        const sponsoredPayload =
+          await this.contractCalls.swapAndDepositToProPTB(amount, args);
+
+        const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
+          sponsoredPayload
+        );
+
+        if (sponsorTxResponse?.ok) {
+          return {
+            ok: true,
+            code: 200,
+            data: sponsorTxResponse,
+            message: "Swap and Deposit to Pro Successful",
+          };
+        }
+
+        // if sponsor fails and not rejected by user, then retry with unsponsored call
+        if (
+          !sponsorTxResponse?.ok &&
+          sponsorTxResponse?.message !== USER_REJECTED_MESSAGE
+        ) {
+          return this.swapWusdcAndDepositToPro(amount, {
+            ...args,
+            sponsor: false,
+          });
+        }
+      }
+
+      //unsponsored call
+      return await this.contractCalls.swapAndDepositToProPTB(amount, args);
+    } catch (e) {
+      return {
+        ok: false,
+        code: 400,
+        data: "",
+        message: e.message,
+      };
+    }
   };
 
   /**

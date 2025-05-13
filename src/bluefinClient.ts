@@ -156,7 +156,6 @@ import {
   VaultDetail,
   VerifyWalletStatusResponse,
 } from "./interfaces/routes";
-import { ValidateTx } from "@firefly-exchange/library-sui";
 
 export class BluefinClient {
   protected readonly network: ExtendedNetwork;
@@ -1603,9 +1602,12 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: interpolate(SuccessMessages.closedDelistedPositionsAndWithdrawMargin, {
-              amount: "all",
-            }),
+            message: interpolate(
+              SuccessMessages.closedDelistedPositionsAndWithdrawMargin,
+              {
+                amount: "all",
+              }
+            ),
           };
         }
 
@@ -1696,9 +1698,12 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, {
-              amount: "all",
-            }),
+            message: interpolate(
+              SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
+              {
+                amount: "all",
+              }
+            ),
           };
         }
 
@@ -1973,8 +1978,8 @@ export class BluefinClient {
   getUserAccountData = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetAccountDataResponse>(
       SERVICE_URLS.USER.ACCOUNT,
-      {parentAddress},
-      {isAuthenticationRequired: true}
+      { parentAddress },
+      { isAuthenticationRequired: true }
     );
     return response;
   };

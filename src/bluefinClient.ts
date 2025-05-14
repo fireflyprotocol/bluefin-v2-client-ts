@@ -36,6 +36,7 @@ import {
   Keypair,
 } from "@firefly-exchange/library-sui/dist";
 import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import interpolate from "interpolate";
 
 import {
   toBase64,
@@ -63,6 +64,7 @@ import { APIService } from "./exchange/apiService";
 import { SERVICE_URLS, VAULT_URLS } from "./exchange/apiUrls";
 import {
   ResponseSchema,
+  SuccessMessages,
   VaultTVLInterval,
 } from "./exchange/contractErrorHandling.service";
 import { ContractCalls } from "./exchange/contractService";
@@ -1600,7 +1602,12 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: "Positions closed and margin withdrawn successfully",
+            message: interpolate(
+              SuccessMessages.closedDelistedPositionsAndWithdrawMargin,
+              {
+                amount: "all",
+              }
+            ),
           };
         }
 
@@ -1691,8 +1698,12 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message:
-              "Positions closed, margin withdrawn, swapped for native USDC, and deposited to Pro successfully",
+            message: interpolate(
+              SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
+              {
+                amount: "all",
+              }
+            ),
           };
         }
 
@@ -1967,8 +1978,8 @@ export class BluefinClient {
   getUserAccountData = async (parentAddress?: string) => {
     const response = await this.apiService.get<GetAccountDataResponse>(
       SERVICE_URLS.USER.ACCOUNT,
-      {parentAddress},
-      {isAuthenticationRequired: true}
+      { parentAddress },
+      { isAuthenticationRequired: true }
     );
     return response;
   };

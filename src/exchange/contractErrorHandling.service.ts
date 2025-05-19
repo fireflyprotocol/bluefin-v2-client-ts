@@ -138,6 +138,7 @@ export enum SuccessMessages {
   setSubAccounts = "This {address} is successfully {status} as a subaccount",
   transferCoins = "{balance} {coin} transferred to {walletAddress}",
   swapAndDepositToPro = "Successfully swapped and deposited {amount} USDC to Pro.",
+  withdrawAllSwapAndDepositToPro = "Successfully withdrew funds, swapped, and deposited {amount} USDC to Pro.",
   closedDelistedPositionsSwapAndDepositToPro = "Successfully closed remaining positions, swapped and deposited {amount} USDC to Pro.",
   closedDelistedPositionsAndWithdrawMargin = "Successfully closed remaining positions and withdrew {amount} margin.",
 }

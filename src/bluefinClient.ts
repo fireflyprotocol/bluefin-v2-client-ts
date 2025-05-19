@@ -1552,15 +1552,6 @@ export class BluefinClient {
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      if (delistedMarkets.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted markets",
-        };
-      }
-
       //get user positions
       const userPositions = await this.getUserPosition({});
 
@@ -1650,15 +1641,6 @@ export class BluefinClient {
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      if (delistedMarkets.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted markets",
-        };
-      }
-
       //get user positions
       const userPositions = await this.getUserPosition({});
 
@@ -1689,6 +1671,8 @@ export class BluefinClient {
             delistedUserPositionsSymbols,
             args
           );
+
+        console.log("mk - sponsored payload", sponsoredPayload);
         const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
           sponsoredPayload
         );

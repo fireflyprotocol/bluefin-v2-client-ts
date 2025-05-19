@@ -27,7 +27,8 @@ interface ProviderRpcError {
 }
 export const handleResponse = (
   response: ProviderRpcError,
-  ok: boolean
+  ok: boolean,
+  customMessage?: string
 ): ResponseSchema => {
   const mutatedResponse: ResponseSchema = {
     ok,
@@ -36,11 +37,13 @@ export const handleResponse = (
       "originalError.transaction",
       response.data
     ),
-    message: getValue(
-      response.data as object,
-      "originalError.reason",
-      response.message
-    ),
+    message:
+      customMessage ||
+      getValue(
+        response.data as object,
+        "originalError.reason",
+        response.message
+      ),
     code: getValue(
       response.data as object,
       "originalError.code",
@@ -48,6 +51,7 @@ export const handleResponse = (
     ),
     stack: response.message,
   };
+
   return mutatedResponse;
 };
 
@@ -81,6 +85,23 @@ export const TransformToResponseSchema = async (
             code: 400,
           },
           false
+        );
+      }
+
+      const errorMessage = tx.toString();
+      if (
+        errorMessage.includes("MoveAbort") &&
+        errorMessage.includes("deposit_to_asset_bank") &&
+        errorMessage.includes("1030")
+      ) {
+        return handleResponse(
+          {
+            data: tx,
+            message: tx as unknown as string,
+            code: 400,
+          },
+          false,
+          "Minimum deposit to Pro is 1 USDC"
         );
       }
       return handleResponse(

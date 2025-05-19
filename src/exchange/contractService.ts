@@ -606,7 +606,15 @@ export class ContractCalls {
       defaultSlippage?: number;
     }
   ) => {
-    const successMessage = delistedMarketPositions.length > 0 ? interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, { amount: "all" }) : interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, { amount: "all" });
+    const successMessage =
+      delistedMarketPositions.length > 0
+        ? interpolate(
+            SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
+            { amount: "all" }
+          )
+        : interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, {
+            amount: "all",
+          });
     return TransformToResponseSchema(
       async () => {
         try {
@@ -647,7 +655,9 @@ export class ContractCalls {
           return error;
         }
       },
-      interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, { amount: "all" }),
+      interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, {
+        amount: "all",
+      }),
       args?.sponsor
     );
   };

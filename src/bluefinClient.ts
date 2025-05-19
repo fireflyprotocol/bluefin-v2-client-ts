@@ -1677,7 +1677,15 @@ export class BluefinClient {
         );
 
         if (sponsorTxResponse?.ok) {
-          const successMessage = delistedUserPositionsSymbols.length > 0 ? interpolate(SuccessMessages.closedDelistedPositionsSwapAndDepositToPro, { amount: "all" }) : interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, { amount: "all" });
+          const successMessage =
+            delistedUserPositionsSymbols.length > 0
+              ? interpolate(
+                  SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
+                  { amount: "all" }
+                )
+              : interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, {
+                  amount: "all",
+                });
 
           return {
             ok: true,
@@ -1733,7 +1741,10 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, { amount: "all" }),
+            message: interpolate(
+              SuccessMessages.withdrawAllSwapAndDepositToPro,
+              { amount: "all" }
+            ),
           };
         }
         // if sponsor fails and not rejected by user, then retry with unsponsored call

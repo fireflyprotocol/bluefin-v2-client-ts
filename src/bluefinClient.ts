@@ -1672,7 +1672,6 @@ export class BluefinClient {
             args
           );
 
-        console.log("mk - sponsored payload", sponsoredPayload);
         const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
           sponsoredPayload
         );

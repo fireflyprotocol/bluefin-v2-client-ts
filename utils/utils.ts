@@ -196,14 +196,14 @@ export function filterDelistedMarkets(exchangeInfo: any): string[] {
   if (Array.isArray(exchangeInfo.data)) {
     const filtered = exchangeInfo.data
       .filter((market: any) => {
-        return market.status === status; // Changed == to === for strict comparison
+        return market.status === status;
       })
       .map((market: any) => market.symbol);
     return filtered;
   } else if (typeof exchangeInfo.data === "object") {
     return exchangeInfo.data.status === status
       ? [exchangeInfo.data.symbol]
-      : []; // Changed == to === for strict comparison
+      : [];
   }
 
   return [];

@@ -1552,15 +1552,6 @@ export class BluefinClient {
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      if (delistedMarkets.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted markets",
-        };
-      }
-
       //get user positions
       const userPositions = await this.getUserPosition({});
 
@@ -1650,15 +1641,6 @@ export class BluefinClient {
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      if (delistedMarkets.length <= 0) {
-        return {
-          ok: false,
-          code: 400,
-          data: "",
-          message: "No delisted markets",
-        };
-      }
-
       //get user positions
       const userPositions = await this.getUserPosition({});
 
@@ -1689,21 +1671,27 @@ export class BluefinClient {
             delistedUserPositionsSymbols,
             args
           );
+
         const sponsorTxResponse = await this.signAndExecuteSponsoredTx(
           sponsoredPayload
         );
 
         if (sponsorTxResponse?.ok) {
+          const successMessage =
+            delistedUserPositionsSymbols.length > 0
+              ? interpolate(
+                  SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
+                  { amount: "all" }
+                )
+              : interpolate(SuccessMessages.withdrawAllSwapAndDepositToPro, {
+                  amount: "all",
+                });
+
           return {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: interpolate(
-              SuccessMessages.closedDelistedPositionsSwapAndDepositToPro,
-              {
-                amount: "all",
-              }
-            ),
+            message: successMessage,
           };
         }
 
@@ -1753,7 +1741,10 @@ export class BluefinClient {
             ok: true,
             code: 200,
             data: sponsorTxResponse,
-            message: "Withdraw, Swap and Deposit to Pro Successful",
+            message: interpolate(
+              SuccessMessages.withdrawAllSwapAndDepositToPro,
+              { amount: "all" }
+            ),
           };
         }
         // if sponsor fails and not rejected by user, then retry with unsponsored call

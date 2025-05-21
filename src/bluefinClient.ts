@@ -1824,6 +1824,54 @@ export class BluefinClient {
     }
   };
 
+  inspectEstimatedWithdrawalAndSwapAmountFrom7k = async (args?: {
+    gasBudget?: number;
+    slippage?: number;
+    dryRunOnly?: boolean;
+    defaultSlippage?: number;
+  }) => {
+    // get exchange info of all markets to read the status
+    const exchangeInfo = await this.getExchangeInfo();
+    const delistedMarkets = filterDelistedMarkets(exchangeInfo);
+
+    //get user positions
+    const userPositions = await this.getUserPosition({});
+
+    let delistedUserPositionsSymbols: string[] = [];
+    //get delisted market positions
+    //if user doesn't have positions in delisted markets, function internally handles not adding any close position call to PTB
+    if (userPositions.data && userPositions.data.length > 0) {
+      delistedUserPositionsSymbols = userPositions.data
+        .filter((position) => {
+          return delistedMarkets.includes(position.symbol);
+        })
+        .map((position) => position.symbol);
+    }
+
+    const response =
+      await this.contractCalls.inspectEstimatedWithdrawalAndSwapAmountFrom7k(
+        delistedUserPositionsSymbols,
+        args
+      );
+
+    if (response.data.swaps.length == 0) {
+      return {
+        ok: false,
+        code: 400,
+        data: "",
+        message: "No route found for swap",
+      };
+    }
+
+    // Transform the response into a standardized format
+    return {
+      ok: true,
+      code: 200,
+      data: response.data,
+      message: "Successfully estimated withdrawal and swap amounts",
+    };
+  };
+
   /**
    * @description
    * Sets subaccount to wallet.

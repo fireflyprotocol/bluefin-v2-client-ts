@@ -1870,13 +1870,13 @@ export class BluefinClient {
         data: response.data,
         message: "Successfully estimated withdrawal and swap amounts",
       };
-
     } catch (error) {
       return {
         ok: false,
         code: 400,
         data: "",
-        message: error?.message || "Error inspecting withdrawal and swap amounts",
+        message:
+          error?.message || "Error inspecting withdrawal and swap amounts",
       };
     }
   };

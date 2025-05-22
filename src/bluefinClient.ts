@@ -1848,28 +1848,37 @@ export class BluefinClient {
         .map((position) => position.symbol);
     }
 
-    const response =
-      await this.contractCalls.inspectEstimatedWithdrawalAndSwapAmountFrom7k(
-        delistedUserPositionsSymbols,
-        args
-      );
+    try {
+      const response =
+        await this.contractCalls.inspectEstimatedWithdrawalAndSwapAmountFrom7k(
+          delistedUserPositionsSymbols,
+          args
+        );
 
-    if (response.data.swaps.length == 0) {
+      if (response.data.swaps.length == 0) {
+        return {
+          ok: false,
+          code: 400,
+          data: "",
+          message: "No route found for swap",
+        };
+      }
+
+      return {
+        ok: true,
+        code: 200,
+        data: response.data,
+        message: "Successfully estimated withdrawal and swap amounts",
+      };
+
+    } catch (error) {
       return {
         ok: false,
         code: 400,
         data: "",
-        message: "No route found for swap",
+        message: error?.message || "Error inspecting withdrawal and swap amounts",
       };
     }
-
-    // Transform the response into a standardized format
-    return {
-      ok: true,
-      code: 200,
-      data: response.data,
-      message: "Successfully estimated withdrawal and swap amounts",
-    };
   };
 
   /**

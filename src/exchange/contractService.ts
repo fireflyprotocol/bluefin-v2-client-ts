@@ -691,4 +691,27 @@ export class ContractCalls {
       args?.sponsor
     );
   };
+
+  inspectEstimatedWithdrawalAndSwapAmountFrom7k = async (
+    delistedUserPositionsSymbols: string[],
+    args?: {
+      gasBudget?: number;
+      slippage?: number;
+      dryRunOnly?: boolean;
+      defaultSlippage?: number;
+    }
+  ) => {
+    return TransformToResponseSchema(async () => {
+      try {
+        return await this.onChainCalls.inspectWithdrawAllAndGetEstimatedSwapAmount(
+          delistedUserPositionsSymbols,
+          this.spotOnchain,
+          this.walletAddress || this.signer.toSuiAddress(),
+          args
+        );
+      } catch (error) {
+        return error;
+      }
+    }, "Inspected estimated withdrawal and swap amount");
+  };
 }

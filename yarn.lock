@@ -538,7 +538,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bluefin-exchange/bluefin-v2-client@workspace:."
   dependencies:
-    "@firefly-exchange/library-sui": "npm:2.6.18"
+    "@firefly-exchange/library-sui": "npm:2.7.0-beta.1"
     "@mysten/sui": "npm:^1.30.0"
     "@mysten/zklogin": "npm:^0.7.22"
     "@noble/hashes": "npm:^1.2.0"
@@ -1069,15 +1069,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firefly-exchange/library-sui@npm:2.6.18":
-  version: 2.6.18
-  resolution: "@firefly-exchange/library-sui@npm:2.6.18"
+"@firefly-exchange/library-sui@npm:2.7.0-beta.1":
+  version: 2.7.0-beta.1
+  resolution: "@firefly-exchange/library-sui@npm:2.7.0-beta.1"
   dependencies:
     "@7kprotocol/sdk-ts": "npm:^2.4.1"
     "@aws-sdk/client-kms": "npm:^3.438.0"
     "@mysten/bcs": "npm:^1.1.0"
     "@mysten/dapp-kit": "npm:^0.14.25"
-    "@mysten/sui": "npm:^1.21.1"
+    "@mysten/sui": "npm:^1.30.0"
     "@mysten/wallet-standard": "npm:^0.13.7"
     "@mysten/zklogin": "npm:^0.7.22"
     "@noble/hashes": "npm:^1.2.0"
@@ -1100,7 +1100,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     yargs: "npm:^17.6.2"
     yarn: "npm:^1.22.19"
-  checksum: 10c0/d1fa8134ff1b4a576dedc3f25141a6c1827f70ef752548bd52de998e5c62936dce14d2acd1af2c5823e8b1f5088c70e816ec221fc6d71f23d406172b7f1aace7
+  checksum: 10c0/25e6799de7b21f4508b66b08493c7f413ea9540387c1510639ff0129718c7014209270040f559f34c616fcdd5e0ba2eb043b5571a15a206d784808ef92654f5a
   languageName: node
   linkType: hard
 

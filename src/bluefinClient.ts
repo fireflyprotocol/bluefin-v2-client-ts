@@ -1542,6 +1542,16 @@ export class BluefinClient {
     return this.contractCalls.withdrawAllFromMarginBankContractCall();
   };
 
+  closeDelistedPosition = async (
+    symbol: MarketSymbol,
+    args?: {
+      gasBudget?: number;
+      dryRunOnly?: boolean;
+    }
+  ) => {
+    return this.contractCalls.closeDelistedPositionContractCall(symbol, args);
+  };
+
   closeAllDelistedPositionsAndWithdrawMargin = async (args?: {
     gasBudget?: number;
     sponsor?: boolean;

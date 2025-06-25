@@ -141,6 +141,7 @@ export enum SuccessMessages {
   withdrawAllSwapAndDepositToPro = "Successfully withdrew funds, swapped, and deposited {amount} USDC to Pro.",
   closedDelistedPositionsSwapAndDepositToPro = "Successfully closed remaining positions, swapped and deposited {amount} USDC to Pro.",
   closedDelistedPositionsAndWithdrawMargin = "Successfully closed remaining positions and withdrew {amount} margin.",
+  closeDelistedPosition = "Successfully closed {symbol} position.",
 }
 
 export enum VerificationStatus {

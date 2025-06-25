@@ -569,6 +569,26 @@ export class ContractCalls {
     return await this.onChainCalls.getUserSuiBalance(walletAddress);
   };
 
+  closeDelistedPositionContractCall = async (
+    symbol: string,
+    args?: {
+      gasBudget?: number;
+    }
+  ) => {
+    const perpId = this.onChainCalls.getPerpetualID(symbol);
+    return TransformToResponseSchema(async () => {
+      try {
+        return this.onChainCalls.closePosition({
+          perpID: perpId,
+          accountAddress: this.walletAddress || this.signer.toSuiAddress(),
+          ...args,
+        });
+      } catch (error) {
+        return error;
+      }
+    }, interpolate(SuccessMessages.closeDelistedPosition, { symbol }));
+  };
+
   closeAllPositionsAndWithdrawMarginPTB = async (
     delistedMarketPositions: string[],
     args?: {

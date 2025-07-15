@@ -1,11 +1,10 @@
 import {
   getValue,
-  SuiTransactionBlockResponse,
+  type SuiTransactionBlockResponse,
   Transaction,
   TransactionBlock,
+  type DryRunTransactionBlockResponse,
 } from "@firefly-exchange/library-sui/";
-import { serializeError } from "eth-rpc-errors";
-import { DryRunTransactionBlockResponse } from "@firefly-exchange/library-sui";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;

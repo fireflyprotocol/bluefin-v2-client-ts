@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf dist",
     "test": "ts-mocha --timeout 100000 tests/*.test.ts",
     "prepare": "husky install",
     "debug": "ts-node ./scripts/myDebuger.ts",
@@ -70,7 +71,6 @@
     "chai-as-promised": "^7.1.1",
     "dotenv": "^16.1.4",
     "es6-promisify": "^7.0.0",
-    "eth-rpc-errors": "^4.0.3",
     "interpolate": "^0.1.0",
     "lodash": "^4.17.21",
     "socket.io-client": "^4.5.1",
@@ -101,5 +101,8 @@
     "fs": false,
     "net": false,
     "tls": false
+  },
+  "react-native": {
+    "path": false
   }
 }

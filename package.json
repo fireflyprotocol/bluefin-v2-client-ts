@@ -1,6 +1,6 @@
 {
   "name": "@bluefin-exchange/bluefin-v2-client",
-  "version": "6.4.0-beta.1",
+  "version": "6.4.0-beta.2",
   "description": "The Bluefin client Library allows traders to sign, create, retrieve and listen to orders on Bluefin Exchange.",
   "main": "dist/index.js",
   "scripts": {
@@ -58,7 +58,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@firefly-exchange/library-sui": "2.8.0-beta.1",
+    "@firefly-exchange/library-sui": "2.8.0-beta.3",
     "@mysten/sui": "^1.21.1",
     "@mysten/zklogin": "^0.7.22",
     "@noble/hashes": "^1.2.0",

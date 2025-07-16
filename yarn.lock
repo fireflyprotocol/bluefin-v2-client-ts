@@ -483,10 +483,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
 
-"@firefly-exchange/library-sui@2.8.0-beta.1":
-  version "2.8.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.8.0-beta.1.tgz#68b04db0e78f54520662e9466cc5d8d24c834620"
-  integrity sha512-2T/V7QX9GdmgLkHAVDd5Di3MH813KzWYXzvw9E2/03AG95tZK0vw5YuxMT1/lGc/oGTqnNTXMWHGuULAKSjoKA==
+"@firefly-exchange/library-sui@2.8.0-beta.3":
+  version "2.8.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.8.0-beta.3.tgz#976f6c848f4defeb7ae4333a02c19cfe16f49ef7"
+  integrity sha512-npxCns093+ucXo4ykrnkdN5w1269/87OPfyPXpIPqtRfDuCvfSPYHJK3w32UrWg8iOKTM+8t1TTuSXZEAOuPRQ==
   dependencies:
     "@7kprotocol/sdk-ts" "^2.4.1"
     "@aws-sdk/client-kms" "^3.438.0"

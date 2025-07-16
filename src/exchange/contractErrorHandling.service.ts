@@ -4,7 +4,7 @@ import {
   Transaction,
   TransactionBlock,
   type DryRunTransactionBlockResponse,
-} from "@firefly-exchange/library-sui/";
+} from "@firefly-exchange/library-sui";
 
 const lockErrorRetryDelayMS = 2000;
 const lockErrorMaxRetries = 5;

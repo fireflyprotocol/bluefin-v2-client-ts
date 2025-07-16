@@ -9,9 +9,8 @@ import {
   ORDER_TYPE,
   TIME_IN_FORCE,
 } from "@firefly-exchange/library-sui";
-import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
+import { SignaturePayload } from "@firefly-exchange/library-sui/blv";
 import { OffchainOrderUpdateAction } from "../constants";
-import { VaultType } from "@firefly-exchange/library-sui/dist/src";
 
 export interface GetTransactionHistoryRequest {
   symbol?: MarketSymbol; // will fetch orders of provided market

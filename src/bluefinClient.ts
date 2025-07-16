@@ -34,16 +34,15 @@ import {
   SuiTransactionBlockResponse,
   Signer,
   Keypair,
-} from "@firefly-exchange/library-sui/dist";
-import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
-import interpolate from "interpolate";
-
+} from "@firefly-exchange/library-sui";
 import {
+  type SignaturePayload,
   toBase64,
   fromBase64,
-} from "@firefly-exchange/library-sui/dist/src/blv/utils";
+} from "@firefly-exchange/library-sui/blv";
+import interpolate from "interpolate";
 
-import { SignatureScheme } from "@mysten/sui/src/cryptography/signature-scheme";
+import { SignatureScheme } from "@mysten/sui/cryptography";
 import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";

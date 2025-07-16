@@ -1,16 +1,15 @@
 import {
   BigNumberable,
   SuiClient,
-  SuiTransactionBlockResponse,
   ZkPayload,
   bnToBaseStr,
-  toBaseNumber,
-  Transaction,
 } from "@firefly-exchange/library-sui";
-import { Interactor } from "@firefly-exchange/library-sui/dist/src/blv/interactor";
+import {
+  Interactor,
+  SignaturePayload,
+} from "@firefly-exchange/library-sui/blv";
 import interpolate from "interpolate";
 
-import { SignaturePayload } from "@firefly-exchange/library-sui/dist/src/blv/interface";
 import { Signer } from "@mysten/sui/cryptography";
 import {
   ResponseSchema,

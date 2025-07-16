@@ -10,17 +10,23 @@ import {
 } from "@firefly-exchange/library-sui";
 import { ExtendedNetwork } from "../src/interfaces/routes";
 import fs from "fs";
-import { toHex } from "@firefly-exchange/library-sui/dist/src";
+import { toHex } from "@firefly-exchange/library-sui/index";
 import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
 import CustomError from "../src/interfaces";
 import { Errors } from "../src/constants";
-import { IBluefinSpotContracts } from "@firefly-exchange/library-sui/dist/src/spot";
-import { IDeployment } from "@firefly-exchange/library-sui/dist/src/v3";
-import path from "path";
+import type { IBluefinSpotContracts } from "@firefly-exchange/library-sui/spot";
+import type { IDeployment } from "@firefly-exchange/library-sui/v3";
+import { isNode } from "../src/platform";
 
 // Import the deployment files directly
 import spotDeployment from "../spotDeployment.json";
 import proDeployment from "../proDeployment.json";
+
+let path: typeof import("path") | undefined;
+
+if (isNode) {
+  path = require("path");
+}
 
 /**
  * Generates random number

@@ -27,12 +27,14 @@ import {
   throwCustomError,
 } from "../../utils/utils";
 import { Errors } from "../constants";
-import { UserCalls as ProUserOnChainCalls } from "@firefly-exchange/library-sui/dist/src/v3/on-chain-calls/user";
-import { IDeployment } from "@firefly-exchange/library-sui/dist/src/v3";
 import {
-  IBluefinSpotContracts,
+  type IDeployment,
+  UserCalls as ProUserOnChainCalls,
+} from "@firefly-exchange/library-sui/v3";
+import {
+  type IBluefinSpotContracts,
   OnChainCalls as OnChainCallsSwap,
-} from "@firefly-exchange/library-sui/dist/src/spot";
+} from "@firefly-exchange/library-sui/spot";
 import { ExtendedNetwork } from "../interfaces/routes";
 export class ContractCalls {
   onChainCalls: OnChainCalls;

@@ -2597,13 +2597,14 @@ avsc@^5.7.6:
   resolved "https://registry.yarnpkg.com/avsc/-/avsc-5.7.7.tgz#8d1b5fd85904cc96a1e439450633ff33f4aff57b"
   integrity sha512-9cYNccliXZDByFsFliVwk5GvTq058Fj513CiR4E60ndDwmuXzTJEp/Bp8FyuRmGyYupLjHLs+JA9/CBoVS4/NQ==
 
-axios@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
-  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
+axios@^0.30.0:
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.30.0.tgz#026ae2c0ae6ac35d564056690683fb77c991d0d3"
+  integrity sha512-Z4F3LjCgfjZz8BMYalWdMgAQUnEtKDmpwNHjh/C8pQZWde32TF64cqnSeyL3xD/aTIASRU30RHTNzRiV/NpGMg==
   dependencies:
-    follow-redirects "^1.14.9"
+    follow-redirects "^1.15.4"
     form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 axios@^1.7.2:
   version "1.9.0"
@@ -4152,7 +4153,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.14.9, follow-redirects@^1.15.6:
+follow-redirects@^1.15.4, follow-redirects@^1.15.6:
   version "1.15.9"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
   integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==

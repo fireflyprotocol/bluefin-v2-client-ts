@@ -2,7 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "commonjs" /* Specify what module code is generated. */,
+    "module": "nodenext" /* Specify what module code is generated. */,
     "resolveJsonModule": true /* Enable importing .json files */,
     "outDir": "dist" /* Specify an output folder for all emitted files. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */,
@@ -20,7 +20,8 @@
     "lib": [
       "es2015",
       "dom"
-    ] /* Specify library files to be included in the compilation. */
+    ] /* Specify library files to be included in the compilation. */,
+    "moduleResolution": "nodenext"
   },
-  "exclude": ["public", "dist"]
+  "exclude": ["public", "dist", "tests"]
 }

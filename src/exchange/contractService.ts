@@ -12,8 +12,17 @@ import {
   TRANSFERABLE_COINS,
   ZkPayload,
 } from "@firefly-exchange/library-sui";
-import { Signer } from "@mysten/sui/cryptography";
+
 import interpolate from "interpolate";
+import {
+  type IDeployment,
+  UserCalls as ProUserOnChainCalls,
+} from "@firefly-exchange/library-sui/v3";
+import {
+  type IBluefinSpotContracts,
+  OnChainCalls as OnChainCallsSwap,
+} from "@firefly-exchange/library-sui/spot";
+import { Signer } from "@mysten/sui/cryptography";
 import {
   ResponseSchema,
   SuccessMessages,
@@ -27,15 +36,8 @@ import {
   throwCustomError,
 } from "../../utils/utils";
 import { Errors } from "../constants";
-import {
-  type IDeployment,
-  UserCalls as ProUserOnChainCalls,
-} from "@firefly-exchange/library-sui/v3";
-import {
-  type IBluefinSpotContracts,
-  OnChainCalls as OnChainCallsSwap,
-} from "@firefly-exchange/library-sui/spot";
 import { ExtendedNetwork } from "../interfaces/routes";
+
 export class ContractCalls {
   onChainCalls: OnChainCalls;
 
@@ -617,6 +619,7 @@ export class ContractCalls {
       args?.sponsor
     );
   };
+
   closeAllPositionsdWithdrawSwapAndDepositToProPTB = async (
     delistedMarketPositions: string[],
     args?: {

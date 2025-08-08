@@ -557,7 +557,6 @@ __metadata:
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-plugin-import: "npm:^2.25.2"
     eslint-plugin-prettier: "npm:^4.0.0"
-    git-format-staged: "npm:^3.0.0"
     husky: "npm:^9.1.7"
     interpolate: "npm:^0.1.0"
     lint-staged: "npm:^13.0.3"
@@ -5932,15 +5931,6 @@ __metadata:
     es-errors: "npm:^1.3.0"
     get-intrinsic: "npm:^1.2.4"
   checksum: 10c0/867be6d63f5e0eb026cb3b0ef695ec9ecf9310febb041072d2e142f260bd91ced9eeb426b3af98791d1064e324e653424afa6fd1af17dee373bea48ae03162bc
-  languageName: node
-  linkType: hard
-
-"git-format-staged@npm:^3.0.0":
-  version: 3.1.1
-  resolution: "git-format-staged@npm:3.1.1"
-  bin:
-    git-format-staged: git-format-staged
-  checksum: 10c0/f28a61edfd6643af13ce9beec85c5077d86d5e2bc49d0b49c35c48ca81783a7c8d9da97a862877ef443990d9dcfcdef378b4b5d7a188402fcae5b113f4b920ff
   languageName: node
   linkType: hard
 

@@ -529,7 +529,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bluefin-exchange/bluefin-v2-client@workspace:."
   dependencies:
-    "@firefly-exchange/library-sui": "npm:^2.8.10"
+    "@firefly-exchange/library-sui": "npm:2.8.12-pre-1"
     "@mysten/sui": "npm:^1.37.1"
     "@mysten/zklogin": "npm:^0.7.22"
     "@noble/hashes": "npm:^1.2.0"
@@ -1079,9 +1079,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firefly-exchange/library-sui@npm:^2.8.10":
-  version: 2.8.10
-  resolution: "@firefly-exchange/library-sui@npm:2.8.10"
+"@firefly-exchange/library-sui@npm:2.8.12-pre-1":
+  version: 2.8.12-pre-1
+  resolution: "@firefly-exchange/library-sui@npm:2.8.12-pre-1"
   dependencies:
     "@7kprotocol/sdk-ts": "npm:^2.4.1"
     "@aws-sdk/client-kms": "npm:^3.438.0"
@@ -1111,7 +1111,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     yargs: "npm:^17.6.2"
     yarn: "npm:^1.22.19"
-  checksum: 10c0/2092901e0c7e7f767d5514dbf7dd41f594a45c4befcd46f8c7d814bb134fdae2441535c2b50bdd2e2c9a613005598a96dc2c569eac349e9a43a6eff3ddbef1af
+  checksum: 10c0/a29b242fadc2f625f86dcefc79cdaf5d8177d4768eb501c824701fe59eaf440090ade9cb7a3f0d8f73c7c1430ac9b0e72142b92f07b9dd04118b23dd1ca5cb29
   languageName: node
   linkType: hard
 

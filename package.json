@@ -62,6 +62,7 @@
     "@mysten/zklogin": "^0.7.22",
     "@noble/hashes": "^1.2.0",
     "@noble/secp256k1": "^1.7.1",
+    "@suiet/wallet-kit": "^0.5.1",
     "add": "^2.0.6",
     "avsc": "^5.7.6",
     "axios": "^0.27.2",

@@ -42,11 +42,14 @@ import {
 } from "@firefly-exchange/library-sui/blv";
 import interpolate from "interpolate";
 
-import { SignatureScheme } from "@mysten/sui/cryptography";
+import {
+  SignatureScheme,
+  parseSerializedSignature,
+} from "@mysten/sui/cryptography";
 import { publicKeyFromRawBytes } from "@mysten/sui/verify";
 import { genAddressSeed, getZkLoginSignature } from "@mysten/zklogin";
 import { sha256 } from "@noble/hashes/sha256";
-import { parseSerializedSignature } from "@mysten/sui/cryptography";
+import { WalletContextState } from "@suiet/wallet-kit";
 import {
   combineAndEncode,
   filterDelistedMarkets,
@@ -173,7 +176,7 @@ export class BluefinClient {
 
   private walletAddress = ""; // to save user's public address when connecting from UI
 
-  private signer: Signer; // to save signer when connecting from UI
+  private signer: Signer | WalletContextState; // to save signer when connecting from UI
 
   private uiWallet: BaseWallet | any; // to save signer when connecting from UI
 
@@ -312,12 +315,12 @@ export class BluefinClient {
   };
 
   initializeWithHook = async (
-    uiSignerObject: ExtendedWalletContextState,
+    uiSignerObject: WalletContextState,
     walletAddress: string
   ): Promise<void> => {
     try {
       this.uiWallet = uiSignerObject;
-      this.signer = uiSignerObject as any;
+      this.signer = uiSignerObject;
       this.walletAddress = walletAddress;
       this.isZkLogin = false;
       this.is_wallet_extension = true;
@@ -452,7 +455,7 @@ export class BluefinClient {
    * Gets the RawSigner of the client
    * @returns RawSigner
    * */
-  getSigner = (): Signer => {
+  getSigner = (): Signer | WalletContextState => {
     if (!this.signer) {
       throw Error("Signer not initialized");
     }
@@ -1561,12 +1564,12 @@ export class BluefinClient {
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      //get user positions
+      // get user positions
       const userPositions = await this.getUserPosition({});
 
       let delistedUserPositionsSymbols: string[] = [];
-      //get delisted market positions
-      //if user doesn't have positions in delisted markets, closeAllPositionsAndWithdrawMarginPTB internally handles not adding any close position call to PTB
+      // get delisted market positions
+      // if user doesn't have positions in delisted markets, closeAllPositionsAndWithdrawMarginPTB internally handles not adding any close position call to PTB
       if (userPositions.data && userPositions.data.length > 0) {
         delistedUserPositionsSymbols = userPositions.data
           .filter((position) => {
@@ -1622,7 +1625,7 @@ export class BluefinClient {
         }
       }
 
-      //unsponsored call
+      // unsponsored call
       return await this.contractCalls.closeAllPositionsAndWithdrawMarginPTB(
         delistedUserPositionsSymbols,
         args
@@ -1646,16 +1649,16 @@ export class BluefinClient {
     defaultSlippage?: number;
   }) => {
     try {
-      //get exchange info of all markets to read the status
+      // get exchange info of all markets to read the status
       const exchangeInfo = await this.getExchangeInfo();
       const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-      //get user positions
+      // get user positions
       const userPositions = await this.getUserPosition({});
 
       let delistedUserPositionsSymbols: string[] = [];
-      //get delisted market positions
-      //if user doesn't have positions in delisted markets, closeAllPositionsdWithdrawSwapAndDepositToProPTB internally handles not adding any close position call to PTB
+      // get delisted market positions
+      // if user doesn't have positions in delisted markets, closeAllPositionsdWithdrawSwapAndDepositToProPTB internally handles not adding any close position call to PTB
       if (userPositions.data && userPositions.data.length > 0) {
         delistedUserPositionsSymbols = userPositions.data
           .filter((position) => {
@@ -1768,7 +1771,7 @@ export class BluefinClient {
         }
       }
 
-      //unsponsored call
+      // unsponsored call
       return await this.contractCalls.withdrawAllSwapAndDepositToProPTB(args);
     } catch (e) {
       return {
@@ -1821,7 +1824,7 @@ export class BluefinClient {
         }
       }
 
-      //unsponsored call
+      // unsponsored call
       return await this.contractCalls.swapAndDepositToProPTB(amount, args);
     } catch (e) {
       return {
@@ -1843,12 +1846,12 @@ export class BluefinClient {
     const exchangeInfo = await this.getExchangeInfo();
     const delistedMarkets = filterDelistedMarkets(exchangeInfo);
 
-    //get user positions
+    // get user positions
     const userPositions = await this.getUserPosition({});
 
     let delistedUserPositionsSymbols: string[] = [];
-    //get delisted market positions
-    //if user doesn't have positions in delisted markets, function internally handles not adding any close position call to PTB
+    // get delisted market positions
+    // if user doesn't have positions in delisted markets, function internally handles not adding any close position call to PTB
     if (userPositions.data && userPositions.data.length > 0) {
       delistedUserPositionsSymbols = userPositions.data
         .filter((position) => {
